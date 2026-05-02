@@ -22,13 +22,13 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          # Unit tests touch optional adapters (web, langchain, llamaindex,
-          # haystack, openai, doctor, seeds, eval, serve). Pull those extras
-          # plus [dev] so the suite runs end-to-end. Skipped: [dense]
-          # (torch/faiss), [pgvector] / [elasticsearch] / [opensearch]
-          # (need running services), [qdrant] / [pinecone] / [chroma] /
-          # [ollama] (vendor-specific, need credentials or a local daemon).
-          pip install -e ".[dev,langchain,llamaindex,haystack,openai,anthropic,google,doctor,seeds,web,eval,serve]"
+          for i in 1 2 3; do
+            pip install --retries 5 --timeout 60 \
+              -e ".[dev,langchain,llamaindex,haystack,openai,anthropic,google,doctor,seeds,web,eval,serve]" \
+              && break
+            echo "pip install failed, retrying ($i/3)..."
+            sleep 10
+          done
       - name: Lint
         run: |
           ruff check src tests

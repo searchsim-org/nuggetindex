@@ -8,6 +8,7 @@ the original in the point's ``payload['nugget_id']`` for filter/recovery.
 The ``qdrant_client`` SDK is imported lazily inside ``__init__`` so importing
 this module does not require the ``[qdrant]`` extra.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -25,8 +26,7 @@ def _require_qdrant_sdk() -> Any:
         import qdrant_client
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "qdrant-client is not installed. "
-            "Run: pip install 'nuggetindex[qdrant]'"
+            "qdrant-client is not installed. Run: pip install 'nuggetindex[qdrant]'"
         ) from e
     return qdrant_client
 
@@ -84,15 +84,11 @@ class QdrantBackend:
 
         # Create collection if missing. Use inner-product since encoders are
         # already L2-normalized for cosine.
-        existing = {
-            c.name for c in self._client.get_collections().collections
-        }
+        existing = {c.name for c in self._client.get_collections().collections}
         if self.collection_name not in existing:
             self._client.create_collection(
                 collection_name=self.collection_name,
-                vectors_config=qmodels.VectorParams(
-                    size=dim, distance=qmodels.Distance.DOT
-                ),
+                vectors_config=qmodels.VectorParams(size=dim, distance=qmodels.Distance.DOT),
             )
 
     # --- upsert ---------------------------------------------------------
@@ -100,14 +96,10 @@ class QdrantBackend:
     async def aupsert(self, id: str, vector: list[float]) -> None:
         await self.aupsert_batch([(id, vector)])
 
-    async def aupsert_batch(
-        self, items: list[tuple[str, list[float]]]
-    ) -> None:
+    async def aupsert_batch(self, items: list[tuple[str, list[float]]]) -> None:
         if not items:
             return
-        await asyncio.get_running_loop().run_in_executor(
-            None, self._upsert_sync, items
-        )
+        await asyncio.get_running_loop().run_in_executor(None, self._upsert_sync, items)
 
     def _upsert_sync(self, items: list[tuple[str, list[float]]]) -> None:
         qmodels = self._qmodels

@@ -30,12 +30,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 def _strip_highlights(s: str) -> str:
     """Remove ``<hi>`` / ``</hi>`` / ``<sep/>`` markup from Vespa snippets."""
-    return (
-        s.replace("<hi>", "")
-        .replace("</hi>", "")
-        .replace("<sep />", " ")
-        .replace("<sep/>", " ")
-    )
+    return s.replace("<hi>", "").replace("</hi>", "").replace("<sep />", " ").replace("<sep/>", " ")
 
 
 def _hit_to_document(hit: dict[str, Any]) -> Document:

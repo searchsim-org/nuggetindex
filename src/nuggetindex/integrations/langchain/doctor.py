@@ -19,6 +19,7 @@ module-level ``_require_langchain()`` call is the runtime guard so callers
 missing the ``[langchain]`` extra see a useful ``pip install`` hint rather
 than a bare ``ModuleNotFoundError``.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -38,8 +39,7 @@ def _require_langchain() -> Any:
         from langchain_core.documents import Document as _Document
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[langchain] not installed. "
-            "Run: pip install 'nuggetindex[langchain]'"
+            "nuggetindex[langchain] not installed. Run: pip install 'nuggetindex[langchain]'"
         ) from e
     return _Document
 
@@ -143,9 +143,7 @@ async def doctor(
         object (has ``.similarity_search`` but no ``__iter__``) — the
         shim's contract is a concrete iterable of ``Document``.
     """
-    if hasattr(documents, "get_relevant_documents") or hasattr(
-        documents, "similarity_search"
-    ):
+    if hasattr(documents, "get_relevant_documents") or hasattr(documents, "similarity_search"):
         raise TypeError(
             "nuggetindex.integrations.langchain.doctor() accepts an "
             "Iterable[langchain_core.documents.Document], not a retriever "

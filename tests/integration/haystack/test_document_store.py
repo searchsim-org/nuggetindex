@@ -14,6 +14,7 @@ Haystack's ``DocumentStoreBaseTests`` in ``test_document_store_base.py``
 cover the protocol-level conformance; this file covers the integration glue
 specific to nuggetindex semantics.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -48,9 +49,7 @@ def test_write_and_count(tmp_path: Path) -> None:
     store = NuggetStore(db_path=tmp_path / "hs.db")
     try:
         ds = NuggetDocumentStore(store=store)
-        n = ds.write_documents(
-            [Document(id="d1", content="Sundar Pichai is CEO of Google.")]
-        )
+        n = ds.write_documents([Document(id="d1", content="Sundar Pichai is CEO of Google.")])
         assert n == 1
         assert ds.count_documents() == 1
     finally:
@@ -131,12 +130,8 @@ def _seed_nuggets(store: NuggetStore) -> None:
                     object="Sundar Pichai",
                     text="Sundar Pichai is CEO of Google.",
                 ),
-                validity=ValidityInterval(
-                    start=datetime(2019, 1, 1, tzinfo=UTC)
-                ),
-                epistemic=EpistemicState(
-                    status=LifecycleStatus.ACTIVE, confidence=0.9
-                ),
+                validity=ValidityInterval(start=datetime(2019, 1, 1, tzinfo=UTC)),
+                epistemic=EpistemicState(status=LifecycleStatus.ACTIVE, confidence=0.9),
                 provenance=(
                     ProvenanceRecord(
                         source_id="d1",
@@ -154,12 +149,8 @@ def _seed_nuggets(store: NuggetStore) -> None:
                     object="1976",
                     text="Apple was founded in 1976.",
                 ),
-                validity=ValidityInterval(
-                    start=datetime(1976, 1, 1, tzinfo=UTC)
-                ),
-                epistemic=EpistemicState(
-                    status=LifecycleStatus.ACTIVE, confidence=0.9
-                ),
+                validity=ValidityInterval(start=datetime(1976, 1, 1, tzinfo=UTC)),
+                epistemic=EpistemicState(status=LifecycleStatus.ACTIVE, confidence=0.9),
                 provenance=(
                     ProvenanceRecord(
                         source_id="d2",
@@ -211,9 +202,7 @@ def test_filter_documents_allowlist_allowed(tmp_path: Path) -> None:
         _seed_nuggets(store)
         ds = NuggetDocumentStore(store=store)
         # ``status`` is in the v0.1 allowlist — call shouldn't raise.
-        out = ds.filter_documents(
-            {"field": "status", "operator": "==", "value": "active"}
-        )
+        out = ds.filter_documents({"field": "status", "operator": "==", "value": "active"})
         assert isinstance(out, list)
     finally:
         _close(store)
@@ -226,9 +215,7 @@ def test_filter_documents_allowlist_disallowed(tmp_path: Path) -> None:
         ds = NuggetDocumentStore(store=store)
         ds.write_documents([Document(id="d1", content="Test")])
         with pytest.raises(ValueError, match="unknown filter"):
-            ds.filter_documents(
-                {"field": "secret_column", "operator": "==", "value": "x"}
-            )
+            ds.filter_documents({"field": "secret_column", "operator": "==", "value": "x"})
     finally:
         _close(store)
 
@@ -238,9 +225,7 @@ def test_filter_documents_only_eq_operator_supported(tmp_path: Path) -> None:
     try:
         ds = NuggetDocumentStore(store=store)
         with pytest.raises(ValueError, match=r"only supports '=='"):
-            ds.filter_documents(
-                {"field": "status", "operator": ">", "value": "active"}
-            )
+            ds.filter_documents({"field": "status", "operator": ">", "value": "active"})
     finally:
         _close(store)
 

@@ -131,9 +131,7 @@ class HaystackCorpus:
         from nuggetindex.pipeline.constructor import Document
 
         meta: dict[str, Any] = dict(getattr(h, "meta", None) or {})
-        source_id = str(
-            getattr(h, "id", None) or meta.get("source_id") or ""
-        )
+        source_id = str(getattr(h, "id", None) or meta.get("source_id") or "")
         text = getattr(h, "content", "") or ""
         uri = meta.get("url") or meta.get("uri")
         return Document(

@@ -49,9 +49,7 @@ class QualityGate:
         review_queue_path: Path | str = Path("review_queue.jsonl"),
     ) -> None:
         if review_threshold > accept_threshold:
-            raise ValueError(
-                "review_threshold must be <= accept_threshold"
-            )
+            raise ValueError("review_threshold must be <= accept_threshold")
         self.extractor = extractor
         self.accept_threshold = accept_threshold
         self.review_threshold = review_threshold

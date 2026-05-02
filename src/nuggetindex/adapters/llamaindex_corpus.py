@@ -186,11 +186,7 @@ class LlamaIndexCorpus:
         """Project a LlamaIndex node into a nuggetindex :class:`Document`."""
         from nuggetindex.pipeline.constructor import Document
 
-        node_id = (
-            getattr(node, "node_id", None)
-            or getattr(node, "id_", None)
-            or ""
-        )
+        node_id = getattr(node, "node_id", None) or getattr(node, "id_", None) or ""
         if hasattr(node, "get_content"):
             try:
                 text = node.get_content() or ""

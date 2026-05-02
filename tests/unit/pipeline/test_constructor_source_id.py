@@ -31,7 +31,9 @@ from tests.fixtures import RuleBasedExtractor
 def _make_result(source_id: str) -> ExtractionResult:
     n = Nugget.new(
         kind=NuggetKind.SEMANTIC_FACT,
-        fact=FactTriple(subject="Google", predicate="is", object="company", text="Google is a company."),
+        fact=FactTriple(
+            subject="Google", predicate="is", object="company", text="Google is a company."
+        ),
         validity=ValidityInterval(start=datetime(1970, 1, 1, tzinfo=UTC)),
         epistemic=EpistemicState(),
         provenance=(ProvenanceRecord(source_id=source_id, evidence_span="Google is a company."),),
@@ -67,7 +69,9 @@ class _LegacyStub(BaseExtractor):
         return [_make_result("legacy-default")]
 
 
-def _build(extractor: BaseExtractor, *, quality_gate: QualityGate | None = None) -> DocumentConstructor:
+def _build(
+    extractor: BaseExtractor, *, quality_gate: QualityGate | None = None
+) -> DocumentConstructor:
     schema = RelationSchema.default()
     return DocumentConstructor(
         extractor=extractor,

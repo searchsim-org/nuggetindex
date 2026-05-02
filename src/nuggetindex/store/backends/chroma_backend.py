@@ -7,6 +7,7 @@ directly (Chroma accepts arbitrary strings).
 
 The ``chromadb`` SDK is imported lazily inside ``__init__``.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -20,8 +21,7 @@ def _require_chromadb_sdk() -> Any:
         import chromadb
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "chromadb is not installed. "
-            "Run: pip install 'nuggetindex[chroma]'"
+            "chromadb is not installed. Run: pip install 'nuggetindex[chroma]'"
         ) from e
     return chromadb
 
@@ -73,14 +73,10 @@ class ChromaBackend:
     async def aupsert(self, id: str, vector: list[float]) -> None:
         await self.aupsert_batch([(id, vector)])
 
-    async def aupsert_batch(
-        self, items: list[tuple[str, list[float]]]
-    ) -> None:
+    async def aupsert_batch(self, items: list[tuple[str, list[float]]]) -> None:
         if not items:
             return
-        await asyncio.get_running_loop().run_in_executor(
-            None, self._upsert_sync, items
-        )
+        await asyncio.get_running_loop().run_in_executor(None, self._upsert_sync, items)
 
     def _upsert_sync(self, items: list[tuple[str, list[float]]]) -> None:
         import numpy as np

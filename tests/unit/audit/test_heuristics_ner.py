@@ -20,9 +20,7 @@ def test_extract_entities_empty_text_returns_empty() -> None:
     assert extract_entities("") == []
 
 
-@pytest.mark.skipif(
-    not ner_available(), reason="spaCy + en_core_web_sm not installed"
-)
+@pytest.mark.skipif(not ner_available(), reason="spaCy + en_core_web_sm not installed")
 def test_extract_entities_finds_org() -> None:
     text = "Microsoft acquired GitHub in 2018."
     result = extract_entities(text)
@@ -37,9 +35,7 @@ def test_extract_entities_finds_org() -> None:
         assert ent.start_char < ent.end_char
 
 
-@pytest.mark.skipif(
-    not ner_available(), reason="spaCy + en_core_web_sm not installed"
-)
+@pytest.mark.skipif(not ner_available(), reason="spaCy + en_core_web_sm not installed")
 def test_extract_entities_filters_out_unwanted_labels() -> None:
     text = "The year 2015 was pivotal for Google."
     result = extract_entities(text)

@@ -8,6 +8,7 @@ the shim:
 * Returns a ``DoctorReport`` with the canonical four scores.
 * Refuses retriever / VectorStore sources with a helpful ``TypeError``.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -86,9 +87,7 @@ async def test_langchain_doctor_shim_delegates_to_scan_index(
 
     import importlib
 
-    doctor_mod = importlib.import_module(
-        "nuggetindex.integrations.langchain.doctor"
-    )
+    doctor_mod = importlib.import_module("nuggetindex.integrations.langchain.doctor")
     monkeypatch.setattr(doctor_mod, "scan_index", fake_scan_index)
     corpus = _seed_corpus()
     await doctor_mod.doctor(corpus, mode="fast", sample_size=7, rng_seed=42)

@@ -5,6 +5,7 @@ and every mutation runs inside ``_tx(conn)``. To exercise the rollback path
 we wrap that connection with a proxy that raises on the Nth ``execute`` call,
 then confirm the error propagates to the caller and leaves the DB empty.
 """
+
 from __future__ import annotations
 
 import sqlite3

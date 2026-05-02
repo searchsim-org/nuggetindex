@@ -7,6 +7,7 @@ This client detects all three and escalates via proxy rotation; when rotation
 is exhausted, it returns a ``SearxngResponse`` with ``was_captcha=True`` so
 the caller can fall back to ``CamoufoxBackend``.
 """
+
 from __future__ import annotations
 
 import json as _json
@@ -62,7 +63,9 @@ class SearxngClient:
             searxng_engines_failed = bool(payload.get("unresponsive_engines"))
 
             detection = self.detector.classify(
-                status_code=status, body=body or "", headers=headers,
+                status_code=status,
+                body=body or "",
+                headers=headers,
                 searxng_empty=searxng_empty,
                 searxng_engines_failed=searxng_engines_failed,
             )
@@ -104,10 +107,13 @@ class SearxngClient:
         if self.http_client is not None:
             # Tests inject an httpx.AsyncClient with a MockTransport.
             resp = await self.http_client.get(
-                f"{self.base_url}/search", params=params, timeout=self.timeout,
+                f"{self.base_url}/search",
+                params=params,
+                timeout=self.timeout,
             )
         else:
             import httpx
+
             client_kwargs: dict[str, Any] = {"timeout": self.timeout}
             if proxy_entry is not None:
                 client_kwargs["proxy"] = proxy_entry.url

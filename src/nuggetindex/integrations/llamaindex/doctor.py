@@ -14,6 +14,7 @@ module-level ``_require_llamaindex()`` call is the runtime guard so
 callers missing the ``[llamaindex]`` extra see a useful ``pip install``
 hint rather than a bare ``ModuleNotFoundError``.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -32,8 +33,7 @@ def _require_llamaindex() -> Any:
         from llama_index.core.schema import BaseNode as _BaseNode
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[llamaindex] not installed. "
-            "Run: pip install 'nuggetindex[llamaindex]'"
+            "nuggetindex[llamaindex] not installed. Run: pip install 'nuggetindex[llamaindex]'"
         ) from e
     return _BaseNode
 

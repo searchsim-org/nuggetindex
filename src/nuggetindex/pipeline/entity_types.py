@@ -49,6 +49,7 @@ def probe_entity_type(mention: str, nlp: Any | None = None) -> str:
         # Lazy import so the core package still imports when spaCy isn't
         # installed -- ``get_nlp()`` itself is safe to call either way.
         from nuggetindex.audit.heuristics.timex import get_nlp
+
         nlp = get_nlp()
     if nlp is None:
         return "UNAVAILABLE"
@@ -123,16 +124,14 @@ def check_triple_direction(
             return "ok"
 
     # Direct direction.
-    direct_ok = (
-        (not expected_subj or subj_type in expected_subj)
-        and (not expected_obj or obj_type in expected_obj)
+    direct_ok = (not expected_subj or subj_type in expected_subj) and (
+        not expected_obj or obj_type in expected_obj
     )
     if direct_ok:
         return "ok"
     # Flip direction (subject <-> object).
-    flip_ok = (
-        (not expected_subj or obj_type in expected_subj)
-        and (not expected_obj or subj_type in expected_obj)
+    flip_ok = (not expected_subj or obj_type in expected_subj) and (
+        not expected_obj or subj_type in expected_obj
     )
     if flip_ok:
         return "flip"

@@ -7,6 +7,7 @@ fixture store. Each returned ``Document`` carries chain-specific metadata
 ``edge_type_to_prev``) on top of the governance fields the regular
 retriever emits.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -95,9 +96,7 @@ async def test_ainvoke_succession_returns_ordered_documents(chain_store) -> None
     from nuggetindex.integrations.langchain import NuggetChainRetriever
 
     retriever = NuggetChainRetriever(store=chain_store)
-    docs = await retriever.ainvoke(
-        {"type": "succession", "subject": "Google", "predicate": "ceo"}
-    )
+    docs = await retriever.ainvoke({"type": "succession", "subject": "Google", "predicate": "ceo"})
     assert all(isinstance(d, Document) for d in docs)
     assert [d.metadata["object"] for d in docs] == ["Schmidt", "Page", "Pichai"]
     # Chain-position and chain-type set on every doc.
@@ -145,9 +144,7 @@ async def test_ainvoke_rename_returns_forward_walk(chain_store) -> None:
     from nuggetindex.integrations.langchain import NuggetChainRetriever
 
     retriever = NuggetChainRetriever(store=chain_store)
-    docs = await retriever.ainvoke(
-        {"type": "rename", "subject": "Twitter Inc"}
-    )
+    docs = await retriever.ainvoke({"type": "rename", "subject": "Twitter Inc"})
     assert [d.metadata["object"] for d in docs] == ["X Corp"]
     assert docs[0].metadata["chain_type"] == "rename"
 
@@ -191,7 +188,5 @@ async def test_chain_retriever_composes_with_runnable_lambda(chain_store) -> Non
 
     retriever = NuggetChainRetriever(store=chain_store)
     chain = retriever | RunnableLambda(lambda docs: len(docs))
-    count = await chain.ainvoke(
-        {"type": "succession", "subject": "Google", "predicate": "ceo"}
-    )
+    count = await chain.ainvoke({"type": "succession", "subject": "Google", "predicate": "ceo"})
     assert count == 3

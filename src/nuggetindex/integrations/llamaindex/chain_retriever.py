@@ -23,6 +23,7 @@ for a chain spec. This adapter supports **two** entry points:
 Imports follow the same two-layer guard pattern as the sibling
 ``retriever.py``.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -50,8 +51,7 @@ def _require_llamaindex() -> tuple[Any, Any, Any, Any]:
         )
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[llamaindex] not installed. "
-            "Run: pip install 'nuggetindex[llamaindex]'"
+            "nuggetindex[llamaindex] not installed. Run: pip install 'nuggetindex[llamaindex]'"
         ) from e
     return _BaseRetriever, _NodeWithScore, _QueryBundle, _TextNode
 
@@ -139,17 +139,11 @@ class NuggetChainRetriever(_BaseRetriever):  # type: ignore[misc,valid-type]
         spec = json.loads(query_bundle.query_str)
         chain_type = spec.get("type")
         if chain_type == "succession":
-            return await self.achain_succession(
-                **self._parse_kwargs(spec, _SUCCESSION_KEYS)
-            )
+            return await self.achain_succession(**self._parse_kwargs(spec, _SUCCESSION_KEYS))
         if chain_type == "rename":
-            return await self.achain_rename(
-                **self._parse_kwargs(spec, _RENAME_KEYS)
-            )
+            return await self.achain_rename(**self._parse_kwargs(spec, _RENAME_KEYS))
         if chain_type == "joined":
-            return await self.achain_join(
-                **self._parse_kwargs(spec, _JOIN_KEYS)
-            )
+            return await self.achain_join(**self._parse_kwargs(spec, _JOIN_KEYS))
         raise ValueError(f"unknown chain type: {chain_type!r}")
 
     def _retrieve(self, query_bundle: QueryBundle) -> list[NodeWithScore]:
@@ -158,9 +152,7 @@ class NuggetChainRetriever(_BaseRetriever):  # type: ignore[misc,valid-type]
     # --- internals --------------------------------------------------------
 
     @staticmethod
-    def _parse_kwargs(
-        spec: dict[str, Any], allowed: set[str]
-    ) -> dict[str, Any]:
+    def _parse_kwargs(spec: dict[str, Any], allowed: set[str]) -> dict[str, Any]:
         """Pick + coerce JSON-decoded kwargs for a chain-method call.
 
         Coerces ``as_of`` (if present) from ISO-8601 string to ``datetime``,
@@ -192,26 +184,18 @@ class NuggetChainRetriever(_BaseRetriever):  # type: ignore[misc,valid-type]
                 "object": n.fact.object,
                 "valid_from": n.validity.start.isoformat(),
                 "valid_until": (
-                    n.validity.end.isoformat()
-                    if n.validity.end is not None
-                    else "ongoing"
+                    n.validity.end.isoformat() if n.validity.end is not None else "ongoing"
                 ),
                 "status": status,
                 "confidence": n.epistemic.confidence,
                 "source": first_prov.source_id if first_prov is not None else None,
-                "evidence": (
-                    first_prov.evidence_span if first_prov is not None else ""
-                ),
+                "evidence": (first_prov.evidence_span if first_prov is not None else ""),
                 "chain_position": i,
                 "chain_type": chain.chain_type,
                 "gap_seconds_to_prev": (
-                    edge.gap.total_seconds()
-                    if edge is not None and edge.gap is not None
-                    else None
+                    edge.gap.total_seconds() if edge is not None and edge.gap is not None else None
                 ),
-                "edge_type_to_prev": (
-                    str(edge.edge_type) if edge is not None else None
-                ),
+                "edge_type_to_prev": (str(edge.edge_type) if edge is not None else None),
             }
             text_node = _TextNode(text=text, metadata=metadata)
             nodes.append(_NodeWithScore(node=text_node, score=None))

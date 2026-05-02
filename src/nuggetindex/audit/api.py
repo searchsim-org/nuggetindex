@@ -347,9 +347,7 @@ def _resolve_extractor(extractor: str | BaseExtractor) -> BaseExtractor:
         from nuggetindex.extractors.llm import LLMExtractor
 
         return LLMExtractor(LLMConfig(provider="openai", model=extractor))
-    raise TypeError(
-        f"extractor must be a string or BaseExtractor, got {type(extractor).__name__}"
-    )
+    raise TypeError(f"extractor must be a string or BaseExtractor, got {type(extractor).__name__}")
 
 
 def _replace_by_id(nuggets: list[Nugget], updated: Nugget) -> None:
@@ -404,9 +402,7 @@ def _stale_reason(n: Nugget, query_time: datetime) -> str:
         return "no explicit end-time in evidence; may be outdated"
     age_days = (query_time - source_date).days
     if age_days > 180:
-        return (
-            f"no explicit end-time; source is {age_days} days older than query_time"
-        )
+        return f"no explicit end-time; source is {age_days} days older than query_time"
     return "no explicit end-time in evidence; may be outdated"
 
 

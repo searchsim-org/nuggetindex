@@ -41,9 +41,7 @@ async def test_multiple_sentences_yield_multiple_nuggets() -> None:
 async def test_founded_pattern() -> None:
     ext = RuleBasedExtractor()
     results = await ext.aextract("Apple was founded in 1976.")
-    matches = [
-        r for r in results if r.nugget.fact.predicate == "founded"
-    ]
+    matches = [r for r in results if r.nugget.fact.predicate == "founded"]
     assert matches
     r = matches[0]
     assert r.nugget.fact.subject == "Apple"

@@ -4,6 +4,7 @@ Stubs for ``ProxyPool``, ``ProxyEntry``. Additional components
 (``CaptchaDetector``, ``SearxngClient``, ``CamoufoxBackend``) ship in later
 tasks within the same package.
 """
+
 from nuggetindex.adapters.searxng.camoufox_backend import CamoufoxBackend
 from nuggetindex.adapters.searxng.client import SearxngClient, SearxngResponse
 from nuggetindex.adapters.searxng.detect import CaptchaDetector, DetectionResult

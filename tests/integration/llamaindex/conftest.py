@@ -5,6 +5,7 @@ pre-seeded with a handful of deterministic nuggets — enough to exercise the
 retriever and governance postprocessor without depending on a live LLM.
 Mirrors the LangChain ``conftest.py`` fixture.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime

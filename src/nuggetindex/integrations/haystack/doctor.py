@@ -14,6 +14,7 @@ module-level ``_require_haystack()`` call is the runtime guard so callers
 missing the ``[haystack]`` extra see a useful ``pip install`` hint rather
 than a bare ``ModuleNotFoundError``.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -32,8 +33,7 @@ def _require_haystack() -> Any:
         from haystack import Document as _Document
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[haystack] not installed. "
-            "Run: pip install 'nuggetindex[haystack]'"
+            "nuggetindex[haystack] not installed. Run: pip install 'nuggetindex[haystack]'"
         ) from e
     return _Document
 

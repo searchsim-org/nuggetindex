@@ -14,9 +14,7 @@ def test_string_api_key_stored_as_secret() -> None:
 
 
 def test_repr_redacts_api_key() -> None:
-    cfg = LLMConfig(
-        provider="openai", model="gpt-4o-mini", api_key="sk-secret-deadbeef"
-    )
+    cfg = LLMConfig(provider="openai", model="gpt-4o-mini", api_key="sk-secret-deadbeef")
     r = repr(cfg)
     assert "sk-secret-deadbeef" not in r
     assert "redacted" in r.lower() or "****" in r

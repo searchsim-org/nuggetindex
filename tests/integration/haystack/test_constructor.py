@@ -5,6 +5,7 @@ Haystack components are sync (``run()`` is a regular function), and
 with a running loop, so these tests are sync and use ``asyncio.run`` to
 set up / inspect the store.
 """
+
 from __future__ import annotations
 
 import asyncio

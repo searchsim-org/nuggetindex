@@ -57,9 +57,7 @@ class DoctorScore:
     ``None`` when the input stream is unbounded / unknown.
     """
 
-    dimension: Literal[
-        "temporal_depth", "temporal_drift", "conflict_surface", "rename_events"
-    ]
+    dimension: Literal["temporal_depth", "temporal_drift", "conflict_surface", "rename_events"]
     percentage: float
     ci95: tuple[float, float]
     n_sampled: int
@@ -146,7 +144,7 @@ def _object_text(text: str, match: TriggerMatch) -> str:
 
 def _subject_text(text: str, match: TriggerMatch) -> str:
     """Raw subject slice, whitespace-stripped."""
-    return text[match.subject_span[0]:match.subject_span[1]].strip()
+    return text[match.subject_span[0] : match.subject_span[1]].strip()
 
 
 def _canonicalize_predicate(predicate: str, schema: Any) -> str:
@@ -266,9 +264,7 @@ async def _fast_scan(
         drift_pct = drift_successes / drift_n * 100.0
         drift_ci = _wilson_ci(drift_successes, drift_n)
         drift_scored.sort(key=lambda t: (t[1], t[2]), reverse=True)
-        drift_examples = [
-            _truncate(f"{k[0]} / {k[1]}") for k, _cnt, _span in drift_scored[:3]
-        ]
+        drift_examples = [_truncate(f"{k[0]} / {k[1]}") for k, _cnt, _span in drift_scored[:3]]
     elif not have_timex:
         drift_pct = 0.0
         drift_ci = (0.0, 0.0)
@@ -462,10 +458,18 @@ async def _deep_scan(
 
             # 2. Score over the populated store.
             (
-                td_pct, td_ci, td_examples,
-                drift_pct, drift_ci, drift_examples,
-                conflict_pct, conflict_ci, conflict_examples,
-                rename_pct, rename_ci, rename_examples,
+                td_pct,
+                td_ci,
+                td_examples,
+                drift_pct,
+                drift_ci,
+                drift_examples,
+                conflict_pct,
+                conflict_ci,
+                conflict_examples,
+                rename_pct,
+                rename_ci,
+                rename_examples,
             ) = await _score_deep_store(
                 store=store,
                 sampled_docs=sampled_docs,
@@ -517,10 +521,7 @@ async def _deep_scan(
 
     warning_line: str | None = None
     if n_sampled and n_failed / n_sampled > _DEEP_FAILURE_THRESHOLD:
-        warning_line = (
-            f"> {n_failed} of {n_sampled} ingestions failed; "
-            "scores may be unreliable."
-        )
+        warning_line = f"> {n_failed} of {n_sampled} ingestions failed; scores may be unreliable."
 
     rendered = _render_markdown_scorecard(
         scores=scores,
@@ -547,10 +548,18 @@ async def _score_deep_store(
     sampled_docs: list[Document],
     schema: Any,
 ) -> tuple[
-    float, tuple[float, float], list[str],
-    float, tuple[float, float], list[str],
-    float, tuple[float, float], list[str],
-    float, tuple[float, float], list[str],
+    float,
+    tuple[float, float],
+    list[str],
+    float,
+    tuple[float, float],
+    list[str],
+    float,
+    tuple[float, float],
+    list[str],
+    float,
+    tuple[float, float],
+    list[str],
 ]:
     """Compute the four deep-mode scores against ``store``.
 
@@ -645,13 +654,9 @@ async def _score_deep_store(
                 if len(seen) >= 2:
                     break
         conflict_scored.append((key, seen))
-    conflict_pct = (
-        conflict_successes / conflict_total * 100.0 if conflict_total else 0.0
-    )
+    conflict_pct = conflict_successes / conflict_total * 100.0 if conflict_total else 0.0
     conflict_ci = _wilson_ci(conflict_successes, conflict_total)
-    conflict_scored.sort(
-        key=lambda t: (len(by_key[t[0]]), t[0]), reverse=True
-    )
+    conflict_scored.sort(key=lambda t: (len(by_key[t[0]]), t[0]), reverse=True)
     conflict_examples = []
     for key, seen in conflict_scored[:3]:
         if len(seen) >= 2:
@@ -682,10 +687,18 @@ async def _score_deep_store(
     rename_examples = [_truncate(x) for x in rename_examples_raw[:3]]
 
     return (
-        td_pct, td_ci, td_examples,
-        drift_pct, drift_ci, drift_examples,
-        conflict_pct, conflict_ci, conflict_examples,
-        rename_pct, rename_ci, rename_examples,
+        td_pct,
+        td_ci,
+        td_examples,
+        drift_pct,
+        drift_ci,
+        drift_examples,
+        conflict_pct,
+        conflict_ci,
+        conflict_examples,
+        rename_pct,
+        rename_ci,
+        rename_examples,
     )
 
 
@@ -725,9 +738,7 @@ def _empty_report(
         sample_mode=sample_mode,
         scores=scores,
         verdict="low",
-        rendered_markdown=(
-            f"# Doctor scan \u2014 {mode_label}\n\nNo documents to scan.\n"
-        ),
+        rendered_markdown=(f"# Doctor scan \u2014 {mode_label}\n\nNo documents to scan.\n"),
     )
 
 
@@ -767,9 +778,7 @@ def _render_markdown_scorecard(
         lo, hi = s.ci95
         ci = f"{lo:.1f}\u2013{hi:.1f} %"
         examples = "; ".join(s.examples) if s.examples else "\u2014"
-        rows.append(
-            f"| {labels[s.dimension]:<18} | {pct:<7} | {ci:<15} | {examples} |"
-        )
+        rows.append(f"| {labels[s.dimension]:<18} | {pct:<7} | {ci:<15} | {examples} |")
 
     combined = drift_pct + conflict_pct
     if combined > 0:
@@ -798,9 +807,7 @@ async def scan_index(
     docs: AsyncIterable[Document] | Iterable[Document],
     mode: Literal["fast", "deep"] = "fast",
     sample_size: int = 500,
-    stratify_by: Literal[
-        "source_date", "none", "domain", "language", "composite"
-    ] = "composite",
+    stratify_by: Literal["source_date", "none", "domain", "language", "composite"] = "composite",
     schema: Any | None = None,  # RelationSchema | None -- avoid hard import at module level
     extractor: Any | None = None,  # BaseExtractor | None -- only used when mode="deep"
     rng_seed: int = 0,
@@ -858,8 +865,7 @@ async def scan_index(
     if mode == "deep":
         if extractor is None:
             raise ValueError(
-                "Deep mode requires an `extractor=` argument "
-                "(e.g., LLMExtractor(...))."
+                "Deep mode requires an `extractor=` argument (e.g., LLMExtractor(...))."
             )
         return await _deep_scan(
             docs=docs,

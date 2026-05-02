@@ -38,17 +38,24 @@ from typing import Any
 # loop in ``_normalize`` consumes "inc." before "inc" when both would match.
 _LEGAL_SUFFIXES: tuple[str, ...] = (
     "incorporated",
-    "inc.", "inc",
+    "inc.",
+    "inc",
     "corporation",
-    "corp.", "corp",
+    "corp.",
+    "corp",
     "limited",
-    "ltd.", "ltd",
-    "l.l.c.", "llc",
-    "p.l.c.", "plc",
+    "ltd.",
+    "ltd",
+    "l.l.c.",
+    "llc",
+    "p.l.c.",
+    "plc",
     "gmbh",
     "ag",
-    "s.a.", "sa",
-    "co.", "company",
+    "s.a.",
+    "sa",
+    "co.",
+    "company",
     "holdings",
     "group",
 )
@@ -100,8 +107,8 @@ class AliasResolution:
 
     canonical: str
     confidence: float  # 1.0 for exact / normalized / new; cosine for string_sim / embedding
-    method: str        # "exact" | "normalized" | "string_sim" | "embedding" | "new" | "empty"
-    resolved_from: str # the raw mention handed to resolve()
+    method: str  # "exact" | "normalized" | "string_sim" | "embedding" | "new" | "empty"
+    resolved_from: str  # the raw mention handed to resolve()
 
 
 @dataclass
@@ -115,10 +122,10 @@ class AliasResolver:
     :meth:`resolve` on each stored form in insertion order).
     """
 
-    sim_threshold: float = 0.88              # char-ngram cosine
-    emb_threshold: float = 0.90              # sentence-transformers cosine
+    sim_threshold: float = 0.88  # char-ngram cosine
+    emb_threshold: float = 0.90  # sentence-transformers cosine
     embedding_model: str | None = None
-    ngram_range: tuple[int, int] = (3, 4)    # char-wb ngrams
+    ngram_range: tuple[int, int] = (3, 4)  # char-wb ngrams
     # Length-ratio guard for the string-sim tier. Char-ngram cosine over a
     # substring hit can falsely bind very different lengths (e.g. "Apple" vs
     # "Следующие CEO Apple?") because of shared n-grams inside the longer
@@ -150,19 +157,27 @@ class AliasResolver:
         raw = mention.strip()
         if not raw:
             return AliasResolution(
-                canonical="", confidence=0.0, method="empty", resolved_from=raw,
+                canonical="",
+                confidence=0.0,
+                method="empty",
+                resolved_from=raw,
             )
         # Tier 1: exact.
         if raw in self._canonicals:
             return AliasResolution(
-                canonical=raw, confidence=1.0, method="exact", resolved_from=raw,
+                canonical=raw,
+                confidence=1.0,
+                method="exact",
+                resolved_from=raw,
             )
         # Tier 2: normalized.
         norm = _normalize(raw)
         if norm and norm in self._norm_to_canonical:
             return AliasResolution(
                 canonical=self._norm_to_canonical[norm],
-                confidence=1.0, method="normalized", resolved_from=raw,
+                confidence=1.0,
+                method="normalized",
+                resolved_from=raw,
             )
         # Tier 3: string-sim (char n-gram cosine via TF-IDF). Only worthwhile
         # once the pool has >= 2 canonicals.
@@ -174,8 +189,10 @@ class AliasResolver:
                 if norm:
                     self._norm_to_canonical[norm] = canonical
                 return AliasResolution(
-                    canonical=canonical, confidence=score,
-                    method="string_sim", resolved_from=raw,
+                    canonical=canonical,
+                    confidence=score,
+                    method="string_sim",
+                    resolved_from=raw,
                 )
         # Tier 4: embedding similarity (optional / stubbed).
         if self.embedding_model and len(self._canonicals) >= 2:
@@ -185,8 +202,10 @@ class AliasResolver:
                 if norm:
                     self._norm_to_canonical[norm] = canonical
                 return AliasResolution(
-                    canonical=canonical, confidence=score,
-                    method="embedding", resolved_from=raw,
+                    canonical=canonical,
+                    confidence=score,
+                    method="embedding",
+                    resolved_from=raw,
                 )
         # No match -- add to pool as a new canonical.
         self._canonicals.append(raw)
@@ -194,7 +213,10 @@ class AliasResolver:
             self._norm_to_canonical[norm] = raw
         self._vectorizer_dirty = True
         return AliasResolution(
-            canonical=raw, confidence=1.0, method="new", resolved_from=raw,
+            canonical=raw,
+            confidence=1.0,
+            method="new",
+            resolved_from=raw,
         )
 
     def _string_sim_lookup(self, raw: str) -> tuple[str, float] | None:

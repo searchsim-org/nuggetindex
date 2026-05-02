@@ -4,6 +4,7 @@
 pre-seeded with a handful of deterministic nuggets — enough to exercise the
 retriever and governance wrappers without depending on a live LLM.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime

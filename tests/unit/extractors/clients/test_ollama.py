@@ -37,9 +37,7 @@ def _build_client_with_fake_raw(raw: object) -> mod.OllamaClient:
 async def test_ollama_structured_output_via_instructor() -> None:
     fake_raw = MagicMock()
     fake_raw.chat.completions.create = AsyncMock(
-        return_value=Triple(
-            subject="Elon Musk", predicate="founded", object="SpaceX"
-        )
+        return_value=Triple(subject="Elon Musk", predicate="founded", object="SpaceX")
     )
     client = _build_client_with_fake_raw(fake_raw)
 
@@ -59,9 +57,7 @@ async def test_ollama_structured_output_via_instructor() -> None:
 async def test_ollama_uses_recorded_transcript() -> None:
     transcript = json.loads(_TRANSCRIPT.read_text())
     fake_raw = MagicMock()
-    fake_raw.chat.completions.create = AsyncMock(
-        return_value=Triple(**transcript["response"])
-    )
+    fake_raw.chat.completions.create = AsyncMock(return_value=Triple(**transcript["response"]))
     client = _build_client_with_fake_raw(fake_raw)
     result = await client.achat_structured(
         messages=transcript["request"]["messages"],

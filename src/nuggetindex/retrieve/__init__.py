@@ -1,4 +1,5 @@
 """Query-time retrieval: fusion + Retriever pipeline."""
+
 from nuggetindex.retrieve.fusion import (
     reciprocal_rank_fusion,
     weighted_minmax_fusion,

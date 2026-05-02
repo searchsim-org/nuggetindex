@@ -43,7 +43,7 @@ def audit_command(
         help=(
             'Extractor: "trigger" (default; LLM-free) or an LLM model id '
             'such as "gpt-4o-mini". The legacy "rule_based" alias is '
-            'accepted with a deprecation warning.'
+            "accepted with a deprecation warning."
         ),
     ),
 ) -> None:
@@ -63,11 +63,7 @@ def audit_command(
         typer.echo(f"Error: context file not found: {context}", err=True)
         raise typer.Exit(code=2)
 
-    query_time = (
-        datetime.fromisoformat(time)
-        if time
-        else datetime.now(UTC)
-    )
+    query_time = datetime.fromisoformat(time) if time else datetime.now(UTC)
     if query_time.tzinfo is None:
         query_time = query_time.replace(tzinfo=UTC)
 

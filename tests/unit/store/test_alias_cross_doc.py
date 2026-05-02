@@ -142,7 +142,10 @@ async def test_document_constructor_accepts_external_resolver(
             self._results = results
 
         async def aextract(
-            self, text: str, *, context: str = "",
+            self,
+            text: str,
+            *,
+            context: str = "",
         ) -> list[ExtractionResult]:
             return list(self._results)
 
@@ -159,9 +162,7 @@ async def test_document_constructor_accepts_external_resolver(
             ),
             validity=ValidityInterval(start=datetime(2020, 1, 1, tzinfo=UTC)),
             epistemic=EpistemicState(),
-            provenance=(
-                ProvenanceRecord(source_id="d", evidence_span=sentence),
-            ),
+            provenance=(ProvenanceRecord(source_id="d", evidence_span=sentence),),
         )
         return ExtractionResult(nugget=n, confidence=0.9, rationale=None)
 

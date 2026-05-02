@@ -16,12 +16,14 @@ def _match(id_, metadata, score=0.9):
 @pytest.mark.asyncio
 async def test_search_translates_matches_to_documents():
     mock_index = MagicMock()
-    mock_index.query = MagicMock(return_value={
-        "matches": [
-            _match("1", {"title": "t", "content": "c", "url": "u"}),
-            _match("2", {"title": "t2", "content": "c2"}),
-        ],
-    })
+    mock_index.query = MagicMock(
+        return_value={
+            "matches": [
+                _match("1", {"title": "t", "content": "c", "url": "u"}),
+                _match("2", {"title": "t2", "content": "c2"}),
+            ],
+        }
+    )
     corpus = PineconeCorpus(index=mock_index, embedder=_fake_embed)
     docs = await corpus.search("query", limit=5)
     assert len(docs) == 2
@@ -88,10 +90,20 @@ async def test_sample_uniform_lists_ids_then_fetches():
 @pytest.mark.asyncio
 async def test_custom_field_names():
     def fake_query(**kwargs):
-        return {"matches": [_match("1", {
-            "heading": "h", "body": "b", "link": "l",
-            "published": "2023-05-10T00:00:00Z",
-        })]}
+        return {
+            "matches": [
+                _match(
+                    "1",
+                    {
+                        "heading": "h",
+                        "body": "b",
+                        "link": "l",
+                        "published": "2023-05-10T00:00:00Z",
+                    },
+                )
+            ]
+        }
+
     mock_index = MagicMock()
     mock_index.query = fake_query
     corpus = PineconeCorpus(

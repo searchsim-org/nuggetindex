@@ -40,11 +40,30 @@ _TEMPORAL_PHRASE_RE = re.compile(
 # appear in the indexed ``text|subject|object`` columns.
 _BM25_STOPWORDS: frozenset[str] = frozenset(
     {
-        "a", "an", "the",
-        "is", "are", "was", "were", "be",
-        "who", "what", "which", "where", "when", "why", "how",
-        "of", "to", "for", "on", "at", "by", "from",
-        "and", "or",
+        "a",
+        "an",
+        "the",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "who",
+        "what",
+        "which",
+        "where",
+        "when",
+        "why",
+        "how",
+        "of",
+        "to",
+        "for",
+        "on",
+        "at",
+        "by",
+        "from",
+        "and",
+        "or",
     }
 )
 
@@ -158,8 +177,7 @@ class JustInTime(SidecarMode):
     ) -> list[Nugget]:
         if extractor is None:
             raise ValueError(
-                "JustInTime.aresolve requires extractor= "
-                "(the `Sidecar.extractor` attribute)."
+                "JustInTime.aresolve requires extractor= (the `Sidecar.extractor` attribute)."
             )
         if not original_hits:
             return []

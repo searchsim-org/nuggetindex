@@ -19,11 +19,9 @@ def test_unknown_predicate_returns_empty_types() -> None:
 
 def test_alias_canonicalizes_before_lookup() -> None:
     schema = RelationSchema.default()
-    assert (
-        schema.expected_object_types("ceo")
-        == schema.expected_object_types("chiefExecutiveOfficer")
+    assert schema.expected_object_types("ceo") == schema.expected_object_types(
+        "chiefExecutiveOfficer"
     )
-    assert (
-        schema.expected_subject_types("ceo")
-        == schema.expected_subject_types("chiefExecutiveOfficer")
+    assert schema.expected_subject_types("ceo") == schema.expected_subject_types(
+        "chiefExecutiveOfficer"
     )

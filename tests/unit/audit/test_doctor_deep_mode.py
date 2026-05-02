@@ -59,9 +59,7 @@ class _ScriptedExtractor(BaseExtractor):
             evidence = text[:200] if text else "(no text)"
             nugget = Nugget.new(
                 kind=NuggetKind.SEMANTIC_FACT,
-                fact=FactTriple(
-                    subject=subj, predicate=pred, object=obj, text=evidence
-                ),
+                fact=FactTriple(subject=subj, predicate=pred, object=obj, text=evidence),
                 validity=ValidityInterval(
                     start=vstart or now,
                     end=vend,
@@ -103,9 +101,7 @@ async def test_deep_mode_shape() -> None:
             source_date=datetime(2020, 1, 1, tzinfo=UTC),
         )
     ]
-    report = await scan_index(
-        docs=docs, mode="deep", sample_size=10, extractor=extractor
-    )
+    report = await scan_index(docs=docs, mode="deep", sample_size=10, extractor=extractor)
     assert isinstance(report, DoctorReport)
     assert report.sample_mode == "deep"
     assert len(report.scores) == 4
@@ -163,9 +159,7 @@ async def test_deep_mode_surfaces_contested() -> None:
         ),
     ]
     extractor = _ScriptedExtractor(script=script)
-    report = await scan_index(
-        docs=docs, mode="deep", sample_size=10, extractor=extractor
-    )
+    report = await scan_index(docs=docs, mode="deep", sample_size=10, extractor=extractor)
     conflict = next(s for s in report.scores if s.dimension == "conflict_surface")
     assert conflict.percentage > 0.0
 
@@ -195,9 +189,7 @@ async def test_deep_mode_rename_event_surfaces() -> None:
         )
     ]
     extractor = _ScriptedExtractor(script=script)
-    report = await scan_index(
-        docs=docs, mode="deep", sample_size=10, extractor=extractor
-    )
+    report = await scan_index(docs=docs, mode="deep", sample_size=10, extractor=extractor)
     rename = next(s for s in report.scores if s.dimension == "rename_events")
     assert rename.percentage > 0.0
 
@@ -206,7 +198,5 @@ async def test_deep_mode_rename_event_surfaces() -> None:
 async def test_deep_mode_markdown_has_deep_label() -> None:
     extractor = _ScriptedExtractor(script={})
     docs = [Document(source_id="d1", text="foo", source_date=None)]
-    report = await scan_index(
-        docs=docs, mode="deep", sample_size=10, extractor=extractor
-    )
+    report = await scan_index(docs=docs, mode="deep", sample_size=10, extractor=extractor)
     assert "deep" in report.rendered_markdown.lower()

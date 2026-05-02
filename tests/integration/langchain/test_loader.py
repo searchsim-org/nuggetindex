@@ -1,4 +1,5 @@
 """Tests for ``NuggetConstructionLoader`` (LangChain loader wrapper)."""
+
 from __future__ import annotations
 
 from collections.abc import AsyncIterator, Iterator
@@ -92,9 +93,7 @@ async def test_alazy_load_falls_back_to_sync() -> None:
 
 def test_does_not_overwrite_existing_flag() -> None:
     """If caller already marked a doc, we preserve their choice."""
-    doc = Document(
-        page_content="already", metadata={"nuggetindex_ingested": False}
-    )
+    doc = Document(page_content="already", metadata={"nuggetindex_ingested": False})
     loader = NuggetConstructionLoader(base_loader=_StubLoader([doc]))
     out = loader.load()
     assert out[0].metadata["nuggetindex_ingested"] is False

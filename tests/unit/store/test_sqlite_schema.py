@@ -8,9 +8,7 @@ def test_fresh_db_creates_all_tables(tmp_db_path):
     conn = sqlite3.connect(tmp_db_path)
     tables = {
         row[0]
-        for row in conn.execute(
-            "SELECT name FROM sqlite_master WHERE type IN ('table', 'view')"
-        )
+        for row in conn.execute("SELECT name FROM sqlite_master WHERE type IN ('table', 'view')")
     }
     conn.close()
     assert "nuggets" in tables

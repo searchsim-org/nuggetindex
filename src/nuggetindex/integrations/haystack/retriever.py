@@ -16,6 +16,7 @@ rather than a bare ``ModuleNotFoundError``.
 Haystack components are inherently sync (``run()``), so ``run`` wraps the
 async :meth:`~nuggetindex.NuggetStore.aretrieve` call in ``asyncio.run``.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -36,8 +37,7 @@ def _require_haystack() -> tuple[Any, type]:
         from haystack import component as _component
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[haystack] not installed. "
-            "Run: pip install 'nuggetindex[haystack]'"
+            "nuggetindex[haystack] not installed. Run: pip install 'nuggetindex[haystack]'"
         ) from e
     return _component, _Document
 

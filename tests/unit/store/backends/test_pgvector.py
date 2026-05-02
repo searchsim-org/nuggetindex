@@ -5,6 +5,7 @@ package) and a live Postgres instance that has the ``vector`` extension
 available. We use ``pytest-postgresql`` to spin up a temp DB when available.
 When any of those prerequisites are missing, tests skip cleanly.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -83,9 +84,7 @@ async def test_adelete(dsn: str) -> None:
     encoder = _make_stub_encoder(dim=8)
     backend = PgvectorBackend(dsn=dsn, dim=8, encoder=encoder)
     vecs = encoder(["alpha", "beta"])
-    await backend.aupsert_batch(
-        [("n1", list(vecs[0])), ("n2", list(vecs[1]))]
-    )
+    await backend.aupsert_batch([("n1", list(vecs[0])), ("n2", list(vecs[1]))])
 
     await backend.adelete(["n1"])
     results = await backend.asearch("alpha", top_k=5)
@@ -106,9 +105,7 @@ async def test_candidate_id_filter(dsn: str) -> None:
         ]
     )
 
-    results = await backend.asearch(
-        "alpha", candidate_ids=["n2", "n3"], top_k=5
-    )
+    results = await backend.asearch("alpha", candidate_ids=["n2", "n3"], top_k=5)
     ids = {nid for nid, _ in results}
     assert "n1" not in ids
     assert ids.issubset({"n2", "n3"})
@@ -133,8 +130,7 @@ def test_missing_deps_import_guard(monkeypatch: pytest.MonkeyPatch) -> None:
 
     def fake_require() -> Any:  # pragma: no cover - trivial
         raise ImportError(
-            "nuggetindex[pgvector] not installed. "
-            "Run: pip install 'nuggetindex[pgvector]'"
+            "nuggetindex[pgvector] not installed. Run: pip install 'nuggetindex[pgvector]'"
         )
 
     monkeypatch.setattr(mod, "_require_pgvector_deps", fake_require)

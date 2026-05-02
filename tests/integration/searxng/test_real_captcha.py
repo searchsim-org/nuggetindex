@@ -3,6 +3,7 @@
 Skipped unless ``RUN_SEARXNG_INTEGRATION=1`` and the SEARXNG_URL is reachable.
 Optional proxy rotation with a comma-separated ``PROXY_URLS`` env var.
 """
+
 from __future__ import annotations
 
 import os

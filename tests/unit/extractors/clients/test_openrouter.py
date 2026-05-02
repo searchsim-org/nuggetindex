@@ -40,9 +40,7 @@ async def test_openrouter_structured_output_via_instructor() -> None:
 
     fake_raw = MagicMock()
     fake_raw.chat.completions.create = AsyncMock(
-        return_value=Triple(
-            subject="Microsoft", predicate="ceo", object="Satya Nadella"
-        )
+        return_value=Triple(subject="Microsoft", predicate="ceo", object="Satya Nadella")
     )
     client._raw_client = fake_raw
 
@@ -76,14 +74,10 @@ def test_openrouter_uses_default_base_url() -> None:
 @pytest.mark.asyncio
 async def test_openrouter_uses_recorded_transcript() -> None:
     transcript = json.loads(_TRANSCRIPT.read_text())
-    cfg = LLMConfig(
-        provider="openrouter", model=transcript["model"], api_key="sk-or-test"
-    )
+    cfg = LLMConfig(provider="openrouter", model=transcript["model"], api_key="sk-or-test")
     client = mod.OpenRouterClient(cfg)
     fake_raw = MagicMock()
-    fake_raw.chat.completions.create = AsyncMock(
-        return_value=Triple(**transcript["response"])
-    )
+    fake_raw.chat.completions.create = AsyncMock(return_value=Triple(**transcript["response"]))
     client._raw_client = fake_raw
     result = await client.achat_structured(
         messages=transcript["request"]["messages"],
@@ -96,12 +90,8 @@ def test_openrouter_client_raises_when_sdk_missing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def _boom() -> tuple[object, object]:
-        raise ImportError(
-            "nuggetindex[openai] not installed. Run: pip install nuggetindex[openai]"
-        )
+        raise ImportError("nuggetindex[openai] not installed. Run: pip install nuggetindex[openai]")
 
     monkeypatch.setattr(mod, "_require_openrouter_sdk", _boom)
     with pytest.raises(ImportError, match=r"nuggetindex\[openai\] not installed"):
-        mod.OpenRouterClient(
-            LLMConfig(provider="openrouter", model="anthropic/claude-3-haiku")
-        )
+        mod.OpenRouterClient(LLMConfig(provider="openrouter", model="anthropic/claude-3-haiku"))

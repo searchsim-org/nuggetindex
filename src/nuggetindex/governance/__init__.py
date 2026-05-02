@@ -10,6 +10,7 @@ retriever in a small, async-safe layer that:
 * is itself framework-agnostic — LangChain / LlamaIndex / Haystack adapters
   will translate their native types to and from ``RetrievedPassage``.
 """
+
 from nuggetindex.governance.postprocessor import (
     GovernancePostProcessor,
     RetrievedPassage,

@@ -48,6 +48,7 @@ def test_probe_entity_type_unavailable_when_nlp_missing() -> None:
 
     from nuggetindex.audit.heuristics import timex as _timex_import  # noqa: F401
     from nuggetindex.pipeline import entity_types as et
+
     timex = sys.modules["nuggetindex.audit.heuristics.timex"]
     original = timex._NLP
     timex._NLP = None  # force the "unavailable" sentinel
@@ -64,19 +65,13 @@ def test_check_direction_ok() -> None:
     # "Google" returns NONE from the small en_core_web_sm model, so avoid it
     # in the spaCy-fallback tests — that's exactly the failure mode fix 9 was
     # introduced to work around at the pipeline level.
-    assert (
-        check_triple_direction("Apple", "chiefExecutiveOfficer", "Tim Cook", schema)
-        == "ok"
-    )
+    assert check_triple_direction("Apple", "chiefExecutiveOfficer", "Tim Cook", schema) == "ok"
 
 
 def test_check_direction_flip() -> None:
     _require_spacy()
     schema = RelationSchema.default()
-    assert (
-        check_triple_direction("Tim Cook", "chiefExecutiveOfficer", "Apple", schema)
-        == "flip"
-    )
+    assert check_triple_direction("Tim Cook", "chiefExecutiveOfficer", "Apple", schema) == "flip"
 
 
 def test_check_direction_reject() -> None:
@@ -97,10 +92,7 @@ def test_check_direction_passthrough_when_no_expected_types() -> None:
     # ``president`` has no expected_*_types in the default YAML, so the
     # direction check is a no-op regardless of whether spaCy is installed.
     schema = RelationSchema.default()
-    assert (
-        check_triple_direction("anything", "president", "something else", schema)
-        == "ok"
-    )
+    assert check_triple_direction("anything", "president", "something else", schema) == "ok"
 
 
 def test_check_direction_passthrough_when_spacy_unavailable() -> None:
@@ -112,6 +104,7 @@ def test_check_direction_passthrough_when_spacy_unavailable() -> None:
     import sys
 
     from nuggetindex.audit.heuristics import timex as _timex_import  # noqa: F401
+
     timex = sys.modules["nuggetindex.audit.heuristics.timex"]
     original = timex._NLP
     timex._NLP = None
@@ -232,6 +225,7 @@ def test_check_direction_one_llm_type_missing_falls_back_to_ner() -> None:
     import sys
 
     from nuggetindex.audit.heuristics import timex as _timex_import  # noqa: F401
+
     timex = sys.modules["nuggetindex.audit.heuristics.timex"]
     original = timex._NLP
     timex._NLP = None

@@ -12,6 +12,7 @@ calls the sync :meth:`Sidecar.handle` wrapper which uses ``asyncio.run``
 internally. The store is seeded via a single ``asyncio.run`` helper,
 matching the idiom used by the existing Haystack integration test.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -111,9 +112,7 @@ def test_llamaindex_sidecar_postprocessor_passthrough(tmp_path: Path) -> None:
     sidecar = Sidecar(store=store, mode="offline-curated")
     pp = NuggetSidecarNodePostprocessor(sidecar=sidecar)
     nodes = [_node("n1", "some retrieved text")]
-    out = pp._postprocess_nodes(
-        nodes, query_bundle=QueryBundle(query_str="the sky is blue")
-    )
+    out = pp._postprocess_nodes(nodes, query_bundle=QueryBundle(query_str="the sky is blue"))
     ids = [n.node.node_id for n in out]
     assert "nuggetindex-governance" not in ids
     assert ids == ["n1"]

@@ -31,9 +31,7 @@ def _nugget(
     n_provenance: int = 1,
 ) -> Nugget:
     provenance = tuple(
-        ProvenanceRecord(
-            source_id=f"doc-{i}", evidence_span="x", char_start=i, char_end=i + 1
-        )
+        ProvenanceRecord(source_id=f"doc-{i}", evidence_span="x", char_start=i, char_end=i + 1)
         for i in range(n_provenance)
     )
     return Nugget.new(

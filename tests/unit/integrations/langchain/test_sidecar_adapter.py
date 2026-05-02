@@ -11,6 +11,7 @@ the adapter:
 Async tests are fine here — the adapter's ``ainvoke`` is a native coroutine
 that awaits :meth:`Sidecar.ahandle` directly (no nested ``asyncio.run``).
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -79,9 +80,7 @@ async def test_langchain_sidecar_runnable_emits_context(tmp_path: Path) -> None:
     sidecar = Sidecar(store=store, mode="offline-curated")
     runnable = NuggetSidecarRunnable(sidecar=sidecar)
     docs = [LangchainDocument(id="d1", page_content="some retrieved text")]
-    result = await runnable.ainvoke(
-        {"query": "who was Google's CEO in 2013?", "documents": docs}
-    )
+    result = await runnable.ainvoke({"query": "who was Google's CEO in 2013?", "documents": docs})
     assert result["query"] == "who was Google's CEO in 2013?"
     assert result["documents"] == docs
     assert result["context_block"] != ""
@@ -95,9 +94,7 @@ async def test_langchain_sidecar_runnable_passthrough(tmp_path: Path) -> None:
     sidecar = Sidecar(store=store, mode="offline-curated")
     runnable = NuggetSidecarRunnable(sidecar=sidecar)
     docs = [LangchainDocument(id="d1", page_content="some retrieved text")]
-    result = await runnable.ainvoke(
-        {"query": "the sky is blue", "documents": docs}
-    )
+    result = await runnable.ainvoke({"query": "the sky is blue", "documents": docs})
     assert result["context_block"] == ""
     assert result["nuggets"] == []
     assert result["documents"] == docs

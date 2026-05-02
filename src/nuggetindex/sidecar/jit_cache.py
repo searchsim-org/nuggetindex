@@ -78,9 +78,7 @@ class JITPassageCache:
         cache_path: Path | str | None = None,
     ) -> None:
         if max_entries <= 0:
-            raise ValueError(
-                f"max_entries must be positive, got {max_entries!r}"
-            )
+            raise ValueError(f"max_entries must be positive, got {max_entries!r}")
         self._max_entries = int(max_entries)
         self._cache_path = Path(cache_path) if cache_path is not None else None
         # Ordered by recency — oldest (least recently used) first.
@@ -255,8 +253,7 @@ def _connect(cache_path: Path) -> sqlite3.Connection:
         conn.execute("PRAGMA journal_mode=WAL")
 
     existing = conn.execute(
-        "SELECT name FROM sqlite_master "
-        "WHERE type='table' AND name='jit_passage_cache'"
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='jit_passage_cache'"
     ).fetchone()
     if existing is None:
         conn.execute(

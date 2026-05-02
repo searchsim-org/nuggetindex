@@ -140,10 +140,7 @@ async def test_rename_empty_chain_for_unknown_subject(tmp_db_path: Path) -> None
 
 @pytest.mark.asyncio
 async def test_rename_max_depth_truncates(tmp_db_path: Path) -> None:
-    nuggets = [
-        _rename(f"E{i}", "renamedTo", f"E{i + 1}", 2000 + i, 2001 + i)
-        for i in range(6)
-    ]
+    nuggets = [_rename(f"E{i}", "renamedTo", f"E{i + 1}", 2000 + i, 2001 + i) for i in range(6)]
     store = await _populate(tmp_db_path, nuggets)
     try:
         chain = await store.achain_rename(subject="E0", max_depth=3)
@@ -198,9 +195,7 @@ async def test_rename_ambiguous_with_resolver_delegates(tmp_db_path: Path) -> No
             # Mimic the ChainResolution return shape
             from types import SimpleNamespace
 
-            return SimpleNamespace(
-                picked=candidates[0], rationale="test pick first"
-            )
+            return SimpleNamespace(picked=candidates[0], rationale="test pick first")
 
     nuggets = [
         _rename("A", "renamedTo", "B", 2000),
@@ -246,9 +241,7 @@ async def test_rename_include_contested(tmp_db_path: Path) -> None:
         default_chain = await store.achain_rename(subject="A")
         assert len(default_chain.nuggets) == 0
 
-        included = await store.achain_rename(
-            subject="A", include_contested=True
-        )
+        included = await store.achain_rename(subject="A", include_contested=True)
         assert len(included.nuggets) == 1
         assert included.nuggets[0].fact.object == "Disputed"
     finally:
@@ -281,7 +274,8 @@ def test_rename_sync_wrapper(tmp_db_path: Path) -> None:
 
 @pytest.mark.asyncio
 async def test_rename_strict_excludes_succession_predicate(
-    tmp_db_path: Path, tmp_path: Path,
+    tmp_db_path: Path,
+    tmp_path: Path,
 ) -> None:
     """``strict=True`` consumes ``entity_rename_predicates``, which never
     includes ``succeededBy`` even when a user-supplied schema flags it as

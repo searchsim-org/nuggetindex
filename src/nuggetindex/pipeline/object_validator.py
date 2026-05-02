@@ -5,6 +5,7 @@ output and BEFORE the pipeline's conflict-detection stage. Dropping malformed
 objects at this point prevents bogus CONTESTED flags driven by LLM noise
 (bare years, interrogative titles, empty-after-strip objects).
 """
+
 from __future__ import annotations
 
 import re

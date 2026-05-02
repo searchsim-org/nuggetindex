@@ -67,9 +67,7 @@ async def _run_chain(
             )
         if chain_type == "rename":
             if subject is None:
-                raise typer.BadParameter(
-                    "--subject is required for type=rename"
-                )
+                raise typer.BadParameter("--subject is required for type=rename")
             return await store.achain_rename(
                 subject=subject,
                 as_of=as_of,
@@ -189,10 +187,14 @@ def chain_command(
         help="Chain type: succession | rename | join.",
     ),
     subject: str | None = typer.Option(
-        None, "--subject", help="Subject (succession + rename).",
+        None,
+        "--subject",
+        help="Subject (succession + rename).",
     ),
     predicate: str | None = typer.Option(
-        None, "--predicate", help="Predicate (succession).",
+        None,
+        "--predicate",
+        help="Predicate (succession).",
     ),
     direction: str = typer.Option(
         "forward",
@@ -200,10 +202,14 @@ def chain_command(
         help="Rename walk direction: forward | backward | both.",
     ),
     start_subject: str | None = typer.Option(
-        None, "--start-subject", help="Join: subject of the first hop.",
+        None,
+        "--start-subject",
+        help="Join: subject of the first hop.",
     ),
     start_predicate: str | None = typer.Option(
-        None, "--start-predicate", help="Join: predicate of the first hop.",
+        None,
+        "--start-predicate",
+        help="Join: predicate of the first hop.",
     ),
     then: str | None = typer.Option(
         None,
@@ -211,13 +217,19 @@ def chain_command(
         help="Join: comma-separated predicates for subsequent hops.",
     ),
     as_of: str | None = typer.Option(
-        None, "--as-of", help="ISO-8601 temporal cutoff.",
+        None,
+        "--as-of",
+        help="ISO-8601 temporal cutoff.",
     ),
     max_depth: int = typer.Option(
-        50, "--max-depth", help="Max chain length before truncation.",
+        50,
+        "--max-depth",
+        help="Max chain length before truncation.",
     ),
     include_contested: bool = typer.Option(
-        False, "--include-contested", help="Include CONTESTED nuggets.",
+        False,
+        "--include-contested",
+        help="Include CONTESTED nuggets.",
     ),
     db: Path = typer.Option(
         Path("nuggetindex.db"),
@@ -225,7 +237,9 @@ def chain_command(
         help="Path to the NuggetStore SQLite file.",
     ),
     format_: str = typer.Option(
-        "console", "--format", help="Output format: console | json.",
+        "console",
+        "--format",
+        help="Output format: console | json.",
     ),
     discover: bool = typer.Option(
         False,
@@ -244,9 +258,7 @@ def chain_command(
 
     ct = type_.lower()
     if ct not in ("succession", "rename", "join"):
-        raise typer.BadParameter(
-            f"--type must be succession | rename | join (got {type_!r})"
-        )
+        raise typer.BadParameter(f"--type must be succession | rename | join (got {type_!r})")
     dir_ = direction.lower()
     if dir_ not in ("forward", "backward", "both"):
         raise typer.BadParameter(
@@ -254,9 +266,7 @@ def chain_command(
         )
 
     as_of_dt = _parse_iso(as_of)
-    then_list = (
-        [p.strip() for p in then.split(",") if p.strip()] if then else []
-    )
+    then_list = [p.strip() for p in then.split(",") if p.strip()] if then else []
 
     chain = asyncio.run(
         _run_chain(
@@ -321,10 +331,7 @@ def chain_command(
                     )
                 )
             else:
-                console.print(
-                    "[yellow]No candidate keys matched the "
-                    "substring filters.[/yellow]"
-                )
+                console.print("[yellow]No candidate keys matched the substring filters.[/yellow]")
         else:
             hint_target = (
                 f"({key_subject!r}, {key_predicate!r})"
@@ -338,6 +345,4 @@ def chain_command(
         return
     console.print(_render_table(chain, title))
     if chain.truncated:
-        console.print(
-            f"[yellow]Chain truncated at max_depth={max_depth}.[/yellow]"
-        )
+        console.print(f"[yellow]Chain truncated at max_depth={max_depth}.[/yellow]")

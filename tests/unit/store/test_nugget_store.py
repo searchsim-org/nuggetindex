@@ -16,9 +16,7 @@ from nuggetindex.store import NuggetStore
 def _n(obj: str = "Pichai") -> Nugget:
     return Nugget.new(
         kind=NuggetKind.SEMANTIC_FACT,
-        fact=FactTriple(
-            subject="Google", predicate="ceo", object=obj, text=f"{obj} is CEO"
-        ),
+        fact=FactTriple(subject="Google", predicate="ceo", object=obj, text=f"{obj} is CEO"),
         validity=ValidityInterval(start=datetime(2015, 10, 1, tzinfo=UTC)),
         epistemic=EpistemicState(),
         provenance=(ProvenanceRecord(source_id="doc-1", evidence_span="x"),),

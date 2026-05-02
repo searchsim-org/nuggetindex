@@ -5,6 +5,7 @@ store's evidence for that key is fresh enough. When stale, the Sidecar
 invokes the fallback CorpusSource (typically WebSearchCorpus) to augment the
 context.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -30,17 +31,25 @@ class FreshnessChecker:
     threshold: timedelta = timedelta(days=90)
 
     def is_fresh(
-        self, *, latest: datetime | None, now: datetime | None = None,
+        self,
+        *,
+        latest: datetime | None,
+        now: datetime | None = None,
     ) -> bool:
         return self.check(latest=latest, now=now).is_fresh
 
     def check(
-        self, *, latest: datetime | None, now: datetime | None = None,
+        self,
+        *,
+        latest: datetime | None,
+        now: datetime | None = None,
     ) -> FreshnessResult:
         now = now or datetime.now(tz=UTC)
         if latest is None:
             return FreshnessResult(
-                is_fresh=False, latest=None, age=None,
+                is_fresh=False,
+                latest=None,
+                age=None,
                 reason="no evidence for key",
             )
         if latest.tzinfo is None:
@@ -48,15 +57,16 @@ class FreshnessChecker:
         age = now - latest
         if age <= self.threshold:
             return FreshnessResult(
-                is_fresh=True, latest=latest, age=age,
+                is_fresh=True,
+                latest=latest,
+                age=age,
                 reason=f"youngest evidence is {age.days}d old",
             )
         return FreshnessResult(
-            is_fresh=False, latest=latest, age=age,
-            reason=(
-                f"youngest evidence is {age.days}d old "
-                f"(threshold {self.threshold.days}d)"
-            ),
+            is_fresh=False,
+            latest=latest,
+            age=age,
+            reason=(f"youngest evidence is {age.days}d old (threshold {self.threshold.days}d)"),
         )
 
     async def check_store(

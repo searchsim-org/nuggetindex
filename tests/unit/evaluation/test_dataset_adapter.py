@@ -21,9 +21,7 @@ async def test_attach_nugget_metadata_populates_columns(populated_store) -> None
             "query_time": ["2020-01-01T00:00:00+00:00"],
         }
     )
-    enriched = attach_nugget_metadata(
-        ds, store=populated_store, query_time_column="query_time"
-    )
+    enriched = attach_nugget_metadata(ds, store=populated_store, query_time_column="query_time")
     assert "retrieved_nuggets" in enriched.column_names
     assert "contested_keys" in enriched.column_names
     assert "temporal_valid_count" in enriched.column_names

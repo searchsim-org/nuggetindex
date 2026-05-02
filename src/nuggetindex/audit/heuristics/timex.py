@@ -145,7 +145,11 @@ def tag_timex(
             continue
         parsed: datetime | None
         try:
-            parsed = dateparser.parse(ent.text, settings=settings) if settings else dateparser.parse(ent.text)
+            parsed = (
+                dateparser.parse(ent.text, settings=settings)
+                if settings
+                else dateparser.parse(ent.text)
+            )
         except Exception:
             # dateparser is noisy on garbage input; treat parse failure as
             # "ambiguous but detected".

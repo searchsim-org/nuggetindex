@@ -1,4 +1,5 @@
 """Tests for ``NuggetIndexRetriever`` (BaseRetriever-based LlamaIndex adapter)."""
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -32,9 +33,7 @@ async def test_aretrieve_returns_nodes_with_score(populated_store) -> None:
     assert all(isinstance(n, NodeWithScore) for n in nodes)
     assert all(isinstance(n.node, TextNode) for n in nodes)
     # Content is the nugget's fact text.
-    assert any(
-        "Google" in n.node.get_content() or "CEO" in n.node.get_content() for n in nodes
-    )
+    assert any("Google" in n.node.get_content() or "CEO" in n.node.get_content() for n in nodes)
     # Required metadata fields are present.
     for n in nodes:
         for key in (
@@ -138,9 +137,7 @@ def test_sync_retrieve_wrapper(tmp_path) -> None:
                     text="Sundar Pichai is CEO of Google.",
                 ),
                 validity=ValidityInterval(start=datetime(2019, 1, 1, tzinfo=UTC)),
-                epistemic=EpistemicState(
-                    status=LifecycleStatus.ACTIVE, confidence=0.9
-                ),
+                epistemic=EpistemicState(status=LifecycleStatus.ACTIVE, confidence=0.9),
                 provenance=(
                     ProvenanceRecord(
                         source_id="d1",

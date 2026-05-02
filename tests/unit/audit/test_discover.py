@@ -43,21 +43,15 @@ def business_corpus() -> list[Document]:
 
 @pytest.mark.asyncio
 async def test_discovers_chief_executive_officer(business_corpus):
-    prop = await discover_schema(
-        docs=business_corpus, sample_size=30, min_frequency=2
-    )
+    prop = await discover_schema(docs=business_corpus, sample_size=30, min_frequency=2)
     names = {p.name for p in prop.predicates}
     assert "chiefExecutiveOfficer" in names
 
 
 @pytest.mark.asyncio
 async def test_event_log_cardinality_on_announced(business_corpus):
-    prop = await discover_schema(
-        docs=business_corpus, sample_size=30, min_frequency=1
-    )
-    ann = next(
-        (p for p in prop.predicates if "announce" in p.name.lower()), None
-    )
+    prop = await discover_schema(docs=business_corpus, sample_size=30, min_frequency=1)
+    ann = next((p for p in prop.predicates if "announce" in p.name.lower()), None)
     # Not strictly required that "announced" surfaces from triggers.py
     # (depends on doc count vs threshold); only check the shape if it does.
     if ann is not None:
@@ -66,9 +60,7 @@ async def test_event_log_cardinality_on_announced(business_corpus):
 
 @pytest.mark.asyncio
 async def test_functional_cardinality_on_ceo(business_corpus):
-    prop = await discover_schema(
-        docs=business_corpus, sample_size=30, min_frequency=2
-    )
+    prop = await discover_schema(docs=business_corpus, sample_size=30, min_frequency=2)
     ceo = next(
         (p for p in prop.predicates if p.name == "chiefExecutiveOfficer"),
         None,
@@ -81,9 +73,7 @@ async def test_functional_cardinality_on_ceo(business_corpus):
 async def test_rendered_yaml_is_valid(business_corpus):
     import yaml
 
-    prop = await discover_schema(
-        docs=business_corpus, sample_size=30, min_frequency=2
-    )
+    prop = await discover_schema(docs=business_corpus, sample_size=30, min_frequency=2)
     parsed = yaml.safe_load(prop.rendered_yaml)
     assert "predicates" in parsed
     assert isinstance(parsed["predicates"], dict)
@@ -124,19 +114,14 @@ async def test_merge_proposal_adds_new_predicates(business_corpus):
     from nuggetindex.core.schema import RelationSchema
 
     base = RelationSchema.default()
-    prop = await discover_schema(
-        docs=business_corpus, sample_size=30, min_frequency=2
-    )
+    prop = await discover_schema(docs=business_corpus, sample_size=30, min_frequency=2)
     merged = merge_proposal(base, prop, accept_all=True)
 
     # Every proposal predicate must either exist in base OR be representable in
     # the merged schema (canonicalize returns the same name back, or the name
     # is reachable via ``is_functional`` / ``cardinality``).
     for p in prop.predicates:
-        assert (
-            p.name in base.renaming_predicates
-            or merged.canonicalize(p.name) == p.name
-        )
+        assert p.name in base.renaming_predicates or merged.canonicalize(p.name) == p.name
 
 
 @pytest.mark.asyncio
@@ -145,9 +130,7 @@ async def test_merge_proposal_respects_accepted_names(business_corpus):
     from nuggetindex.core.schema import RelationSchema
 
     base = RelationSchema.default()
-    prop = await discover_schema(
-        docs=business_corpus, sample_size=30, min_frequency=2
-    )
+    prop = await discover_schema(docs=business_corpus, sample_size=30, min_frequency=2)
     if not prop.predicates:
         pytest.skip("no predicates discovered in this test env")
 
@@ -163,9 +146,7 @@ async def test_rendered_yaml_merges_back_into_schema(business_corpus):
     """The proposal YAML must round-trip through RelationSchema.from_yaml."""
     from nuggetindex.core.schema import RelationSchema
 
-    prop = await discover_schema(
-        docs=business_corpus, sample_size=30, min_frequency=2
-    )
+    prop = await discover_schema(docs=business_corpus, sample_size=30, min_frequency=2)
     if not prop.predicates:
         pytest.skip("no predicates discovered in this test env")
 
@@ -183,9 +164,7 @@ async def test_rendered_yaml_merges_back_into_schema(business_corpus):
 
 @pytest.mark.asyncio
 async def test_predicate_proposal_has_examples(business_corpus):
-    prop = await discover_schema(
-        docs=business_corpus, sample_size=30, min_frequency=2
-    )
+    prop = await discover_schema(docs=business_corpus, sample_size=30, min_frequency=2)
     assert prop.predicates, "expected at least one predicate"
     for p in prop.predicates:
         # Up to 3 examples, each a parenthesised triple.
@@ -196,9 +175,7 @@ async def test_predicate_proposal_has_examples(business_corpus):
 
 @pytest.mark.asyncio
 async def test_frequency_and_sample_metadata(business_corpus):
-    prop = await discover_schema(
-        docs=business_corpus, sample_size=30, min_frequency=2
-    )
+    prop = await discover_schema(docs=business_corpus, sample_size=30, min_frequency=2)
     assert prop.n_docs_sampled > 0
     assert prop.n_docs_total == len(business_corpus)
     # Every proposal's frequency is a positive int.

@@ -230,14 +230,8 @@ def _majority_labels(labels: list[str | None], threshold: float = 0.5) -> list[s
     if not labels:
         return []
     total = len(labels)
-    counts = Counter(
-        label for label in labels if label and label not in _NER_SENTINELS
-    )
-    out = [
-        (label, c)
-        for label, c in counts.items()
-        if c / total >= threshold
-    ]
+    counts = Counter(label for label in labels if label and label not in _NER_SENTINELS)
+    out = [(label, c) for label, c in counts.items() if c / total >= threshold]
     out.sort(key=lambda t: (-t[1], t[0]))
     return [label for label, _ in out]
 
@@ -321,11 +315,7 @@ def _render_markdown(
     n_docs_total: int | None,
 ) -> str:
     """Human-readable summary: counts by cardinality + top predicates."""
-    denom = (
-        f"{n_docs_sampled}"
-        if n_docs_total is None
-        else f"{n_docs_sampled} of {n_docs_total}"
-    )
+    denom = f"{n_docs_sampled}" if n_docs_total is None else f"{n_docs_sampled} of {n_docs_total}"
     header = f"# Schema proposal (n = {len(predicates)} predicates, sample = {denom} docs)"
 
     if not predicates:
@@ -340,16 +330,18 @@ def _render_markdown(
 
     # Confidence = frequency (predicates seen more often win). Break ties by
     # name for determinism.
-    most_confident = sorted(
-        predicates, key=lambda p: (-p.frequency, p.name)
-    )[:5]
+    most_confident = sorted(predicates, key=lambda p: (-p.frequency, p.name))[:5]
     top_lines = ["## 5 most confident predicates", ""]
     if not most_confident:
         top_lines.append("_(none)_")
         top_lines.append("")
     else:
-        top_lines.append("| # | Predicate | Cardinality | Frequency | Subject types | Object types |")
-        top_lines.append("|---|-----------|-------------|-----------|---------------|--------------|")
+        top_lines.append(
+            "| # | Predicate | Cardinality | Frequency | Subject types | Object types |"
+        )
+        top_lines.append(
+            "|---|-----------|-------------|-----------|---------------|--------------|"
+        )
         for i, p in enumerate(most_confident, 1):
             subj = ", ".join(p.expected_subject_types) or "-"
             obj = ", ".join(p.expected_object_types) or "-"
@@ -363,14 +355,10 @@ def _render_markdown(
     all_lines.append("|-----------|-------------|-----------|---------|")
     for p in sorted(predicates, key=lambda p: p.name):
         alias = ", ".join(p.aliases) or "-"
-        all_lines.append(
-            f"| {p.name} | {p.cardinality} | {p.frequency} | {alias} |"
-        )
+        all_lines.append(f"| {p.name} | {p.cardinality} | {p.frequency} | {alias} |")
     all_lines.append("")
 
-    return "\n".join(
-        [header, "", *breakdown_lines, *top_lines, *all_lines]
-    )
+    return "\n".join([header, "", *breakdown_lines, *top_lines, *all_lines])
 
 
 # --------------------------------------------------------------------------- #
@@ -382,9 +370,7 @@ async def discover_schema(
     *,
     docs: Iterable[Document] | AsyncIterable[Document],
     sample_size: int = 500,
-    stratify_by: Literal[
-        "composite", "source_date", "language", "domain", "none"
-    ] = "composite",
+    stratify_by: Literal["composite", "source_date", "language", "domain", "none"] = "composite",
     extractor: Any | None = None,
     min_frequency: int = 3,
     rng_seed: int = 0,
@@ -508,11 +494,7 @@ async def discover_schema(
             continue
 
         # Aliases = non-canonical surface forms seen in the sample.
-        aliases = sorted(
-            form
-            for form in acc.raw_surface_forms
-            if form != canonical
-        )
+        aliases = sorted(form for form in acc.raw_surface_forms if form != canonical)
         cardinality = _infer_cardinality(acc, aliases)
         subj_types = _majority_labels(acc.subject_types)
         obj_types = _majority_labels(acc.object_types)

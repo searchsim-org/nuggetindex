@@ -58,8 +58,7 @@ def _load_jsonl_docs(path: Path) -> list[Document]:
                 row = json.loads(line)
             except json.JSONDecodeError as exc:
                 typer.echo(
-                    f"estimate-cost: skipping {path.name}:{lineno} -- "
-                    f"invalid JSON: {exc}",
+                    f"estimate-cost: skipping {path.name}:{lineno} -- invalid JSON: {exc}",
                     err=True,
                 )
                 continue
@@ -120,8 +119,7 @@ def estimate_cost_command(
         raise typer.Exit(code=1)
     if index.suffix.lower() not in {".jsonl", ".ndjson"}:
         typer.echo(
-            f"estimate-cost: --index must be .jsonl / .ndjson "
-            f"(got {index.suffix!r})",
+            f"estimate-cost: --index must be .jsonl / .ndjson (got {index.suffix!r})",
             err=True,
         )
         raise typer.Exit(code=1)

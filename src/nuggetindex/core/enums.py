@@ -35,6 +35,6 @@ class Cardinality(StrEnum):
     stream of events rather than a contested single-valued attribute.
     """
 
-    FUNCTIONAL = "functional"      # one value at a time (CEO, headquarters)
+    FUNCTIONAL = "functional"  # one value at a time (CEO, headquarters)
     MULTI_VALUED = "multi_valued"  # many values coexist (board members, acquisitions, aliases)
-    EVENT_LOG = "event_log"        # news-verb / timestamped event stream (announced, says, published)
+    EVENT_LOG = "event_log"  # news-verb / timestamped event stream (announced, says, published)

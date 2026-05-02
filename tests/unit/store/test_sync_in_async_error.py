@@ -3,6 +3,7 @@ raise a clear ``RuntimeError`` that points to the async equivalent rather
 than the cryptic default ``asyncio.run() cannot be called from a running
 event loop`` message. (findings-A4)
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -24,9 +25,7 @@ from nuggetindex.store import NuggetStore
 def _any_nugget(obj: str = "Pichai") -> Nugget:
     return Nugget.new(
         kind=NuggetKind.SEMANTIC_FACT,
-        fact=FactTriple(
-            subject="Google", predicate="ceo", object=obj, text=f"{obj} is CEO"
-        ),
+        fact=FactTriple(subject="Google", predicate="ceo", object=obj, text=f"{obj} is CEO"),
         validity=ValidityInterval(start=datetime(2015, 10, 1, tzinfo=UTC)),
         epistemic=EpistemicState(),
         provenance=(ProvenanceRecord(source_id="doc-1", evidence_span="x"),),
@@ -60,9 +59,7 @@ async def test_count_sync_inside_event_loop_raises_clearly(tmp_db_path):
         ("candidate_keys", "acandidate_keys"),
     ],
 )
-async def test_sync_wrappers_raise_clear_error(
-    tmp_db_path, method_name, async_name
-):
+async def test_sync_wrappers_raise_clear_error(tmp_db_path, method_name, async_name):
     store = NuggetStore(db_path=tmp_db_path)
     method = getattr(store, method_name, None)
     if method is None:

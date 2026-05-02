@@ -46,9 +46,7 @@ def _load_prompt_sections(path: Path) -> tuple[str, str]:
     try:
         return sections["system"], sections["user"]
     except KeyError as e:  # pragma: no cover - only triggered by prompt edits
-        raise ValueError(
-            "extraction.md must contain both '# System' and '# User' sections"
-        ) from e
+        raise ValueError("extraction.md must contain both '# System' and '# User' sections") from e
 
 
 _SYSTEM_TEMPLATE, _USER_TEMPLATE = _load_prompt_sections(_PROMPT_PATH)
@@ -93,18 +91,14 @@ class LLMExtractor(BaseExtractor):
     ) -> None:
         self.cfg = cfg
         self.client: LLMClient = client if client is not None else build_client(cfg)
-        self.source_id_fn: Callable[[], str] = source_id_fn or (
-            lambda: "llm-extract"
-        )
+        self.source_id_fn: Callable[[], str] = source_id_fn or (lambda: "llm-extract")
         self._prompt_path: Path = prompt_path or _DEFAULT_PROMPT_PATH
         if prompt_path is None:
             # Fast path: use the module-level pre-parsed default templates.
             self._system_template = _SYSTEM_TEMPLATE
             self._user_template = _USER_TEMPLATE
         else:
-            self._system_template, self._user_template = _load_prompt_sections(
-                self._prompt_path
-            )
+            self._system_template, self._user_template = _load_prompt_sections(self._prompt_path)
         self._prompt: str = self._prompt_path.read_text()
 
     def _build_messages(self, text: str, context: str) -> list[dict[str, Any]]:

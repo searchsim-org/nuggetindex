@@ -102,9 +102,7 @@ class ConflictDetector:
                 # Branch 3a: newer wins (has more evidence) -> deprecate older,
                 # tighten its end.
                 updated.append(
-                    _with_status_and_end(
-                        ex, LifecycleStatus.DEPRECATED, incoming.validity.start
-                    )
+                    _with_status_and_end(ex, LifecycleStatus.DEPRECATED, incoming.validity.start)
                 )
             elif old_ev >= 2 and new_ev < 2 and old_is_newer:
                 # Branch 3b: older wins (later AND more evidence) -> deprecate incoming.

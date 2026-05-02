@@ -4,6 +4,7 @@ Exercises the two-tier retrieval contract: semantic BM25/fusion over nugget
 text picks the relevant records, then ``aget_source_passages`` hydrates the
 original document text via each nugget's provenance source_id.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -30,9 +31,7 @@ async def test_two_tier_passage_resolution(tmp_db_path):
         "Sundar Pichai was promoted to CEO of Google in October 2015, "
         "replacing Larry Page who moved to lead Alphabet."
     )
-    passage_b = (
-        "Apple Inc. is headquartered at Apple Park in Cupertino, California."
-    )
+    passage_b = "Apple Inc. is headquartered at Apple Park in Cupertino, California."
     await store.backend.aupsert_passage("doc-google", "https://ex.com/google", passage_a)
     await store.backend.aupsert_passage("doc-apple", "https://ex.com/apple", passage_b)
 
@@ -100,9 +99,7 @@ async def test_two_tier_missing_passages_silently_dropped(tmp_db_path):
     store = NuggetStore(db_path=tmp_db_path)
     n = Nugget.new(
         kind=NuggetKind.SEMANTIC_FACT,
-        fact=FactTriple(
-            subject="X", predicate="p", object="Y", text="X p Y"
-        ),
+        fact=FactTriple(subject="X", predicate="p", object="Y", text="X p Y"),
         validity=ValidityInterval(start=datetime(2020, 1, 1, tzinfo=UTC)),
         epistemic=EpistemicState(),
         provenance=(ProvenanceRecord(source_id="absent-doc", evidence_span="x"),),

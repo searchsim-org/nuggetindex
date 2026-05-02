@@ -58,10 +58,7 @@ async def test_sidecar_offline_curated_temporal_query(seeded_store):
     assert isinstance(response, SidecarResponse)
     assert response.decision is not None
     assert response.decision.use_nugget is True
-    assert (
-        response.decision.query_time is not None
-        and response.decision.query_time.year == 2013
-    )
+    assert response.decision.query_time is not None and response.decision.query_time.year == 2013
     assert response.context_block != ""
     assert "Larry Page" in response.context_block
 

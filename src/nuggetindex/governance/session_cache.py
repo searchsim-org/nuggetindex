@@ -11,6 +11,7 @@ over the lifetime of a session. Two primitives live here:
 * :func:`passage_hash` — the content-addressed hash we use to deduplicate
   extraction work across passages whose text we have already processed.
 """
+
 from __future__ import annotations
 
 import os

@@ -20,9 +20,7 @@ def _make_nugget(obj: str, status: str, src: str, evidence: str) -> Nugget:
             object=obj,
             text=evidence,
         ),
-        validity=ValidityInterval(
-            start=datetime(2011, 1, 1, tzinfo=UTC), end=None
-        ),
+        validity=ValidityInterval(start=datetime(2011, 1, 1, tzinfo=UTC), end=None),
         epistemic=EpistemicState(
             status=LifecycleStatus(status),
             rank=EpistemicRank.NORMAL,
@@ -53,9 +51,7 @@ def test_format_active_fact():
 def test_format_contested_groups_by_key():
     f = ContextFormatter()
     a = _make_nugget("$26.2B", "contested", "reuters", "Microsoft paid $26.2B")
-    b = _make_nugget(
-        "$26.4B", "contested", "bloomberg", "Microsoft paid $26.4B"
-    )
+    b = _make_nugget("$26.4B", "contested", "bloomberg", "Microsoft paid $26.4B")
     out = f.format(nuggets=[a, b])
     assert "DISPUTED" in out
     assert "$26.2B" in out and "$26.4B" in out

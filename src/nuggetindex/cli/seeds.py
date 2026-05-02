@@ -93,8 +93,7 @@ def _load_jsonl_docs(path: Path, *, verbose: bool) -> list[Document]:
             )
     if verbose:
         typer.echo(
-            f"seeds: loaded {len(docs)} document(s) from {path} "
-            f"(skipped {total - len(docs)}).",
+            f"seeds: loaded {len(docs)} document(s) from {path} (skipped {total - len(docs)}).",
             err=True,
         )
     return docs
@@ -123,10 +122,7 @@ def propose_command(
     index_path: Path = typer.Option(
         ...,
         "--index-path",
-        help=(
-            "Path to a .jsonl file (one document per line with "
-            "'source_id'/'text')."
-        ),
+        help=("Path to a .jsonl file (one document per line with 'source_id'/'text')."),
     ),
     budget: int = typer.Option(
         50,

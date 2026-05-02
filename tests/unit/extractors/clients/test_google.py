@@ -37,9 +37,7 @@ def _build_client_with_fake_raw(raw: object) -> mod.GoogleClient:
 async def test_google_structured_output_via_instructor() -> None:
     fake_raw = MagicMock()
     fake_raw.messages.create = AsyncMock(
-        return_value=Triple(
-            subject="Larry Page", predicate="co-founded", object="Google"
-        )
+        return_value=Triple(subject="Larry Page", predicate="co-founded", object="Google")
     )
     client = _build_client_with_fake_raw(fake_raw)
 
@@ -61,9 +59,7 @@ async def test_google_structured_output_via_instructor() -> None:
 async def test_google_uses_recorded_transcript() -> None:
     transcript = json.loads(_TRANSCRIPT.read_text())
     fake_raw = MagicMock()
-    fake_raw.messages.create = AsyncMock(
-        return_value=Triple(**transcript["response"])
-    )
+    fake_raw.messages.create = AsyncMock(return_value=Triple(**transcript["response"]))
     client = _build_client_with_fake_raw(fake_raw)
     result = await client.achat_structured(
         messages=transcript["request"]["messages"],
@@ -76,9 +72,7 @@ def test_google_client_raises_when_sdk_missing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def _boom() -> tuple[object, object]:
-        raise ImportError(
-            "nuggetindex[google] not installed. Run: pip install nuggetindex[google]"
-        )
+        raise ImportError("nuggetindex[google] not installed. Run: pip install nuggetindex[google]")
 
     monkeypatch.setattr(mod, "_require_google_sdk", _boom)
     with pytest.raises(ImportError, match=r"nuggetindex\[google\] not installed"):

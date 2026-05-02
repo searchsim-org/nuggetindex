@@ -19,9 +19,7 @@ def _mk_docs(n: int, *, with_dates: bool = True) -> list[Document]:
     out: list[Document] = []
     for i in range(n):
         d = start + span * i if with_dates else None
-        out.append(
-            Document(source_id=f"d{i:04d}", text=f"doc {i}", source_date=d)
-        )
+        out.append(Document(source_id=f"d{i:04d}", text=f"doc {i}", source_date=d))
     return out
 
 
@@ -54,12 +52,8 @@ async def test_sample_deterministic() -> None:
 @pytest.mark.asyncio
 async def test_sample_deterministic_stratified() -> None:
     docs = _mk_docs(200)
-    s1, _ = await stratified_sample(
-        docs, sample_size=30, stratify_by="source_date", rng_seed=7
-    )
-    s2, _ = await stratified_sample(
-        docs, sample_size=30, stratify_by="source_date", rng_seed=7
-    )
+    s1, _ = await stratified_sample(docs, sample_size=30, stratify_by="source_date", rng_seed=7)
+    s2, _ = await stratified_sample(docs, sample_size=30, stratify_by="source_date", rng_seed=7)
     assert [d.source_id for d in s1] == [d.source_id for d in s2]
 
 
@@ -76,20 +70,15 @@ async def test_sample_stratified_covers_deciles() -> None:
     # original population (rank-based, matching the sampler's bucketing).
     sorted_by_date = sorted(docs, key=lambda d: d.source_date)  # type: ignore[arg-type,return-value]
     rank_by_id = {d.source_id: i for i, d in enumerate(sorted_by_date)}
-    deciles_hit = {
-        min(9, (rank_by_id[d.source_id] * 10) // len(docs)) for d in sampled
-    }
-    assert deciles_hit == set(range(10)), (
-        f"expected all 10 deciles, got {sorted(deciles_hit)}"
-    )
+    deciles_hit = {min(9, (rank_by_id[d.source_id] * 10) // len(docs)) for d in sampled}
+    assert deciles_hit == set(range(10)), f"expected all 10 deciles, got {sorted(deciles_hit)}"
 
 
 @pytest.mark.asyncio
 async def test_sample_stratified_handles_unknown_bucket() -> None:
     dated = _mk_docs(80)
     undated = [
-        Document(source_id=f"u{i:04d}", text=f"undated {i}", source_date=None)
-        for i in range(20)
+        Document(source_id=f"u{i:04d}", text=f"undated {i}", source_date=None) for i in range(20)
     ]
     docs = dated + undated
 

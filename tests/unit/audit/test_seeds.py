@@ -91,9 +91,7 @@ async def test_covers_entities(synthetic_corpus: list[Document]) -> None:
     )
     entities = {s.entity.lower() for s in p.seeds}
     hits = {"google", "microsoft", "apple", "twitter", "facebook"} & entities
-    assert len(hits) >= 3, (
-        f"seeds didn't cover enough distinct entities: {entities}"
-    )
+    assert len(hits) >= 3, f"seeds didn't cover enough distinct entities: {entities}"
 
 
 async def test_empty_corpus() -> None:
@@ -113,6 +111,4 @@ async def test_rendered_markdown_has_table(
     )
     md = p.rendered_markdown.lower()
     assert "seed" in md
-    assert any(
-        kind in md for kind in ["functional", "rename", "entity_coverage"]
-    )
+    assert any(kind in md for kind in ["functional", "rename", "entity_coverage"])

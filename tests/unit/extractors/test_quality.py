@@ -38,9 +38,7 @@ class _Stub(BaseExtractor):
     def __init__(self, confidences: list[float]) -> None:
         self._confs = confidences
 
-    async def aextract(
-        self, text: str, *, context: str = ""
-    ) -> list[ExtractionResult]:
+    async def aextract(self, text: str, *, context: str = "") -> list[ExtractionResult]:
         return [_make_result(c, subject=f"s-{i}") for i, c in enumerate(self._confs)]
 
 

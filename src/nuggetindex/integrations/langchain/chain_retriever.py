@@ -21,6 +21,7 @@ Imports follow the same two-layer pattern as the sibling
 ``_require_langchain()`` call is the runtime guard so callers missing the
 ``[langchain]`` extra see a useful ``pip install`` hint.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -41,8 +42,7 @@ def _require_langchain() -> tuple[Any, Any, Any]:
         from langchain_core.runnables.config import RunnableConfig as _Config
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[langchain] not installed. "
-            "Run: pip install 'nuggetindex[langchain]'"
+            "nuggetindex[langchain] not installed. Run: pip install 'nuggetindex[langchain]'"
         ) from e
     return _Document, _Runnable, _Config
 
@@ -100,13 +100,9 @@ class NuggetChainRetriever(_RunnableSerializable):  # type: ignore[misc,valid-ty
                 **self._extract_kwargs(input, _SUCCESSION_KEYS)
             )
         elif chain_type == "rename":
-            chain = await self.store.achain_rename(
-                **self._extract_kwargs(input, _RENAME_KEYS)
-            )
+            chain = await self.store.achain_rename(**self._extract_kwargs(input, _RENAME_KEYS))
         elif chain_type == "joined":
-            chain = await self.store.achain_join(
-                **self._extract_kwargs(input, _JOIN_KEYS)
-            )
+            chain = await self.store.achain_join(**self._extract_kwargs(input, _JOIN_KEYS))
         else:
             raise ValueError(f"unknown chain type: {chain_type!r}")
         return self._chain_to_documents(chain)
@@ -147,26 +143,18 @@ class NuggetChainRetriever(_RunnableSerializable):  # type: ignore[misc,valid-ty
                 "object": n.fact.object,
                 "valid_from": n.validity.start.isoformat(),
                 "valid_until": (
-                    n.validity.end.isoformat()
-                    if n.validity.end is not None
-                    else "ongoing"
+                    n.validity.end.isoformat() if n.validity.end is not None else "ongoing"
                 ),
                 "status": status,
                 "confidence": n.epistemic.confidence,
                 "source": first_prov.source_id if first_prov is not None else None,
-                "evidence": (
-                    first_prov.evidence_span if first_prov is not None else None
-                ),
+                "evidence": (first_prov.evidence_span if first_prov is not None else None),
                 "chain_position": i,
                 "chain_type": chain.chain_type,
                 "gap_seconds_to_prev": (
-                    edge.gap.total_seconds()
-                    if edge is not None and edge.gap is not None
-                    else None
+                    edge.gap.total_seconds() if edge is not None and edge.gap is not None else None
                 ),
-                "edge_type_to_prev": (
-                    str(edge.edge_type) if edge is not None else None
-                ),
+                "edge_type_to_prev": (str(edge.edge_type) if edge is not None else None),
             }
             docs.append(_Document(page_content=content, metadata=metadata))
         return docs

@@ -109,10 +109,7 @@ async def test_sample_uniform_paginates() -> None:
         # Three full pages, then empty. page_size should be <= n.
         if offset >= 150:
             return httpx.Response(200, json={"hits": []})
-        hits = [
-            _hit(f"doc-{offset + i}", f"uniform title {offset + i}")
-            for i in range(50)
-        ]
+        hits = [_hit(f"doc-{offset + i}", f"uniform title {offset + i}") for i in range(50)]
         return httpx.Response(200, json={"hits": hits})
 
     client = _build_client(handler)

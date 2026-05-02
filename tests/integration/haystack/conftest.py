@@ -6,6 +6,7 @@ stores synchronously (see ``test_retriever._seed_store``) because Haystack
 components call ``asyncio.run`` inside ``run()`` and so can't live inside
 an async fixture — nested loops raise.
 """
+
 from __future__ import annotations
 
 import pytest

@@ -244,8 +244,7 @@ async def test_audit_batch_over_jsonl(tmp_path: Path) -> None:
 async def test_audit_batch_skips_blank_lines(tmp_path: Path) -> None:
     jsonl_path = tmp_path / "batch.jsonl"
     jsonl_path.write_text(
-        json.dumps({"query": "q", "passages": ["Sundar Pichai is CEO of Google."]})
-        + "\n\n"
+        json.dumps({"query": "q", "passages": ["Sundar Pichai is CEO of Google."]}) + "\n\n"
     )
     reports = await audit_batch(
         jsonl_path=jsonl_path,

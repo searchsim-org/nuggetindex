@@ -99,9 +99,7 @@ async def test_cache_hit_rate_lowers_net_cost(tmp_path: Path) -> None:
     from nuggetindex.extractors.cache import content_hash_for
     from nuggetindex.extractors.prompts import PROMPT_VERSION
 
-    sampled, _ = await stratified_sample(
-        docs, sample_size=20, stratify_by="composite"
-    )
+    sampled, _ = await stratified_sample(docs, sample_size=20, stratify_by="composite")
     extractor_id = f"llm:openai:gpt-4o-mini:{PROMPT_VERSION}"
 
     cache_path = tmp_path / "cache.db"

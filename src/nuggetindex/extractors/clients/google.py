@@ -27,8 +27,7 @@ def _require_google_sdk() -> tuple[Any, Any]:
         import instructor
     except ImportError as e:  # pragma: no cover - exercised via stub in tests
         raise ImportError(
-            "nuggetindex[google] not installed. "
-            "Run: pip install nuggetindex[google]"
+            "nuggetindex[google] not installed. Run: pip install nuggetindex[google]"
         ) from e
     return instructor, genai
 
@@ -45,13 +44,10 @@ class GoogleClient:
         native_model = genai.GenerativeModel(model_name=cfg.model)
         # Use whichever structured-output helper is available on the installed
         # instructor version.
-        factory = getattr(
-            instructor, "from_gemini", getattr(instructor, "from_genai", None)
-        )
+        factory = getattr(instructor, "from_gemini", getattr(instructor, "from_genai", None))
         if factory is None:  # pragma: no cover - guarded by import above
             raise ImportError(
-                "Installed instructor version has no Gemini/GenAI adapter. "
-                "Upgrade instructor."
+                "Installed instructor version has no Gemini/GenAI adapter. Upgrade instructor."
             )
         self._raw_client = factory(client=native_model, use_async=True)
 

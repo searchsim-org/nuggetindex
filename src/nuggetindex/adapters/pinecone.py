@@ -14,6 +14,7 @@ Payload mapping:
                                                            (ISO-8601 parsed; ``None``
                                                            on error)
 """
+
 from __future__ import annotations
 
 import random
@@ -144,9 +145,7 @@ class PineconeCorpus:
             metadata = getattr(match, "metadata", None) or {}
         title = metadata.get(self.title_field, "") or ""
         content = metadata.get(self.text_field, "") or ""
-        text = (
-            f"{title}\n{content}" if title and content else title or content
-        ).strip()
+        text = (f"{title}\n{content}" if title and content else title or content).strip()
         uri = metadata.get(self.url_field) or None
         raw_date = metadata.get(self.date_field)
         source_date: datetime | None = None

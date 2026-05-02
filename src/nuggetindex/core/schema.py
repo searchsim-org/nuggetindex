@@ -75,9 +75,7 @@ class RelationSchema:
             self._alias_to_canonical[r.name.lower()] = r.name
             for a in r.aliases:
                 self._alias_to_canonical[a.lower()] = r.name
-        self._renaming: frozenset[str] = frozenset(
-            r.name for r in materialised if r.renaming
-        )
+        self._renaming: frozenset[str] = frozenset(r.name for r in materialised if r.renaming)
 
     @classmethod
     def default(cls) -> RelationSchema:
@@ -137,13 +135,9 @@ class RelationSchema:
             expected_subj_raw = spec.get("expected_subject_types", []) or []
             expected_obj_raw = spec.get("expected_object_types", []) or []
             if not isinstance(expected_subj_raw, list):
-                raise InvalidRelationSchema(
-                    f"{path}: {name}.expected_subject_types must be a list"
-                )
+                raise InvalidRelationSchema(f"{path}: {name}.expected_subject_types must be a list")
             if not isinstance(expected_obj_raw, list):
-                raise InvalidRelationSchema(
-                    f"{path}: {name}.expected_object_types must be a list"
-                )
+                raise InvalidRelationSchema(f"{path}: {name}.expected_object_types must be a list")
             expected_subj = frozenset(str(t) for t in expected_subj_raw)
             expected_obj = frozenset(str(t) for t in expected_obj_raw)
 

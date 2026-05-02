@@ -133,8 +133,7 @@ def attach_nugget_metadata(
             temporal_valid = sum(
                 1
                 for n in unique
-                if n.validity.contains(qt)
-                and n.epistemic.status != LifecycleStatus.DEPRECATED
+                if n.validity.contains(qt) and n.epistemic.status != LifecycleStatus.DEPRECATED
             )
 
         return {

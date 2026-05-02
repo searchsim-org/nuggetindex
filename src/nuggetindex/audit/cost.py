@@ -345,7 +345,7 @@ def _empty_estimate(*, model_id: str, n_total: int | None) -> CostEstimate:
             "\n> **Note:** pricing for `"
             + model_id
             + "` is unknown; falling back to a **pessimistic default** "
-            f"(${in_price*1000:.2f} / ${out_price*1000:.2f} per 1M tokens).\n"
+            f"(${in_price * 1000:.2f} / ${out_price * 1000:.2f} per 1M tokens).\n"
         )
     return CostEstimate(
         n_docs_total=n_total,
@@ -390,19 +390,14 @@ def _render_markdown(
     lines.append("| Metric | Value |")
     lines.append("| --- | --- |")
     lines.append(f"| Model | `{model_id}` |")
-    lines.append(
-        f"| Documents | {n_total if n_total is not None else '?'} "
-        f"(sampled {n_sampled}) |"
-    )
+    lines.append(f"| Documents | {n_total if n_total is not None else '?'} (sampled {n_sampled}) |")
     lines.append(f"| Mean input tokens / doc | {mean_in:.1f} |")
     lines.append(f"| Mean output tokens / doc | {mean_out:.1f} |")
     lines.append(f"| Total input tokens (est) | {total_in:,} |")
     lines.append(f"| Total output tokens (est) | {total_out:,} |")
-    lines.append(
-        f"| Price | ${in_price*1000:.2f} in / ${out_price*1000:.2f} out per 1M |"
-    )
+    lines.append(f"| Price | ${in_price * 1000:.2f} in / ${out_price * 1000:.2f} out per 1M |")
     lines.append(f"| Gross cost | ${gross_cost:.4f} |")
-    lines.append(f"| Cache hit rate (expected) | {hit_rate*100:.1f}% |")
+    lines.append(f"| Cache hit rate (expected) | {hit_rate * 100:.1f}% |")
     lines.append(f"| Net cost | ${net_cost:.4f} |")
     lines.append(f"| Wall-time (est, serial) | {wall_time:.1f} s |")
     lines.append("")
@@ -416,15 +411,14 @@ def _render_markdown(
         lines.append("")
     if cache_path is not None and not cache_path.exists():
         lines.append(
-            f"> **Cache probe:** `{cache_path}` does not exist yet; "
-            "hit-rate is 0% (first run)."
+            f"> **Cache probe:** `{cache_path}` does not exist yet; hit-rate is 0% (first run)."
         )
         lines.append("")
     if unknown_model:
         lines.append(
             f"> **Note:** pricing for `{model_id}` is unknown; using a "
-            f"**pessimistic default** of ${in_price*1000:.2f} / "
-            f"${out_price*1000:.2f} per 1M tokens. Pass an explicit model id "
+            f"**pessimistic default** of ${in_price * 1000:.2f} / "
+            f"${out_price * 1000:.2f} per 1M tokens. Pass an explicit model id "
             "from the bundled table (`gpt-4o-mini`, `gpt-4o`, "
             "`claude-haiku-4-5-20251001`, `claude-sonnet-4-6`, "
             "`Qwen/Qwen3-32B`, `trigger`) for a calibrated number."

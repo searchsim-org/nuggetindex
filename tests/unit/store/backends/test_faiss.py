@@ -4,6 +4,7 @@ Gated with ``pytest.importorskip('faiss')`` so the suite still passes when the
 ``[dense]`` extra is not installed. Uses a stub encoder throughout — tests do
 NOT download a real sentence-transformers model.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -50,14 +51,10 @@ def stub_encoder() -> Any:
     return make_stub_encoder(dim=8)
 
 
-def _make_backend(
-    tmp_path: Path, stub_encoder: Any, dim: int = 8
-) -> FAISSBackend:
+def _make_backend(tmp_path: Path, stub_encoder: Any, dim: int = 8) -> FAISSBackend:
     # nlist=2 is fine for our tiny test datasets; training uses 1024 random
     # vectors internally so clusters are well populated.
-    return FAISSBackend(
-        tmp_path / "faiss.index", encoder=stub_encoder, dim=dim, nlist=2
-    )
+    return FAISSBackend(tmp_path / "faiss.index", encoder=stub_encoder, dim=dim, nlist=2)
 
 
 @pytest.mark.asyncio
@@ -77,20 +74,14 @@ async def test_upsert_and_search(tmp_path: Path, stub_encoder: Any) -> None:
 
 
 @pytest.mark.asyncio
-async def test_search_filters_to_candidate_ids(
-    tmp_path: Path, stub_encoder: Any
-) -> None:
+async def test_search_filters_to_candidate_ids(tmp_path: Path, stub_encoder: Any) -> None:
     backend = _make_backend(tmp_path, stub_encoder)
     texts = {"n1": "alpha", "n2": "alphabet", "n3": "zzz"}
     vecs = stub_encoder(list(texts.values()))
-    await backend.aupsert_batch(
-        [(nid, list(vecs[i])) for i, nid in enumerate(texts)]
-    )
+    await backend.aupsert_batch([(nid, list(vecs[i])) for i, nid in enumerate(texts)])
 
     # Constrain to just n2/n3: n1 must NOT show up.
-    results = await backend.asearch(
-        "alpha", candidate_ids=["n2", "n3"], top_k=5
-    )
+    results = await backend.asearch("alpha", candidate_ids=["n2", "n3"], top_k=5)
     ids = {nid for nid, _ in results}
     assert "n1" not in ids
     assert ids.issubset({"n2", "n3"})
@@ -102,9 +93,7 @@ async def test_adelete_soft_delete(tmp_path: Path, stub_encoder: Any) -> None:
     backend = _make_backend(tmp_path, stub_encoder)
     texts = {"n1": "alpha", "n2": "beta"}
     vecs = stub_encoder(list(texts.values()))
-    await backend.aupsert_batch(
-        [(nid, list(vecs[i])) for i, nid in enumerate(texts)]
-    )
+    await backend.aupsert_batch([(nid, list(vecs[i])) for i, nid in enumerate(texts)])
 
     await backend.adelete(["n1"])
 
@@ -119,9 +108,7 @@ async def test_persistence_roundtrip(tmp_path: Path, stub_encoder: Any) -> None:
     path = tmp_path / "faiss.index"
     backend = FAISSBackend(path, encoder=stub_encoder, dim=8, nlist=2)
     vecs = stub_encoder(["alpha", "beta"])
-    await backend.aupsert_batch(
-        [("n1", list(vecs[0])), ("n2", list(vecs[1]))]
-    )
+    await backend.aupsert_batch([("n1", list(vecs[0])), ("n2", list(vecs[1]))])
     await backend.aclose()
 
     # Re-open: id map + faiss file should both be present.
@@ -136,9 +123,7 @@ async def test_persistence_roundtrip(tmp_path: Path, stub_encoder: Any) -> None:
 
 
 @pytest.mark.asyncio
-async def test_empty_index_returns_empty_search(
-    tmp_path: Path, stub_encoder: Any
-) -> None:
+async def test_empty_index_returns_empty_search(tmp_path: Path, stub_encoder: Any) -> None:
     backend = _make_backend(tmp_path, stub_encoder)
     results = await backend.asearch("anything", top_k=5)
     assert results == []
@@ -146,9 +131,7 @@ async def test_empty_index_returns_empty_search(
 
 
 @pytest.mark.asyncio
-async def test_invalid_vector_dim_raises(
-    tmp_path: Path, stub_encoder: Any
-) -> None:
+async def test_invalid_vector_dim_raises(tmp_path: Path, stub_encoder: Any) -> None:
     backend = _make_backend(tmp_path, stub_encoder, dim=8)
     with pytest.raises(ValueError, match="dim"):
         await backend.aupsert("n1", [0.0, 0.0, 0.0])  # wrong dim
@@ -156,9 +139,7 @@ async def test_invalid_vector_dim_raises(
 
 
 @pytest.mark.asyncio
-async def test_nuggetstore_integration_with_faiss(
-    tmp_path: Path, stub_encoder: Any
-) -> None:
+async def test_nuggetstore_integration_with_faiss(tmp_path: Path, stub_encoder: Any) -> None:
     """End-to-end: NuggetStore + FAISSBackend produces hybrid-ranked results."""
     from datetime import UTC, datetime
 
@@ -174,9 +155,7 @@ async def test_nuggetstore_integration_with_faiss(
 
     faiss_path = tmp_path / "faiss.index"
     backend = FAISSBackend(faiss_path, encoder=stub_encoder, dim=8, nlist=2)
-    store = NuggetStore(
-        db_path=tmp_path / "store.db", dense=backend, encoder=stub_encoder
-    )
+    store = NuggetStore(db_path=tmp_path / "store.db", dense=backend, encoder=stub_encoder)
 
     n1 = Nugget.new(
         kind=NuggetKind.SEMANTIC_FACT,

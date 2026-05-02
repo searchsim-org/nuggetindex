@@ -3,6 +3,7 @@
 string ``"<redacted>"`` in place of the ``SecretStr`` api_key so calling
 code can't accidentally ``get_secret_value()`` it later. (findings-A6)
 """
+
 from __future__ import annotations
 
 from nuggetindex.extractors.clients.base import LLMConfig, asdict_redacted

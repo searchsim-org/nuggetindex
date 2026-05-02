@@ -134,9 +134,7 @@ def test_auto_cli_builds_vespa_corpus_and_runs(
             str(tmp_path / "cache.db"),
         ],
     )
-    assert result.exit_code == 0, (
-        (result.stdout or "") + "\n---stderr---\n" + (result.stderr or "")
-    )
+    assert result.exit_code == 0, (result.stdout or "") + "\n---stderr---\n" + (result.stderr or "")
     assert captured == {"base_url": "http://vespa.test", "corpus": "my-corpus"}
     # The Markdown report dump includes "docs processed".
     assert "docs processed" in result.stdout
@@ -163,9 +161,7 @@ def test_auto_cli_rejects_unknown_bootstrap_value(tmp_path: Path) -> None:
     assert result.exit_code != 0
 
 
-def test_auto_cli_still_supports_index_path(
-    jsonl_corpus: Path, tmp_path: Path
-) -> None:
+def test_auto_cli_still_supports_index_path(jsonl_corpus: Path, tmp_path: Path) -> None:
     """Backward-compat: --index alone still drives the old pipeline."""
     # Silence MagicMock warnings and just drive the real tiny pipeline.
     result = runner.invoke(
@@ -182,7 +178,5 @@ def test_auto_cli_still_supports_index_path(
             str(tmp_path / "cache.db"),
         ],
     )
-    assert result.exit_code == 0, (
-        (result.stdout or "") + "\n---stderr---\n" + (result.stderr or "")
-    )
+    assert result.exit_code == 0, (result.stdout or "") + "\n---stderr---\n" + (result.stderr or "")
     assert "docs processed" in result.stdout

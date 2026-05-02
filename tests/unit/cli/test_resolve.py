@@ -7,12 +7,12 @@ The CLI is interactive (typer.prompt). We test it by:
 3. Verifying the post-conditions on the store via the public API
    (winner is Active+Preferred, loser is Deprecated+Deprecated).
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
 from pathlib import Path
 
-import pytest
 from typer.testing import CliRunner
 
 from nuggetindex.cli.app import app
@@ -48,9 +48,7 @@ def _seed_contested(db: Path) -> tuple[str, str]:
         ),
         validity=ValidityInterval(start=datetime(2016, 6, 13, tzinfo=UTC)),
         epistemic=EpistemicState(status=LifecycleStatus.CONTESTED),
-        provenance=(
-            ProvenanceRecord(source_id="reuters", evidence_span="...for $26.2B."),
-        ),
+        provenance=(ProvenanceRecord(source_id="reuters", evidence_span="...for $26.2B."),),
     )
     loser = Nugget.new(
         kind=NuggetKind.SEMANTIC_FACT,
@@ -62,9 +60,7 @@ def _seed_contested(db: Path) -> tuple[str, str]:
         ),
         validity=ValidityInterval(start=datetime(2016, 6, 13, tzinfo=UTC)),
         epistemic=EpistemicState(status=LifecycleStatus.CONTESTED),
-        provenance=(
-            ProvenanceRecord(source_id="bloomberg", evidence_span="...for $26.4B."),
-        ),
+        provenance=(ProvenanceRecord(source_id="bloomberg", evidence_span="...for $26.4B."),),
     )
     store.add(winner)
     store.add(loser)
@@ -80,10 +76,10 @@ def test_resolve_dry_run_does_not_change_store(tmp_path: Path) -> None:
     # The two contested rivals are still both contested.
     store = NuggetStore(db_path=db)
     w = store.get(winner_id)
-    l = store.get(loser_id)
+    los = store.get(loser_id)
     store.close()
     assert w is not None and w.epistemic.status is LifecycleStatus.CONTESTED
-    assert l is not None and l.epistemic.status is LifecycleStatus.CONTESTED
+    assert los is not None and los.epistemic.status is LifecycleStatus.CONTESTED
 
 
 def test_resolve_picks_winner_via_prompt(tmp_path: Path) -> None:
@@ -127,9 +123,7 @@ def test_resolve_skip_leaves_state_alone(tmp_path: Path) -> None:
 def test_resolve_all_wrong_suppresses_every_candidate(tmp_path: Path) -> None:
     db = tmp_path / "store.db"
     a_id, b_id = _seed_contested(db)
-    result = runner.invoke(
-        app, ["resolve", "--store", str(db)], input="all-wrong\n"
-    )
+    result = runner.invoke(app, ["resolve", "--store", str(db)], input="all-wrong\n")
     assert result.exit_code == 0, result.output
     store = NuggetStore(db_path=db)
     a = store.get(a_id)
@@ -148,7 +142,9 @@ def test_resolve_no_contested_keys_short_circuits(tmp_path: Path) -> None:
         Nugget.new(
             kind=NuggetKind.SEMANTIC_FACT,
             fact=FactTriple(
-                subject="Apple", predicate="ceo", object="Tim Cook",
+                subject="Apple",
+                predicate="ceo",
+                object="Tim Cook",
                 text="Tim Cook is CEO of Apple",
             ),
             validity=ValidityInterval(start=datetime(2011, 8, 24, tzinfo=UTC)),
@@ -167,8 +163,6 @@ def test_resolve_invalid_choice_reprompts(tmp_path: Path) -> None:
     _seed_contested(db)
     # First an invalid token, then a valid '1'. The prompt loop must
     # reject 'banana' and accept '1' on retry.
-    result = runner.invoke(
-        app, ["resolve", "--store", str(db)], input="banana\n1\n"
-    )
+    result = runner.invoke(app, ["resolve", "--store", str(db)], input="banana\n1\n")
     assert result.exit_code == 0, result.output
     assert "Invalid choice" in result.output

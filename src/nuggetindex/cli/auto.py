@@ -100,8 +100,7 @@ def auto_command(
         10,
         "--deep-docs-per-seed",
         help=(
-            "Per-seed corpus.search() limit for the Pass-2 deep pull "
-            "(ignored without --two-pass)."
+            "Per-seed corpus.search() limit for the Pass-2 deep pull (ignored without --two-pass)."
         ),
     ),
     deep_budget: int | None = typer.Option(
@@ -126,8 +125,7 @@ def auto_command(
     """Build an end-to-end sidecar from a JSONL corpus or live endpoint."""
     if mode not in {"offline-curated", "just-in-time"}:
         typer.echo(
-            f"auto: --mode must be 'offline-curated' or 'just-in-time' "
-            f"(got {mode!r}).",
+            f"auto: --mode must be 'offline-curated' or 'just-in-time' (got {mode!r}).",
             err=True,
         )
         raise typer.Exit(code=1)
@@ -154,8 +152,7 @@ def auto_command(
     if corpus_url_set and corpus_name_set:
         if index_path is not None:
             typer.echo(
-                "auto: pass either --index or --corpus-url/--corpus-name, "
-                "not both.",
+                "auto: pass either --index or --corpus-url/--corpus-name, not both.",
                 err=True,
             )
             raise typer.Exit(code=1)

@@ -5,6 +5,7 @@ joined chains against a purpose-built store fixture. Supports both the
 primary passthrough API (``await retriever.achain_succession(...)``) and
 the ``QueryBundle`` fallback (``_aretrieve(QueryBundle(query_str=json_spec))``).
 """
+
 from __future__ import annotations
 
 import json
@@ -93,9 +94,7 @@ async def test_achain_succession_passthrough(chain_store) -> None:
     from nuggetindex.integrations.llamaindex import NuggetChainRetriever
 
     retriever = NuggetChainRetriever(store=chain_store)
-    nodes = await retriever.achain_succession(
-        subject="Google", predicate="ceo"
-    )
+    nodes = await retriever.achain_succession(subject="Google", predicate="ceo")
     assert len(nodes) == 3
     assert all(isinstance(n, NodeWithScore) for n in nodes)
     assert all(isinstance(n.node, TextNode) for n in nodes)
@@ -144,9 +143,7 @@ async def test_aretrieve_json_query_bundle(chain_store) -> None:
     from nuggetindex.integrations.llamaindex import NuggetChainRetriever
 
     retriever = NuggetChainRetriever(store=chain_store)
-    spec = json.dumps(
-        {"type": "succession", "subject": "Google", "predicate": "ceo"}
-    )
+    spec = json.dumps({"type": "succession", "subject": "Google", "predicate": "ceo"})
     nodes = await retriever._aretrieve(QueryBundle(query_str=spec))
     assert [n.node.metadata["object"] for n in nodes] == [
         "Schmidt",

@@ -83,9 +83,7 @@ class CachedExtractor(BaseExtractor):
         self._misses = 0
         # Mirror the inner extractor's placeholder flag so the pipeline's
         # source-date warning stays intact when the inner extractor opts in.
-        self.emits_placeholder_validity = bool(
-            getattr(inner, "emits_placeholder_validity", False)
-        )
+        self.emits_placeholder_validity = bool(getattr(inner, "emits_placeholder_validity", False))
         self._conn = _connect(self._cache_path)
 
     # ------------------------------------------------------------------

@@ -12,6 +12,7 @@ per-passage governance still works — but the caller won't be able to tell
 which upstream doc produced a kept passage unless they were already tracking
 their own ID.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -30,8 +31,7 @@ def _require_langchain() -> tuple[Any, Any]:
         from langchain_core.runnables import RunnableSerializable as _Runnable
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[langchain] not installed. "
-            "Run: pip install 'nuggetindex[langchain]'"
+            "nuggetindex[langchain] not installed. Run: pip install 'nuggetindex[langchain]'"
         ) from e
     return _Document, _Runnable
 
@@ -106,11 +106,7 @@ class GovernanceFilter(_RunnableSerializable):  # type: ignore[misc,valid-type]
                 continue
             kept_passage = kept_by_source[sid]
             if kept_passage.text != d.page_content:
-                out.append(
-                    _Document(
-                        page_content=kept_passage.text, metadata=dict(d.metadata)
-                    )
-                )
+                out.append(_Document(page_content=kept_passage.text, metadata=dict(d.metadata)))
             else:
                 out.append(d)
         return out

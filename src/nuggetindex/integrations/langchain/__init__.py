@@ -7,6 +7,7 @@ guard at the leaf submodule level (and NOT in
 importing ``nuggetindex.integrations`` never raises when optional framework
 extras are missing.
 """
+
 from nuggetindex.integrations.langchain.chain_retriever import NuggetChainRetriever
 from nuggetindex.integrations.langchain.doctor import doctor
 from nuggetindex.integrations.langchain.loader import NuggetConstructionLoader

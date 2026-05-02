@@ -4,6 +4,7 @@ Haystack components are inherently sync -- ``run()`` calls ``asyncio.run``
 internally -- so these tests use the same sync-seed pattern as
 ``test_retriever.py``.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -133,9 +134,7 @@ def test_run_rename_chain(tmp_path: Path) -> None:
     store = _seed_store(tmp_path / "hs_chain.db")
     try:
         retriever = NuggetChainRetriever(store=store)
-        out = retriever.run(
-            chain_spec={"type": "rename", "subject": "Twitter Inc"}
-        )
+        out = retriever.run(chain_spec={"type": "rename", "subject": "Twitter Inc"})
         docs = out["documents"]
         assert [d.meta["object"] for d in docs] == ["X Corp"]
         assert out["chain_metadata"]["chain_type"] == "rename"

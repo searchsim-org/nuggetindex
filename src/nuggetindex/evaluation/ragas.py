@@ -38,9 +38,9 @@ from nuggetindex.core.models import Nugget
 
 # Entailment prompt used by ``TemporalFaithfulness`` when an LLM is wired in.
 # Loaded at module-import so per-call formatting is a cheap ``str.format``.
-_ENTAILMENT_PROMPT: str = (
-    Path(__file__).parent / "prompts" / "entailment.md"
-).read_text(encoding="utf-8")
+_ENTAILMENT_PROMPT: str = (Path(__file__).parent / "prompts" / "entailment.md").read_text(
+    encoding="utf-8"
+)
 
 
 def _require_ragas() -> tuple[Any, Any, Any]:
@@ -149,16 +149,12 @@ def _token_overlap_support(claim: str, nuggets: list[Nugget]) -> list[Nugget]:
     we fall through to returning all nuggets (the claim is too short to
     distinguish them).
     """
-    claim_tokens = [
-        tok for tok in re.findall(r"\w+", claim.lower()) if len(tok) > 3
-    ]
+    claim_tokens = [tok for tok in re.findall(r"\w+", claim.lower()) if len(tok) > 3]
     if not claim_tokens:
         return list(nuggets)  # empty claim matches everything — be lenient
     supporting: list[Nugget] = []
     for n in nuggets:
-        hay = (
-            f"{n.fact.subject} {n.fact.predicate} {n.fact.object} {n.fact.text}"
-        ).lower()
+        hay = (f"{n.fact.subject} {n.fact.predicate} {n.fact.object} {n.fact.text}").lower()
         if any(tok in hay for tok in claim_tokens):
             supporting.append(n)
     return supporting
@@ -353,9 +349,7 @@ class ConflictTransparency(_MetricWithLLM, _SingleTurnMetric):  # type: ignore[m
         contested_keys = row.get("contested_keys")
         if contested_keys is None:
             nuggets = _load_nuggets(row.get("retrieved_nuggets"))
-            has_contested = any(
-                n.epistemic.status == LifecycleStatus.CONTESTED for n in nuggets
-            )
+            has_contested = any(n.epistemic.status == LifecycleStatus.CONTESTED for n in nuggets)
         else:
             has_contested = bool(contested_keys)
 
@@ -402,7 +396,9 @@ class ChainCompleteness(_MetricWithLLM, _SingleTurnMetric):  # type: ignore[misc
 
         # 1. Extract the referenced entity sequence from the answer.
         sequence = await self._extract_entity_sequence(
-            answer, nuggets=nuggets, callbacks=callbacks,
+            answer,
+            nuggets=nuggets,
+            callbacks=callbacks,
         )
         if len(sequence) < 2:
             # No chain reference or a single entity -- nothing to score.
@@ -420,10 +416,7 @@ class ChainCompleteness(_MetricWithLLM, _SingleTurnMetric):  # type: ignore[misc
 
         # 3. Fraction of adjacent pairs in the answer's sequence that match
         #    adjacent pairs in the expected chain.
-        expected_pairs = {
-            (expected[i], expected[i + 1])
-            for i in range(len(expected) - 1)
-        }
+        expected_pairs = {(expected[i], expected[i + 1]) for i in range(len(expected) - 1)}
         total_pairs = len(sequence) - 1
         matched = 0
         for i in range(total_pairs):
@@ -446,9 +439,7 @@ class ChainCompleteness(_MetricWithLLM, _SingleTurnMetric):  # type: ignore[misc
         """
         if self.llm is not None:
             try:
-                return await _llm_extract_sequence(
-                    answer, nuggets, self.llm, callbacks
-                )
+                return await _llm_extract_sequence(answer, nuggets, self.llm, callbacks)
             except Exception:  # noqa: BLE001 -- fall through to regex
                 pass
         return _regex_extract_sequence(answer, nuggets)

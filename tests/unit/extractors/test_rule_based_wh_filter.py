@@ -43,9 +43,6 @@ async def test_rule_based_still_emits_legitimate_subjects() -> None:
     ext = RuleBasedExtractor()
     results = await ext.aextract("Sundar Pichai is the CEO of Google.")
     subjects = {r.nugget.fact.subject.lower() for r in results}
-    assert any(
-        "pichai" in s or "google" in s or "sundar" in s for s in subjects
-    ), (
-        f"extractor should still find real subjects in a normal sentence; "
-        f"got {subjects}"
+    assert any("pichai" in s or "google" in s or "sundar" in s for s in subjects), (
+        f"extractor should still find real subjects in a normal sentence; got {subjects}"
     )

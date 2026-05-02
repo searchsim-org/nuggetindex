@@ -1,4 +1,5 @@
 """Tests for LlamaIndex ``GovernancePostProcessor`` — the Tier-1 wedge."""
+
 from __future__ import annotations
 
 from datetime import UTC, datetime

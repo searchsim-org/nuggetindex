@@ -11,6 +11,7 @@ Allowed: ``from nuggetindex import NuggetStore`` (top-level re-exports) and
 ``from nuggetindex.governance import GovernancePostProcessor`` (a public
 subpackage the governance module explicitly declares stable).
 """
+
 from __future__ import annotations
 
 import ast

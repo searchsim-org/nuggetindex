@@ -13,6 +13,7 @@ and nested loops raise. The store is seeded via a single ``asyncio.run``
 helper before the ``run()`` call, matching the idiom used by the existing
 Haystack retriever integration test.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -87,9 +88,7 @@ def test_haystack_sidecar_component_inserts_governance_doc(tmp_path: Path) -> No
     docs = [HaystackDocument(id="d1", content="some retrieved text")]
     result = component.run(query="who was Google's CEO in 2013?", documents=docs)
     assert "documents" in result
-    gov = next(
-        (d for d in result["documents"] if d.id == "nuggetindex-governance"), None
-    )
+    gov = next((d for d in result["documents"] if d.id == "nuggetindex-governance"), None)
     assert gov is not None
     assert "Larry Page" in gov.content
     ids = [d.id for d in result["documents"]]

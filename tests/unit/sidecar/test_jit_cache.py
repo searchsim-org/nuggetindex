@@ -149,15 +149,11 @@ async def test_jit_sidecar_uses_cache_end_to_end(tmp_path: Path) -> None:
 
         hits = [{"id": "d1", "content": "Larry Page served as CEO of Google in 2013."}]
         # First call: extractor runs once.
-        await sidecar.ahandle(
-            "who was Google's CEO in 2013?", top_k=1, original_hits=hits
-        )
+        await sidecar.ahandle("who was Google's CEO in 2013?", top_k=1, original_hits=hits)
         first_call_count = extractor.calls
 
         # Second call with the SAME passage: extractor stays put.
-        await sidecar.ahandle(
-            "in 2013 who was the Google CEO?", top_k=1, original_hits=hits
-        )
+        await sidecar.ahandle("in 2013 who was the Google CEO?", top_k=1, original_hits=hits)
         assert extractor.calls == first_call_count
         stats = cache.stats()
         assert stats["hits"] >= 1

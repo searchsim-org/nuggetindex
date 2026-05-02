@@ -23,6 +23,7 @@ Cosine similarity is computed as ``1 - (embedding <=> query)``; pgvector's
 flips the sign so downstream hybrid-fusion logic sees "bigger is better"
 scores, consistent with FAISS/Qdrant/Chroma backends.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
@@ -40,8 +41,7 @@ def _require_pgvector_deps() -> tuple[Any, Any]:
         from pgvector.asyncpg import register_vector
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[pgvector] not installed. "
-            "Run: pip install 'nuggetindex[pgvector]'"
+            "nuggetindex[pgvector] not installed. Run: pip install 'nuggetindex[pgvector]'"
         ) from e
     return asyncpg, register_vector
 
@@ -94,9 +94,7 @@ class PgvectorBackend:
             await conn.execute("CREATE EXTENSION IF NOT EXISTS vector")
             await register_vector(conn)
 
-        self._pool = await asyncpg.create_pool(
-            dsn=self._dsn, init=_init, min_size=1, max_size=4
-        )
+        self._pool = await asyncpg.create_pool(dsn=self._dsn, init=_init, min_size=1, max_size=4)
         assert self._pool is not None
         async with self._pool.acquire() as conn:
             await conn.execute(
@@ -125,9 +123,7 @@ class PgvectorBackend:
     async def aupsert(self, id: str, vector: list[float]) -> None:
         await self.aupsert_batch([(id, vector)])
 
-    async def aupsert_batch(
-        self, items: list[tuple[str, list[float]]]
-    ) -> None:
+    async def aupsert_batch(self, items: list[tuple[str, list[float]]]) -> None:
         if not items:
             return
         await self._ensure_pool()
@@ -187,9 +183,7 @@ class PgvectorBackend:
         await self._ensure_pool()
         assert self._pool is not None
         async with self._pool.acquire() as conn:
-            await conn.execute(
-                f"DELETE FROM {self._table} WHERE id = ANY($1)", ids_list
-            )
+            await conn.execute(f"DELETE FROM {self._table} WHERE id = ANY($1)", ids_list)
 
     async def aclose(self) -> None:
         if self._pool is not None:

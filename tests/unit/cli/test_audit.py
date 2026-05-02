@@ -17,9 +17,7 @@ runner = CliRunner()
 
 def _write_context(tmp_path: Path) -> Path:
     ctx = tmp_path / "ctx.txt"
-    ctx.write_text(
-        "Sundar Pichai is CEO of Google.\n\nLarry Page is CEO of Google.\n"
-    )
+    ctx.write_text("Sundar Pichai is CEO of Google.\n\nLarry Page is CEO of Google.\n")
     return ctx
 
 

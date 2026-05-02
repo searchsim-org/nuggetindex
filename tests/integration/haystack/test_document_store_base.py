@@ -13,6 +13,7 @@ arbitrary metadata), which is intentionally out-of-scope for v0.2. Our
 ``filter_documents`` honours the v0.1 SQL allowlist + ``==`` only; the
 scenario tests in ``test_document_store.py`` cover that surface.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -85,9 +86,7 @@ class TestWrite(WriteDocumentsTest):
         assert len(stored) == 1
         assert stored[0].id == "x1"
 
-    def test_write_documents_duplicate_overwrite(
-        self, document_store: NuggetDocumentStore
-    ) -> None:
+    def test_write_documents_duplicate_overwrite(self, document_store: NuggetDocumentStore) -> None:
         """Second write with same id replaces stored content.
 
         Override the base to avoid the ``assert_documents_are_equal`` meta
@@ -99,23 +98,13 @@ class TestWrite(WriteDocumentsTest):
         doc1 = Document(id="1", content="test doc 1")
         doc2 = Document(id="1", content="test doc 2")
 
-        assert (
-            document_store.write_documents(
-                [doc2], policy=DuplicatePolicy.OVERWRITE
-            )
-            == 1
-        )
+        assert document_store.write_documents([doc2], policy=DuplicatePolicy.OVERWRITE) == 1
         stored = document_store.filter_documents()
         assert len(stored) == 1
         assert stored[0].id == "1"
         assert stored[0].content == "test doc 2"
 
-        assert (
-            document_store.write_documents(
-                [doc1], policy=DuplicatePolicy.OVERWRITE
-            )
-            == 1
-        )
+        assert document_store.write_documents([doc1], policy=DuplicatePolicy.OVERWRITE) == 1
         stored = document_store.filter_documents()
         assert len(stored) == 1
         assert stored[0].id == "1"

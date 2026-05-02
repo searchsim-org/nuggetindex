@@ -9,6 +9,7 @@ the shim:
   ``.docstore.docs``) into the same shape.
 * Returns a ``DoctorReport`` with the canonical four scores.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -128,9 +129,7 @@ async def test_llamaindex_doctor_shim_delegates_to_scan_index(
 
     import importlib
 
-    doctor_mod = importlib.import_module(
-        "nuggetindex.integrations.llamaindex.doctor"
-    )
+    doctor_mod = importlib.import_module("nuggetindex.integrations.llamaindex.doctor")
     monkeypatch.setattr(doctor_mod, "scan_index", fake_scan_index)
     nodes = _seed_nodes()
     await doctor_mod.doctor(nodes, mode="fast", sample_size=7, rng_seed=42)

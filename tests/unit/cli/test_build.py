@@ -15,12 +15,8 @@ runner = CliRunner()
 def _write_corpus(tmp_path: Path) -> Path:
     corpus = tmp_path / "corpus"
     corpus.mkdir()
-    (corpus / "a.txt").write_text(
-        "Sundar Pichai became CEO of Google in 2015.\n"
-    )
-    (corpus / "b.md").write_text(
-        "Satya Nadella became CEO of Microsoft in 2014.\n"
-    )
+    (corpus / "a.txt").write_text("Sundar Pichai became CEO of Google in 2015.\n")
+    (corpus / "b.md").write_text("Satya Nadella became CEO of Microsoft in 2014.\n")
     return corpus
 
 
@@ -41,33 +37,25 @@ def test_build_explicit_trigger_model(tmp_path: Path) -> None:
     """``--model trigger`` is the documented opt-in spelling."""
     corpus = _write_corpus(tmp_path)
     db = tmp_path / "ni.db"
-    result = runner.invoke(
-        app, ["build", str(corpus), "--db", str(db), "--model", "trigger"]
-    )
+    result = runner.invoke(app, ["build", str(corpus), "--db", str(db), "--model", "trigger"])
     assert result.exit_code == 0, result.output
     assert db.exists()
 
 
 def test_build_missing_folder_errors(tmp_path: Path) -> None:
     missing = tmp_path / "nope"
-    result = runner.invoke(
-        app, ["build", str(missing), "--db", str(tmp_path / "x.db")]
-    )
+    result = runner.invoke(app, ["build", str(missing), "--db", str(tmp_path / "x.db")])
     assert result.exit_code != 0
 
 
 def test_ingest_appends_with_trigger(tmp_path: Path) -> None:
     corpus = _write_corpus(tmp_path)
     db = tmp_path / "ni.db"
-    first = runner.invoke(
-        app, ["build", str(corpus), "--db", str(db), "--model", "trigger"]
-    )
+    first = runner.invoke(app, ["build", str(corpus), "--db", str(db), "--model", "trigger"])
     assert first.exit_code == 0, first.output
     # Add another file + re-run via ingest
     (corpus / "c.txt").write_text("Tim Cook became CEO of Apple in 2011.\n")
-    second = runner.invoke(
-        app, ["ingest", str(corpus), "--db", str(db), "--model", "trigger"]
-    )
+    second = runner.invoke(app, ["ingest", str(corpus), "--db", str(db), "--model", "trigger"])
     assert second.exit_code == 0, second.output
     assert "ingest complete" in second.stdout
 

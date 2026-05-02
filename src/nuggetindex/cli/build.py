@@ -81,8 +81,7 @@ def _wrap_with_cache(extractor: object, cache_path: Path | None) -> object:
 def _discover_files(folder: Path) -> list[Path]:
     """Return text files under ``folder`` sorted deterministically."""
     return sorted(
-        p for p in folder.rglob("*")
-        if p.is_file() and p.suffix.lower() in _TEXT_SUFFIXES
+        p for p in folder.rglob("*") if p.is_file() and p.suffix.lower() in _TEXT_SUFFIXES
     )
 
 
@@ -183,7 +182,7 @@ def build_command(
         help=(
             'Extractor: "trigger" (default; LLM-free) or an LLM model id '
             'such as "gpt-4o-mini". The legacy "rule_based" alias is '
-            'accepted with a deprecation warning.'
+            "accepted with a deprecation warning."
         ),
     ),
     append: bool = typer.Option(
@@ -219,9 +218,7 @@ def build_command(
         typer.echo(rendered)
         return
 
-    files_done, added, merged, conflicts = asyncio.run(
-        _run_build(folder, db, model, append, cache)
-    )
+    files_done, added, merged, conflicts = asyncio.run(_run_build(folder, db, model, append, cache))
 
     console.print(
         f"[bold green]build complete[/bold green]: "
@@ -246,7 +243,7 @@ def ingest_command(
         help=(
             'Extractor: "trigger" (default; LLM-free) or an LLM model id '
             'such as "gpt-4o-mini". The legacy "rule_based" alias is '
-            'accepted with a deprecation warning.'
+            "accepted with a deprecation warning."
         ),
     ),
     cache: Path | None = typer.Option(

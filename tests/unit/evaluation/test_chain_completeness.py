@@ -145,9 +145,7 @@ async def test_chain_hint_picks_right_group() -> None:
                 object="Pichai",
                 text="Pichai is Alphabet CEO",
             ),
-            validity=ValidityInterval(
-                start=datetime(2019, 1, 1, tzinfo=UTC)
-            ),
+            validity=ValidityInterval(start=datetime(2019, 1, 1, tzinfo=UTC)),
             epistemic=EpistemicState(),
             provenance=(
                 ProvenanceRecord(

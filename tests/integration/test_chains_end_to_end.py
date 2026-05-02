@@ -88,9 +88,7 @@ async def store(tmp_path: Path):
 @pytest.mark.asyncio
 async def test_succession_over_google_ceos(store: NuggetStore) -> None:
     # Use the "ceo" alias to confirm canonicalisation at lookup time.
-    chain = await store.achain_succession(
-        subject="Google", predicate="ceo"
-    )
+    chain = await store.achain_succession(subject="Google", predicate="ceo")
     assert chain.chain_type == "succession"
     assert [n.fact.object for n in chain.nuggets] == [
         "Schmidt",
@@ -108,9 +106,7 @@ async def test_rename_forward_twitter_to_x(store: NuggetStore) -> None:
 
 @pytest.mark.asyncio
 async def test_rename_backward_from_x_corp(store: NuggetStore) -> None:
-    chain = await store.achain_rename(
-        subject="X Corp", direction="backward"
-    )
+    chain = await store.achain_rename(subject="X Corp", direction="backward")
     subjects = [n.fact.subject for n in chain.nuggets]
     assert subjects == ["Twitter Inc"]
 

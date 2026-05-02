@@ -127,9 +127,7 @@ async def run_eval(
     sidecar: Sidecar,
     baseline_retriever: Callable[[str, int], list[Any]]
     | Callable[[str, int], Awaitable[list[Any]]],
-    answerer: Callable[[str, str], str]
-    | Callable[[str, str], Awaitable[str]]
-    | None = None,
+    answerer: Callable[[str, str], str] | Callable[[str, str], Awaitable[str]] | None = None,
     max_queries: int | None = None,
     top_k: int = 5,
 ) -> EvalReport:
@@ -158,19 +156,13 @@ async def run_eval(
         passed into the sidecar.
     """
     queries = _resolve_queries(benchmark, max_queries=max_queries)
-    bench_name = (
-        benchmark if isinstance(benchmark, str) else "inline"
-    )
+    bench_name = benchmark if isinstance(benchmark, str) else "inline"
 
     results: list[EvalResult] = []
     for q in queries:
-        baseline_hits = await _maybe_await(
-            baseline_retriever(q.query, top_k)
-        )
+        baseline_hits = await _maybe_await(baseline_retriever(q.query, top_k))
         baseline_context = _format_baseline_context(baseline_hits)
-        baseline_answer = await _call_answerer(
-            answerer, baseline_context, q
-        )
+        baseline_answer = await _call_answerer(answerer, baseline_context, q)
 
         sidecar_resp = await sidecar.ahandle(
             q.query,
@@ -179,13 +171,9 @@ async def run_eval(
             original_hits=baseline_hits,
         )
         sidecar_context = "\n".join(
-            part
-            for part in (baseline_context, sidecar_resp.context_block)
-            if part
+            part for part in (baseline_context, sidecar_resp.context_block) if part
         )
-        sidecar_answer = await _call_answerer(
-            answerer, sidecar_context, q
-        )
+        sidecar_answer = await _call_answerer(answerer, sidecar_context, q)
 
         results.append(
             EvalResult(
@@ -196,11 +184,7 @@ async def run_eval(
                 sidecar_correct=exact_match(sidecar_answer, q.expected_answer),
                 baseline_hits=[_coerce_hit_id(h) for h in baseline_hits],
                 sidecar_hits=[_coerce_hit_id(h) for h in baseline_hits]
-                + (
-                    ["nuggetindex-governance"]
-                    if sidecar_resp.context_block
-                    else []
-                ),
+                + (["nuggetindex-governance"] if sidecar_resp.context_block else []),
                 sidecar_context_block=sidecar_resp.context_block,
             )
         )
@@ -284,22 +268,10 @@ def _assemble_report(
 
     baseline_em = sum(1 for r in results if r.baseline_correct) / n
     sidecar_em = sum(1 for r in results if r.sidecar_correct) / n
-    baseline_f1 = (
-        sum(f1_score(r.baseline_answer, r.query.expected_answer) for r in results)
-        / n
-    )
-    sidecar_f1 = (
-        sum(f1_score(r.sidecar_answer, r.query.expected_answer) for r in results)
-        / n
-    )
-    fixed = [
-        r for r in results
-        if r.sidecar_correct and not r.baseline_correct
-    ]
-    broken = [
-        r for r in results
-        if r.baseline_correct and not r.sidecar_correct
-    ]
+    baseline_f1 = sum(f1_score(r.baseline_answer, r.query.expected_answer) for r in results) / n
+    sidecar_f1 = sum(f1_score(r.sidecar_answer, r.query.expected_answer) for r in results) / n
+    fixed = [r for r in results if r.sidecar_correct and not r.baseline_correct]
+    broken = [r for r in results if r.baseline_correct and not r.sidecar_correct]
 
     rendered_md = _render_markdown(benchmark, results, fixed=fixed, broken=broken)
     rendered_json = _render_json(benchmark, results)

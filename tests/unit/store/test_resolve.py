@@ -1,5 +1,6 @@
 """Tests for the resolve plumbing: ``amark_preferred``, ``asuppress``,
 ``acontested_keys``."""
+
 from datetime import UTC, datetime
 
 import pytest
@@ -37,9 +38,7 @@ def _n(
         ),
         validity=ValidityInterval(start=datetime(start_year, 6, 13, tzinfo=UTC)),
         epistemic=EpistemicState(status=status, rank=rank),
-        provenance=(
-            ProvenanceRecord(source_id=source, evidence_span=f"...for {obj}..."),
-        ),
+        provenance=(ProvenanceRecord(source_id=source, evidence_span=f"...for {obj}..."),),
     )
 
 
@@ -149,12 +148,12 @@ async def test_resolve_pins_winner_and_suppresses_losers(tmp_db_path):
     await store.asuppress(loser.id)
 
     w = await store.aget(winner.id)
-    l = await store.aget(loser.id)
-    assert w is not None and l is not None
+    los = await store.aget(loser.id)
+    assert w is not None and los is not None
     assert w.epistemic.status is LifecycleStatus.ACTIVE
     assert w.epistemic.rank is EpistemicRank.PREFERRED
-    assert l.epistemic.status is LifecycleStatus.DEPRECATED
-    assert l.epistemic.rank is EpistemicRank.DEPRECATED
+    assert los.epistemic.status is LifecycleStatus.DEPRECATED
+    assert los.epistemic.rank is EpistemicRank.DEPRECATED
     # No more contested keys for this pair.
     keys = await store.acontested_keys()
     assert all(s != "Microsoft" for s, _p, _sc, _n in keys)

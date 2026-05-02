@@ -259,8 +259,7 @@ def load_benchmark(
         queries = load_situatedqa(max_queries=max_queries)
     else:
         raise ValueError(
-            f"Unknown benchmark {name!r}; expected one of "
-            "'sanity', 'timeqa', 'situatedqa'."
+            f"Unknown benchmark {name!r}; expected one of 'sanity', 'timeqa', 'situatedqa'."
         )
     if max_queries is not None:
         return queries[:max_queries]

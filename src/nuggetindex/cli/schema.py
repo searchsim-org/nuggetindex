@@ -97,8 +97,7 @@ def _load_jsonl_docs(path: Path, *, verbose: bool) -> list[Document]:
             )
     if verbose:
         typer.echo(
-            f"schema: loaded {len(docs)} document(s) from {path} "
-            f"(skipped {total - len(docs)}).",
+            f"schema: loaded {len(docs)} document(s) from {path} (skipped {total - len(docs)}).",
             err=True,
         )
     return docs
@@ -136,10 +135,7 @@ def discover_command(
     index_path: Path = typer.Option(
         ...,
         "--index",
-        help=(
-            "Path to a .jsonl file (one document per line with "
-            "'source_id'/'text')."
-        ),
+        help=("Path to a .jsonl file (one document per line with 'source_id'/'text')."),
     ),
     sample_size: int = typer.Option(
         500,
@@ -162,18 +158,12 @@ def discover_command(
     out: Path | None = typer.Option(
         None,
         "--out",
-        help=(
-            "Write the YAML proposal to this file. If omitted the YAML is "
-            "printed to stdout."
-        ),
+        help=("Write the YAML proposal to this file. If omitted the YAML is printed to stdout."),
     ),
     report: Path | None = typer.Option(
         None,
         "--report",
-        help=(
-            "Optional Markdown report destination. If omitted the report is "
-            "printed to stderr."
-        ),
+        help=("Optional Markdown report destination. If omitted the report is printed to stderr."),
     ),
     verbose: bool = typer.Option(
         False,

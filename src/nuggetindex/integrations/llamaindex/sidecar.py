@@ -15,6 +15,7 @@ Imports follow the two-layer guard used by the sibling ``retriever.py``:
 :func:`_require_llamaindex` raises a useful ``pip install`` hint when the
 ``[llamaindex]`` extra isn't installed.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -42,8 +43,7 @@ def _require_llamaindex() -> tuple[Any, Any, Any, Any]:
         )
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[llamaindex] not installed. "
-            "Run: pip install 'nuggetindex[llamaindex]'"
+            "nuggetindex[llamaindex] not installed. Run: pip install 'nuggetindex[llamaindex]'"
         ) from e
     return _BNP, _NodeWithScore, _QueryBundle, _TextNode
 

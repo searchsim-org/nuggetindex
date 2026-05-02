@@ -7,6 +7,7 @@ For multi-tenant or multi-worker deployments, replace this module with an
 external task queue (Celery, RQ, Arq, etc.). The Protocol at the bottom of
 this module is what ``app.py`` depends on.
 """
+
 from __future__ import annotations
 
 import asyncio

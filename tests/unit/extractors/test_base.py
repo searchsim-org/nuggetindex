@@ -54,9 +54,7 @@ def test_base_extractor_is_abstract() -> None:
 
 def test_base_extractor_sync_wrapper_uses_aextract() -> None:
     class _Dummy(BaseExtractor):
-        async def aextract(
-            self, text: str, *, context: str = ""
-        ) -> list[ExtractionResult]:
+        async def aextract(self, text: str, *, context: str = "") -> list[ExtractionResult]:
             return [ExtractionResult(nugget=_nugget(), confidence=0.4)]
 
     results = _Dummy().extract("hi")

@@ -50,8 +50,7 @@ async def test_dedup_near_duplicates_removes_duplicates() -> None:
     # Ideally the sample contains exactly the 50 unique-text docs; top-up logic
     # won't find more non-duplicates so the final size is bounded above by 50.
     assert len(sampled) <= 50, (
-        f"expected <=50 after dedup (population has only 50 unique texts), "
-        f"got {len(sampled)}"
+        f"expected <=50 after dedup (population has only 50 unique texts), got {len(sampled)}"
     )
     # And the texts really are unique.
     assert len({d.text for d in sampled}) == len(sampled)
@@ -61,8 +60,6 @@ async def test_dedup_near_duplicates_removes_duplicates() -> None:
 async def test_dedup_off_by_default() -> None:
     """Default call path leaves duplicates in — 80 docs returned unchanged."""
     docs = _mk_dup_corpus()
-    sampled, n_total = await stratified_sample(
-        docs, sample_size=80, stratify_by="none", rng_seed=0
-    )
+    sampled, n_total = await stratified_sample(docs, sample_size=80, stratify_by="none", rng_seed=0)
     assert n_total == 100
     assert len(sampled) == 80

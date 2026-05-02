@@ -27,8 +27,7 @@ def _require_anthropic_sdk() -> tuple[Any, Any]:
         from anthropic import AsyncAnthropic
     except ImportError as e:  # pragma: no cover - exercised via stub in tests
         raise ImportError(
-            "nuggetindex[anthropic] not installed. "
-            "Run: pip install nuggetindex[anthropic]"
+            "nuggetindex[anthropic] not installed. Run: pip install nuggetindex[anthropic]"
         ) from e
     return instructor, AsyncAnthropic
 

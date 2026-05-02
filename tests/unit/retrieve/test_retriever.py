@@ -1,4 +1,5 @@
 """Integration tests for Retriever + NuggetStore.aretrieve."""
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -174,9 +175,7 @@ async def test_aretrieve_weighted_minmax_mode(tmp_db_path):
             start=datetime(2015, 10, 1, tzinfo=UTC),
         )
     )
-    results = await store.aretrieve(
-        "CEO Google", top_k=5, fusion="weighted_minmax"
-    )
+    results = await store.aretrieve("CEO Google", top_k=5, fusion="weighted_minmax")
     assert len(results) >= 1
     await store.aclose()
 

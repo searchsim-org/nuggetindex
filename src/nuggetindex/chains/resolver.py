@@ -24,12 +24,7 @@ from pydantic import BaseModel, Field
 from nuggetindex.core.models import Nugget
 from nuggetindex.extractors.clients.base import LLMClient, LLMConfig, build_client
 
-_PROMPT_PATH = (
-    Path(__file__).parent.parent
-    / "extractors"
-    / "prompts"
-    / "chain_resolver.md"
-)
+_PROMPT_PATH = Path(__file__).parent.parent / "extractors" / "prompts" / "chain_resolver.md"
 
 
 def _load_prompt() -> str:
@@ -84,9 +79,7 @@ class ChainResolver:
         # call so ``ChainResolver.default()`` doesn't require an API key at
         # construction time.
         self._client: LLMClient | None = client
-        self._log_path: Path = (
-            Path(log_path) if log_path is not None else _default_log_path()
-        )
+        self._log_path: Path = Path(log_path) if log_path is not None else _default_log_path()
 
     @classmethod
     def default(cls) -> ChainResolver:
@@ -102,7 +95,10 @@ class ChainResolver:
         return self._client
 
     async def adisambiguate(
-        self, *, candidates: list[Nugget], context: str,
+        self,
+        *,
+        candidates: list[Nugget],
+        context: str,
     ) -> ChainResolution:
         if not candidates:
             raise ValueError("adisambiguate requires at least one candidate")
@@ -117,9 +113,7 @@ class ChainResolver:
         # Defensive: clamp out-of-range indices rather than crashing the walker.
         if idx < 0 or idx >= len(candidates):
             idx = 0
-        resolution = ChainResolution(
-            picked=candidates[idx], rationale=resp.rationale
-        )
+        resolution = ChainResolution(picked=candidates[idx], rationale=resp.rationale)
         self._log(candidates, context, idx, resp.rationale)
         return resolution
 

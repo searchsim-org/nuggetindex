@@ -5,6 +5,7 @@ supplied predicate through ``schema.canonicalize`` before SQL lookup so that
 users typing an alias (e.g. ``ceo``) hit nuggets keyed under the canonical
 predicate (e.g. ``chiefExecutiveOfficer``).
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -33,9 +34,7 @@ def _make(obj: str, year: int, predicate: str = "chiefExecutiveOfficer") -> Nugg
         ),
         validity=ValidityInterval(start=datetime(year, 1, 1, tzinfo=UTC)),
         epistemic=EpistemicState(),
-        provenance=(
-            ProvenanceRecord(source_id=f"d-{obj}", evidence_span=f"{obj} is CEO"),
-        ),
+        provenance=(ProvenanceRecord(source_id=f"d-{obj}", evidence_span=f"{obj} is CEO"),),
     )
 
 
@@ -67,9 +66,7 @@ async def test_chain_accepts_canonical_predicate(tmp_db_path):
         await store.aadd(_make("Page", 2011))
         await store.aadd(_make("Pichai", 2015))
 
-        chain = await store.achain_succession(
-            subject="Google", predicate="chiefExecutiveOfficer"
-        )
+        chain = await store.achain_succession(subject="Google", predicate="chiefExecutiveOfficer")
         assert [n.fact.object for n in chain.nuggets] == ["Schmidt", "Page", "Pichai"]
     finally:
         await store.aclose()
@@ -106,9 +103,7 @@ async def test_chain_join_canonicalises_start_and_then(tmp_db_path):
             ),
             validity=ValidityInterval(start=datetime(2015, 10, 2, tzinfo=UTC)),
             epistemic=EpistemicState(),
-            provenance=(
-                ProvenanceRecord(source_id="d-parent", evidence_span="alphabet"),
-            ),
+            provenance=(ProvenanceRecord(source_id="d-parent", evidence_span="alphabet"),),
         )
         # Alphabet ceo -> Pichai
         ceo = Nugget.new(
@@ -121,9 +116,7 @@ async def test_chain_join_canonicalises_start_and_then(tmp_db_path):
             ),
             validity=ValidityInterval(start=datetime(2019, 12, 3, tzinfo=UTC)),
             epistemic=EpistemicState(),
-            provenance=(
-                ProvenanceRecord(source_id="d-alphabet-ceo", evidence_span="pichai"),
-            ),
+            provenance=(ProvenanceRecord(source_id="d-alphabet-ceo", evidence_span="pichai"),),
         )
         await store.aadd(parent)
         await store.aadd(ceo)

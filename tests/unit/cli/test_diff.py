@@ -20,6 +20,7 @@ def _patch_rule_based(monkeypatch: pytest.MonkeyPatch) -> None:
     """Patch the CLI's ``_build_extractor`` so the rule-based fixture
     stands in for the LLM extractor — keeps these diff tests offline after
     ``RuleBasedExtractor`` was moved out of the library."""
+
     def _stub(model: str) -> object:  # noqa: ARG001
         return RuleBasedExtractor()
 
@@ -32,9 +33,7 @@ def _build(tmp_path: Path, db_name: str, files: dict[str, str]) -> Path:
     for name, text in files.items():
         (corpus / name).write_text(text)
     db = tmp_path / db_name
-    result = runner.invoke(
-        app, ["build", str(corpus), "--db", str(db)]
-    )
+    result = runner.invoke(app, ["build", str(corpus), "--db", str(db)])
     assert result.exit_code == 0, result.output
     return db
 
@@ -47,13 +46,9 @@ def test_diff_reports_additions(tmp_path: Path) -> None:
     extra = tmp_path / "extra"
     extra.mkdir()
     (extra / "c.txt").write_text("Tim Cook is CEO of Apple.\n")
-    runner.invoke(
-        app, ["ingest", str(extra), "--db", str(new)]
-    )
+    runner.invoke(app, ["ingest", str(extra), "--db", str(new)])
 
-    result = runner.invoke(
-        app, ["diff", "--old", str(old), "--new", str(new)]
-    )
+    result = runner.invoke(app, ["diff", "--old", str(old), "--new", str(new)])
     assert result.exit_code == 0, result.output
     assert "added" in result.stdout
     assert "removed" in result.stdout

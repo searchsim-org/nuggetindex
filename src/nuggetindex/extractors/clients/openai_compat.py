@@ -37,9 +37,7 @@ class OpenAICompatClient:
 
     def __init__(self, cfg: LLMConfig) -> None:
         if not cfg.base_url:
-            raise ValueError(
-                "openai_compat provider requires an explicit base_url"
-            )
+            raise ValueError("openai_compat provider requires an explicit base_url")
         instructor, AsyncOpenAI = _require_openai_compat_sdk()
         self.cfg = cfg
         self._raw_client = instructor.from_openai(

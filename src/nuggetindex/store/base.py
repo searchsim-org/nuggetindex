@@ -3,6 +3,7 @@
 NuggetStore is the single class users touch. It delegates to pluggable
 backends for sparse retrieval, dense retrieval, and metadata storage.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -237,9 +238,7 @@ class NuggetStore:
         existing = await self._backend_impl.aget(nugget_id)
         if existing is None:
             raise KeyError(f"nugget not found: {nugget_id!r}")
-        new_status = (
-            LifecycleStatus.ACTIVE if set_active else existing.epistemic.status
-        )
+        new_status = LifecycleStatus.ACTIVE if set_active else existing.epistemic.status
         new_state = EpistemicState(
             status=new_status,
             rank=EpistemicRank.PREFERRED,
@@ -426,7 +425,8 @@ class NuggetStore:
 
         if self._retriever is None:
             self._retriever = Retriever(
-                backend=self._backend_impl, dense_backend=self.dense,
+                backend=self._backend_impl,
+                dense_backend=self.dense,
             )
         # Cast to satisfy the Literal FusionMode param without forcing callers
         # to import the type.
@@ -472,9 +472,7 @@ class NuggetStore:
         statuses = ["active", "deprecated"]
         if include_contested:
             statuses.append("contested")
-        rows = await self._backend_impl.asuccession_for_key(
-            key, as_of, statuses, max_depth + 1
-        )
+        rows = await self._backend_impl.asuccession_for_key(key, as_of, statuses, max_depth + 1)
         truncated = len(rows) > max_depth
         nuggets = tuple(rows[:max_depth] if truncated else rows)
         edges: list[ChainEdge] = []
@@ -536,9 +534,7 @@ class NuggetStore:
         the historical behaviour.
         """
         renaming = (
-            self.schema.entity_rename_predicates
-            if strict
-            else self.schema.renaming_predicates
+            self.schema.entity_rename_predicates if strict else self.schema.renaming_predicates
         )
         truncated = False
 
@@ -639,23 +635,16 @@ class NuggetStore:
                 break
             if len(candidates) > 1:
                 if resolver is None:
-                    raise ChainAmbiguousError(
-                        subject=current, candidates=candidates, step=step
-                    )
+                    raise ChainAmbiguousError(subject=current, candidates=candidates, step=step)
                 resolution = await resolver.adisambiguate(
                     candidates=candidates,
-                    context=(
-                        f"rename walk ({direction}) from {current!r} "
-                        f"at as_of={as_of}"
-                    ),
+                    context=(f"rename walk ({direction}) from {current!r} at as_of={as_of}"),
                 )
                 picked = resolution.picked
             else:
                 picked = candidates[0]
             nuggets.append(picked)
-            next_subject = (
-                picked.fact.object if direction == "forward" else picked.fact.subject
-            )
+            next_subject = picked.fact.object if direction == "forward" else picked.fact.subject
             if next_subject in seen:
                 break  # cycle guard
             seen.add(next_subject)
@@ -702,10 +691,7 @@ class NuggetStore:
         ``resolver`` or raise :class:`ChainAmbiguousError`.
         """
         if len(then) > 3:
-            raise ValueError(
-                "max_hops guardrail: len(then) must be <= 3 "
-                f"(got {len(then)})"
-            )
+            raise ValueError(f"max_hops guardrail: len(then) must be <= 3 (got {len(then)})")
         subject, predicate = start
         # Canonicalise the start predicate and every ``then`` hop so aliases
         # (``"ceo"``) match nuggets keyed under the canonical predicate
@@ -778,13 +764,9 @@ class NuggetStore:
         if len(eligible) == 1:
             return eligible[0]
         if resolver is None:
-            raise ChainAmbiguousError(
-                subject=subject, candidates=eligible, step=step
-            )
+            raise ChainAmbiguousError(subject=subject, candidates=eligible, step=step)
         if not eligible:
-            raise ChainAmbiguousError(
-                subject=subject, candidates=[], step=step
-            )
+            raise ChainAmbiguousError(subject=subject, candidates=[], step=step)
         resolution = await resolver.adisambiguate(
             candidates=eligible,
             context=f"join hop {subject}.{predicate}@{as_of}",
@@ -867,9 +849,7 @@ class NuggetStore:
         _require_no_running_loop("close", "aclose")
         asyncio.run(self._backend_impl.aclose())
 
-    def mark_preferred(
-        self, nugget_id: str, *, set_active: bool = True
-    ) -> Nugget:
+    def mark_preferred(self, nugget_id: str, *, set_active: bool = True) -> Nugget:
         _require_no_running_loop("mark_preferred", "amark_preferred")
         return asyncio.run(self.amark_preferred(nugget_id, set_active=set_active))
 

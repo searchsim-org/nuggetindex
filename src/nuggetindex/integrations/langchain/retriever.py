@@ -12,6 +12,7 @@ real ``Document`` / ``RunnableSerializable`` types, while the module-level
 ``pip install nuggetindex[langchain]`` hint instead of a bare
 ``ModuleNotFoundError`` (same pattern as the dense backends in Phase 6).
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -33,8 +34,7 @@ def _require_langchain() -> tuple[Any, Any, Any]:
         from langchain_core.runnables.config import RunnableConfig as _Config
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[langchain] not installed. "
-            "Run: pip install 'nuggetindex[langchain]'"
+            "nuggetindex[langchain] not installed. Run: pip install 'nuggetindex[langchain]'"
         ) from e
     return _Document, _Runnable, _Config
 

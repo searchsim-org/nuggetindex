@@ -54,15 +54,13 @@ def eval_command(
     """Score baseline vs sidecar on a benchmark."""
     if benchmark not in {"sanity", "timeqa", "situatedqa"}:
         typer.echo(
-            f"eval: --benchmark must be 'sanity', 'timeqa', or 'situatedqa' "
-            f"(got {benchmark!r}).",
+            f"eval: --benchmark must be 'sanity', 'timeqa', or 'situatedqa' (got {benchmark!r}).",
             err=True,
         )
         raise typer.Exit(code=1)
     if retriever_spec not in {"bm25", "none"}:
         typer.echo(
-            f"eval: --retriever must be 'bm25' or 'none' "
-            f"(got {retriever_spec!r}).",
+            f"eval: --retriever must be 'bm25' or 'none' (got {retriever_spec!r}).",
             err=True,
         )
         raise typer.Exit(code=1)
@@ -103,6 +101,7 @@ def eval_command(
 def _build_retriever(spec: str, *, store: Any):  # type: ignore[no-untyped-def]
     """Return a ``(query, top_k) -> list[hit]`` function for the CLI."""
     if spec == "none":
+
         def _empty(_query: str, _top_k: int) -> list[Any]:
             return []
 
@@ -132,8 +131,7 @@ def _resolve_answerer(spec: str):  # type: ignore[no-untyped-def]
         from nuggetindex.extractors.clients.base import LLMConfig, build_client
     except ImportError:  # pragma: no cover -- defensive
         typer.echo(
-            f"eval: --answerer {spec!r} needs the LLM extras; "
-            "falling back to 'string-match'.",
+            f"eval: --answerer {spec!r} needs the LLM extras; falling back to 'string-match'.",
             err=True,
         )
         return None

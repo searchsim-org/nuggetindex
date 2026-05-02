@@ -1,4 +1,5 @@
 """Qdrant backend tests (gated by ``pytest.importorskip``)."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -46,9 +47,7 @@ async def test_upsert_and_search(stub_encoder: Any) -> None:
     )
     texts = {"n1": "alpha", "n2": "beta", "n3": "gamma"}
     vecs = stub_encoder(list(texts.values()))
-    await backend.aupsert_batch(
-        [(nid, list(vecs[i])) for i, nid in enumerate(texts)]
-    )
+    await backend.aupsert_batch([(nid, list(vecs[i])) for i, nid in enumerate(texts)])
 
     results = await backend.asearch("alpha", top_k=3)
     assert len(results) >= 1
@@ -66,13 +65,9 @@ async def test_candidate_id_filter(stub_encoder: Any) -> None:
     )
     texts = {"n1": "alpha", "n2": "alphabet", "n3": "zzz"}
     vecs = stub_encoder(list(texts.values()))
-    await backend.aupsert_batch(
-        [(nid, list(vecs[i])) for i, nid in enumerate(texts)]
-    )
+    await backend.aupsert_batch([(nid, list(vecs[i])) for i, nid in enumerate(texts)])
 
-    results = await backend.asearch(
-        "alpha", candidate_ids=["n2", "n3"], top_k=5
-    )
+    results = await backend.asearch("alpha", candidate_ids=["n2", "n3"], top_k=5)
     ids = {nid for nid, _ in results}
     assert "n1" not in ids
     assert ids.issubset({"n2", "n3"})

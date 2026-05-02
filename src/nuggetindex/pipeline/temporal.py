@@ -185,9 +185,7 @@ def _infer(
                 # End is in the past relative to source_date; use a conservative
                 # open start so the interval is valid (start < end).
                 start_candidate = end.replace(year=end.year - 1)
-            return InferredValidity(
-                ValidityInterval(start=start_candidate, end=end)
-            )
+            return InferredValidity(ValidityInterval(start=start_candidate, end=end))
 
     # 4. "since <date>" / "starting <date>" / "from <date>" — start only
     m = _SINCE.search(text)

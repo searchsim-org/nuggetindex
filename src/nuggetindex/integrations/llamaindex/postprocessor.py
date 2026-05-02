@@ -10,6 +10,7 @@ The integration class here shadows the core class name. To keep things
 readable we alias the import to ``_CoreGPP`` so the wrapping class can keep
 the unqualified name consumers expect from LlamaIndex postprocessors.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -41,8 +42,7 @@ def _require_llamaindex() -> tuple[Any, Any, Any]:
         )
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[llamaindex] not installed. "
-            "Run: pip install 'nuggetindex[llamaindex]'"
+            "nuggetindex[llamaindex] not installed. Run: pip install 'nuggetindex[llamaindex]'"
         ) from e
     return _BNP, _NodeWithScore, _QueryBundle
 

@@ -9,6 +9,7 @@ its own ``sqlite3.Connection``. The contract these tests lock in:
   updates, no SQLite "database is locked" flakiness).
 * ``aclose()`` drains any pending writes before tearing the connection down.
 """
+
 from __future__ import annotations
 
 import asyncio

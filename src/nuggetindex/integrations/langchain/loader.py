@@ -9,6 +9,7 @@ For v0.1 this is intentionally minimal: the heavy lifting (extraction,
 dedup, conflict detection) stays behind ``NuggetStore.aingest``. Users wire
 the loader to a store themselves; the loader just marks docs.
 """
+
 from __future__ import annotations
 
 from collections.abc import AsyncIterator, Iterator
@@ -23,8 +24,7 @@ def _require_langchain() -> Any:
         from langchain_core.documents import Document as _Document
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[langchain] not installed. "
-            "Run: pip install 'nuggetindex[langchain]'"
+            "nuggetindex[langchain] not installed. Run: pip install 'nuggetindex[langchain]'"
         ) from e
     return _Document
 

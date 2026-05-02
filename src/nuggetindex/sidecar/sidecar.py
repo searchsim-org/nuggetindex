@@ -73,8 +73,7 @@ class Sidecar:
     def __post_init__(self) -> None:
         if self.mode == "just-in-time" and self.extractor is None:
             raise ValueError(
-                "just-in-time mode requires an `extractor=` argument "
-                "(e.g., LLMExtractor(...))."
+                "just-in-time mode requires an `extractor=` argument (e.g., LLMExtractor(...))."
             )
         if self.fallback_corpus is not None and self.extractor is None:
             raise ValueError(
@@ -89,12 +88,8 @@ class Sidecar:
         # Auto-construct a FreshnessChecker when a fallback_corpus is set
         # without one.
         if self.fallback_corpus is not None and self.freshness_checker is None:
-            self.freshness_checker = FreshnessChecker(
-                threshold=self.freshness_threshold
-            )
-        self._mode_strategy = (
-            OfflineCurated() if self.mode == "offline-curated" else JustInTime()
-        )
+            self.freshness_checker = FreshnessChecker(threshold=self.freshness_threshold)
+        self._mode_strategy = OfflineCurated() if self.mode == "offline-curated" else JustInTime()
 
     async def ahandle(
         self,
@@ -185,9 +180,7 @@ class Sidecar:
                     query_time=decision.query_time,
                     expand_aliases=decision.expand_aliases,
                     reason=(
-                        decision.reason + " · fallback:web"
-                        if decision.reason
-                        else "fallback:web"
+                        decision.reason + " · fallback:web" if decision.reason else "fallback:web"
                     ),
                 )
 

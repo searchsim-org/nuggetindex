@@ -15,6 +15,7 @@ Payload mapping:
                                                         (ISO-8601 parsed; ``None`` on
                                                         error)
 """
+
 from __future__ import annotations
 
 import random
@@ -122,9 +123,7 @@ class QdrantCorpus:
         payload = getattr(point, "payload", None) or {}
         title = payload.get(self.title_field, "") or ""
         content = payload.get(self.text_field, "") or ""
-        text = (
-            f"{title}\n{content}" if title and content else title or content
-        ).strip()
+        text = (f"{title}\n{content}" if title and content else title or content).strip()
         uri = payload.get(self.url_field) or None
         raw_date = payload.get(self.date_field)
         source_date: datetime | None = None

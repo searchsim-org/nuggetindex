@@ -30,9 +30,7 @@ async def _collect_stats(db: Path) -> dict[str, object]:
 
     conn = sqlite3.connect(db)
     try:
-        unique_keys = conn.execute(
-            "SELECT COUNT(DISTINCT key) FROM nuggets"
-        ).fetchone()[0]
+        unique_keys = conn.execute("SELECT COUNT(DISTINCT key) FROM nuggets").fetchone()[0]
         top_preds = conn.execute(
             "SELECT predicate, COUNT(*) AS c FROM nuggets "
             "GROUP BY predicate ORDER BY c DESC LIMIT 10"

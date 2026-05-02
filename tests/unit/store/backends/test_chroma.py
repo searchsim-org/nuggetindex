@@ -1,4 +1,5 @@
 """Chroma backend tests (gated by ``pytest.importorskip``)."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -46,9 +47,7 @@ async def test_upsert_and_search(stub_encoder: Any) -> None:
     )
     texts = {"n1": "alpha", "n2": "beta", "n3": "gamma"}
     vecs = stub_encoder(list(texts.values()))
-    await backend.aupsert_batch(
-        [(nid, list(vecs[i])) for i, nid in enumerate(texts)]
-    )
+    await backend.aupsert_batch([(nid, list(vecs[i])) for i, nid in enumerate(texts)])
     results = await backend.asearch("alpha", top_k=3)
     assert len(results) >= 1
     assert results[0][0] == "n1"
@@ -64,12 +63,8 @@ async def test_candidate_id_filter(stub_encoder: Any) -> None:
     )
     texts = {"n1": "alpha", "n2": "alphabet", "n3": "zzz"}
     vecs = stub_encoder(list(texts.values()))
-    await backend.aupsert_batch(
-        [(nid, list(vecs[i])) for i, nid in enumerate(texts)]
-    )
-    results = await backend.asearch(
-        "alpha", candidate_ids=["n2", "n3"], top_k=5
-    )
+    await backend.aupsert_batch([(nid, list(vecs[i])) for i, nid in enumerate(texts)])
+    results = await backend.asearch("alpha", candidate_ids=["n2", "n3"], top_k=5)
     ids = {nid for nid, _ in results}
     assert "n1" not in ids
     assert ids.issubset({"n2", "n3"})
@@ -84,9 +79,7 @@ async def test_delete(stub_encoder: Any) -> None:
         encoder=stub_encoder,
     )
     vecs = stub_encoder(["alpha", "beta"])
-    await backend.aupsert_batch(
-        [("n1", list(vecs[0])), ("n2", list(vecs[1]))]
-    )
+    await backend.aupsert_batch([("n1", list(vecs[0])), ("n2", list(vecs[1]))])
     await backend.adelete(["n1"])
     results = await backend.asearch("alpha", top_k=5)
     assert "n1" not in {nid for nid, _ in results}
@@ -94,9 +87,7 @@ async def test_delete(stub_encoder: Any) -> None:
 
 
 @pytest.mark.asyncio
-async def test_persistence_roundtrip(
-    tmp_path: Path, stub_encoder: Any
-) -> None:
+async def test_persistence_roundtrip(tmp_path: Path, stub_encoder: Any) -> None:
     persist_dir = tmp_path / "chroma"
     backend = ChromaBackend(
         persist_directory=persist_dir,
@@ -104,9 +95,7 @@ async def test_persistence_roundtrip(
         encoder=stub_encoder,
     )
     vecs = stub_encoder(["alpha", "beta"])
-    await backend.aupsert_batch(
-        [("n1", list(vecs[0])), ("n2", list(vecs[1]))]
-    )
+    await backend.aupsert_batch([("n1", list(vecs[0])), ("n2", list(vecs[1]))])
     await backend.aclose()
 
     # Re-open the same directory and collection.

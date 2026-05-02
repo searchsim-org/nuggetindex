@@ -67,9 +67,7 @@ async def test_succession_returns_ordered_chain(
 
 
 @pytest.mark.asyncio
-async def test_succession_as_of_cutoff(
-    tmp_db_path: Path, sample_nuggets: list[Nugget]
-) -> None:
+async def test_succession_as_of_cutoff(tmp_db_path: Path, sample_nuggets: list[Nugget]) -> None:
     store = await _populate(tmp_db_path, sample_nuggets)
     try:
         chain = await store.achain_succession(
@@ -91,9 +89,7 @@ async def test_succession_respects_include_contested(
     contested = _contested_ceo("Other", 2005, 2007)
     store = await _populate(tmp_db_path, [*sample_nuggets, contested])
     try:
-        default_chain = await store.achain_succession(
-            subject="Google", predicate="ceo"
-        )
+        default_chain = await store.achain_succession(subject="Google", predicate="ceo")
         assert "Other" not in [n.fact.object for n in default_chain.nuggets]
 
         inclusive = await store.achain_succession(
@@ -108,9 +104,7 @@ async def test_succession_respects_include_contested(
 async def test_succession_empty_when_subject_unknown(tmp_db_path: Path) -> None:
     store = NuggetStore(db_path=tmp_db_path)
     try:
-        chain = await store.achain_succession(
-            subject="Nonexistent", predicate="ceo"
-        )
+        chain = await store.achain_succession(subject="Nonexistent", predicate="ceo")
         assert chain.nuggets == ()
         assert chain.edges == ()
         assert chain.chain_type == "succession"
@@ -134,23 +128,17 @@ async def test_succession_includes_deprecated_by_default(
         await store.aadd(deprecated)
         for n in sample_nuggets[1:]:
             await store.aadd(n)
-        chain = await store.achain_succession(
-            subject="Google", predicate="ceo"
-        )
+        chain = await store.achain_succession(subject="Google", predicate="ceo")
         assert "Schmidt" in [n.fact.object for n in chain.nuggets]
     finally:
         await store.aclose()
 
 
 @pytest.mark.asyncio
-async def test_succession_edges_have_gap(
-    tmp_db_path: Path, sample_nuggets: list[Nugget]
-) -> None:
+async def test_succession_edges_have_gap(tmp_db_path: Path, sample_nuggets: list[Nugget]) -> None:
     store = await _populate(tmp_db_path, sample_nuggets)
     try:
-        chain = await store.achain_succession(
-            subject="Google", predicate="ceo"
-        )
+        chain = await store.achain_succession(subject="Google", predicate="ceo")
         # Schmidt ends 2011-01-01, Page starts 2011-01-01 -> gap == zero
         # but validity is non-overlapping, so gap should be zero.
         assert chain.edges[0].gap is not None
@@ -188,18 +176,14 @@ async def test_succession_truncated_by_max_depth(tmp_db_path: Path) -> None:
         )
     store = await _populate(tmp_db_path, nuggets)
     try:
-        chain = await store.achain_succession(
-            subject="Google", predicate="ceo", max_depth=3
-        )
+        chain = await store.achain_succession(subject="Google", predicate="ceo", max_depth=3)
         assert len(chain.nuggets) == 3
         assert chain.truncated is True
     finally:
         await store.aclose()
 
 
-def test_succession_sync_wrapper(
-    tmp_db_path: Path, sample_nuggets: list[Nugget]
-) -> None:
+def test_succession_sync_wrapper(tmp_db_path: Path, sample_nuggets: list[Nugget]) -> None:
     store = NuggetStore(db_path=tmp_db_path)
     try:
         for n in sample_nuggets:

@@ -58,9 +58,7 @@ def test_doctor_cli_fast_mode_writes_json(jsonl_corpus: Path, tmp_path: Path) ->
 
 def test_doctor_cli_deep_mode_default_is_trigger(jsonl_corpus: Path) -> None:
     """The new deep-mode default (``--extractor trigger``) runs offline."""
-    result = runner.invoke(
-        app, ["doctor", "--index-path", str(jsonl_corpus), "--mode", "deep"]
-    )
+    result = runner.invoke(app, ["doctor", "--index-path", str(jsonl_corpus), "--mode", "deep"])
     assert result.exit_code == 0, result.output
 
 

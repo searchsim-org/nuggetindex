@@ -44,9 +44,7 @@ async def test_cost_is_zero_for_trigger(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
-async def test_cost_reflects_llm_extractor(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+async def test_cost_reflects_llm_extractor(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """An LLMExtractor threads its ``cfg.model`` into estimate_ingest_cost."""
     pytest.importorskip("openai")
     from nuggetindex.extractors.clients.base import LLMConfig

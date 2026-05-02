@@ -1,4 +1,5 @@
 """Tests for ``GovernancePostProcessor`` — the Tier-1 session-cached wedge."""
+
 from __future__ import annotations
 
 import asyncio
@@ -387,11 +388,7 @@ async def test_extractions_bounded_by_semaphore(tmp_path):
                 ),
                 validity=ValidityInterval(start=datetime(2024, 1, 1, tzinfo=UTC)),
                 epistemic=EpistemicState(confidence=0.9),
-                provenance=(
-                    ProvenanceRecord(
-                        source_id=source_id or "stub", evidence_span=text
-                    ),
-                ),
+                provenance=(ProvenanceRecord(source_id=source_id or "stub", evidence_span=text),),
                 extraction_confidence=0.9,
             )
             return [ExtractionResult(nugget=nugget, confidence=0.9, rationale="stub")]
@@ -402,9 +399,7 @@ async def test_extractions_bounded_by_semaphore(tmp_path):
         query_time=datetime(2024, 6, 1, tzinfo=UTC),
         max_extraction_concurrency=2,
     )
-    passages = [
-        RetrievedPassage(source_id=f"d-{i}", text=f"text-{i}") for i in range(8)
-    ]
+    passages = [RetrievedPassage(source_id=f"d-{i}", text=f"text-{i}") for i in range(8)]
     await pp.apostprocess(passages)
     assert peak <= 2, f"expected peak <= 2, observed peak={peak}"
     assert peak >= 1, "extractor never observed any concurrency"

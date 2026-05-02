@@ -37,6 +37,7 @@ def test_all_proxies_quarantined_raises():
 
 def test_health_recovers_after_quarantine_expiry():
     import time
+
     pool = ProxyPool(proxies=["http://a:1"], quarantine_duration=timedelta(microseconds=1))
     a = pool.next()
     pool.mark_failed(a)

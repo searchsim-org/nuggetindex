@@ -391,8 +391,7 @@ def _render_markdown(
     ]
     for i, s in enumerate(seeds, 1):
         rows.append(
-            f"| {i} | {s.query} | {s.kind} | {s.entity} | "
-            f"{s.expected_coverage:.2f} | {s.reason} |"
+            f"| {i} | {s.query} | {s.kind} | {s.entity} | {s.expected_coverage:.2f} | {s.reason} |"
         )
     return "\n".join([header, "", *rows, ""])
 
@@ -408,9 +407,7 @@ async def propose_seeds(
     schema: Any | None = None,
     budget: int = 50,
     sample_size: int = 500,
-    stratify_by: Literal[
-        "source_date", "none", "domain", "language", "composite"
-    ] = "composite",
+    stratify_by: Literal["source_date", "none", "domain", "language", "composite"] = "composite",
     min_entity_frequency: int = 3,
     embedding_model: str | None = None,
     rng_seed: int = 0,
@@ -482,9 +479,7 @@ async def propose_seeds(
             total_candidates_considered=0,
             sample_size=0,
             sample_mode="stratified",
-            rendered_markdown=_render_markdown(
-                seeds=[], total_candidates=0, sample_size=0
-            ),
+            rendered_markdown=_render_markdown(seeds=[], total_candidates=0, sample_size=0),
         )
 
     # Resolve schema lazily so core module import stays light.
@@ -672,9 +667,7 @@ async def propose_seeds(
         )
 
     # --- Step 5: diversity optimisation ------------------------------------
-    quality_scores = np.asarray(
-        [c.expected_coverage for c in candidates], dtype=float
-    )
+    quality_scores = np.asarray([c.expected_coverage for c in candidates], dtype=float)
     queries = [c.query for c in candidates]
     vectors = _embed(queries, embedding_model)
 
@@ -682,9 +675,7 @@ async def propose_seeds(
     if effective_budget == 0:
         selected_idx: list[int] = []
     else:
-        selected_idx = _greedy_facility_location(
-            vectors, effective_budget, quality_scores
-        )
+        selected_idx = _greedy_facility_location(vectors, effective_budget, quality_scores)
         selected_idx = selected_idx[:effective_budget]
 
     selected_seeds = [candidates[i] for i in selected_idx]

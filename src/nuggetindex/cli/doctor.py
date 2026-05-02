@@ -125,8 +125,7 @@ def _load_jsonl_docs(path: Path, *, verbose: bool) -> list[Document]:
             )
     if verbose:
         typer.echo(
-            f"doctor: loaded {len(docs)} document(s) from {path} "
-            f"(skipped {total - len(docs)}).",
+            f"doctor: loaded {len(docs)} document(s) from {path} (skipped {total - len(docs)}).",
             err=True,
         )
     return docs
@@ -362,8 +361,7 @@ def doctor_command(
             extractor_obj = _build_extractor(extractor)
         except Exception as exc:  # noqa: BLE001 -- config / import failures
             typer.echo(
-                f"doctor: failed to build extractor {extractor!r}: "
-                f"{type(exc).__name__}: {exc}",
+                f"doctor: failed to build extractor {extractor!r}: {type(exc).__name__}: {exc}",
                 err=True,
             )
             raise typer.Exit(code=1) from exc

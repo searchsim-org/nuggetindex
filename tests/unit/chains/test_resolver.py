@@ -53,13 +53,13 @@ class _StubClient:
         self.calls: list[dict[str, Any]] = []
 
     async def achat_structured(
-        self, messages: list[dict[str, Any]], response_model: type[BaseModel],
+        self,
+        messages: list[dict[str, Any]],
+        response_model: type[BaseModel],
     ) -> BaseModel:
         self.calls.append({"messages": messages, "model": response_model})
         assert response_model is _ResolverResponse
-        return _ResolverResponse(
-            picked_index=self.picked_index, rationale=self.rationale
-        )
+        return _ResolverResponse(picked_index=self.picked_index, rationale=self.rationale)
 
 
 @pytest.mark.asyncio
@@ -71,9 +71,7 @@ async def test_resolver_returns_chain_resolution(tmp_path: Path) -> None:
         log_path=tmp_path / "log.jsonl",
     )
     candidates = [_fact("A"), _fact("B")]
-    result = await resolver.adisambiguate(
-        candidates=candidates, context="test"
-    )
+    result = await resolver.adisambiguate(candidates=candidates, context="test")
     assert isinstance(result, ChainResolution)
     assert result.picked == candidates[1]
     assert result.rationale == "B looks better"
@@ -101,7 +99,8 @@ async def test_resolver_writes_log_row(tmp_path: Path) -> None:
 
 @pytest.mark.asyncio
 async def test_resolver_log_path_respects_nuggetindex_home(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("NUGGETINDEX_HOME", str(tmp_path))
     stub = _StubClient()
@@ -109,9 +108,7 @@ async def test_resolver_log_path_respects_nuggetindex_home(
         LLMConfig(provider="openai", model="gpt-4o-mini"),
         client=stub,
     )
-    await resolver.adisambiguate(
-        candidates=[_fact("A"), _fact("B")], context="ctx"
-    )
+    await resolver.adisambiguate(candidates=[_fact("A"), _fact("B")], context="ctx")
     expected_log = tmp_path / "chain_resolver_log.jsonl"
     assert expected_log.exists()
 
@@ -146,8 +143,6 @@ async def test_resolver_clamps_out_of_range_index(tmp_path: Path) -> None:
         log_path=tmp_path / "log.jsonl",
     )
     candidates = [_fact("A"), _fact("B")]
-    result = await resolver.adisambiguate(
-        candidates=candidates, context="ctx"
-    )
+    result = await resolver.adisambiguate(candidates=candidates, context="ctx")
     # Out-of-range gets clamped to 0.
     assert result.picked == candidates[0]

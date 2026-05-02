@@ -1,4 +1,5 @@
 """Store module: NuggetStore public class + pluggable backends."""
+
 from nuggetindex.store.base import (
     AddResult,
     DiffReport,

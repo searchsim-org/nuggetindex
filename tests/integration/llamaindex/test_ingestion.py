@@ -1,4 +1,5 @@
 """Tests for ``NuggetTransformation`` (LlamaIndex IngestionPipeline component)."""
+
 from __future__ import annotations
 
 from pathlib import Path

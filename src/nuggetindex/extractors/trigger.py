@@ -121,8 +121,7 @@ class TriggerExtractor(BaseExtractor):
     ) -> None:
         if not 0.0 <= min_trigger_confidence <= 1.0:
             raise ValueError(
-                "min_trigger_confidence must be within [0.0, 1.0], "
-                f"got {min_trigger_confidence!r}"
+                f"min_trigger_confidence must be within [0.0, 1.0], got {min_trigger_confidence!r}"
             )
         self._min_confidence = float(min_trigger_confidence)
         self._default_source_id = source_id
@@ -194,11 +193,11 @@ class TriggerExtractor(BaseExtractor):
         :func:`is_valid_object` to the emitted object so downstream stages
         don't see obvious malformed values.
         """
-        subject = text[match.subject_span[0]:match.subject_span[1]].strip()
+        subject = text[match.subject_span[0] : match.subject_span[1]].strip()
         if match.object_span == (0, 0):
             obj = ""
         else:
-            obj = text[match.object_span[0]:match.object_span[1]].strip()
+            obj = text[match.object_span[0] : match.object_span[1]].strip()
         if not subject or not obj:
             return None
 

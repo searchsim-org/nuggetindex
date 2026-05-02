@@ -106,11 +106,15 @@ async def test_basic_pipeline_end_to_end() -> None:
 async def test_pipeline_drops_duplicates() -> None:
     # Two extractions with same (canonical) key and identical objects.
     e1 = _extraction(
-        subject="Google", predicate="ceo", obj="Sundar Pichai",
+        subject="Google",
+        predicate="ceo",
+        obj="Sundar Pichai",
         sentence="Pichai became CEO in 2019",
     )
     e2 = _extraction(
-        subject="Google", predicate="ceo", obj="Sundar Pichai",
+        subject="Google",
+        predicate="ceo",
+        obj="Sundar Pichai",
         sentence="Sundar Pichai has been CEO since 2019",
     )
     constructor = _build_constructor([e1, e2])
@@ -152,7 +156,9 @@ async def test_pipeline_uses_fetch_existing_by_key() -> None:
         return []
 
     e = _extraction(
-        subject="Google", predicate="ceo", obj="Page",
+        subject="Google",
+        predicate="ceo",
+        obj="Page",
         sentence="Page became CEO in 2015",
         source_id="doc-new",
     )
@@ -212,11 +218,13 @@ async def test_pipeline_two_doc_succession() -> None:
     )
 
     d1 = Document(
-        source_id="d1", text="Page was CEO until 2014",
+        source_id="d1",
+        text="Page was CEO until 2014",
         source_date=datetime(2014, 12, 31, tzinfo=UTC),
     )
     d2 = Document(
-        source_id="d2", text="Pichai became CEO in 2015",
+        source_id="d2",
+        text="Pichai became CEO in 2015",
         source_date=datetime(2016, 1, 1, tzinfo=UTC),
     )
 
@@ -253,7 +261,9 @@ async def test_pipeline_ambiguous_year_reduces_confidence() -> None:
         sentence="An article about 2018 changes at Acme.",
     )
     constructor = _build_constructor([e_bare])
-    doc = Document(source_id="doc", text="An article about 2018 changes at Acme.", source_date=source)
+    doc = Document(
+        source_id="doc", text="An article about 2018 changes at Acme.", source_date=source
+    )
     out = await constructor.aprocess(doc)
     assert len(out) == 1
     # Ambiguous -> confidence multiplier 0.75.
@@ -456,6 +466,7 @@ async def test_pipeline_entity_type_flip_and_reject() -> None:
     )
     # Accept any UserWarning; we just want the ingest to complete.
     import warnings as _w
+
     with _w.catch_warnings():
         _w.simplefilter("always")
         out = await constructor.aprocess(doc)
@@ -468,15 +479,11 @@ async def test_pipeline_entity_type_flip_and_reject() -> None:
     # Inverted triple flipped: subject should be the ORG, not the PERSON.
     assert ("SpaceX", "Elon Musk") in triples
     # After flipping, types must be swapped in lockstep with subject/object.
-    flipped = next(
-        n for n in out if (n.fact.subject, n.fact.object) == ("SpaceX", "Elon Musk")
-    )
+    flipped = next(n for n in out if (n.fact.subject, n.fact.object) == ("SpaceX", "Elon Musk"))
     assert flipped.fact.subject_type == "ORG"
     assert flipped.fact.object_type == "PERSON"
     # Bad-type triple must be rejected.
-    assert not any(
-        n.fact.object == "A Day In The Life of Apple's CEO" for n in out
-    )
+    assert not any(n.fact.object == "A Day In The Life of Apple's CEO" for n in out)
 
 
 @pytest.mark.asyncio
@@ -485,13 +492,17 @@ async def test_pipeline_with_quality_gate_filters_low_confidence() -> None:
 
     # Two extractions: one above accept threshold, one below.
     high = _extraction(
-        subject="Google", predicate="ceo", obj="Pichai",
+        subject="Google",
+        predicate="ceo",
+        obj="Pichai",
         sentence="Pichai became CEO in 2019",
     )
     high_ref = ExtractionResult(nugget=high.nugget, confidence=0.95, rationale=None)
 
     low = _extraction(
-        subject="Foo", predicate="ceo", obj="Bar",
+        subject="Foo",
+        predicate="ceo",
+        obj="Bar",
         sentence="Bar is CEO of Foo",
     )
     low_ref = ExtractionResult(nugget=low.nugget, confidence=0.4, rationale=None)

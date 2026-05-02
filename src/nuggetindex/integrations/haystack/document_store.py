@@ -44,6 +44,7 @@ import from the public ``nuggetindex`` top-level namespace. The Haystack
 side imports go through ``_require_haystack()`` so callers missing the
 ``[haystack]`` extra get a useful ``pip install`` hint.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -70,8 +71,7 @@ def _require_haystack() -> tuple[Any, Any, Any]:
         )
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[haystack] not installed. "
-            "Run: pip install 'nuggetindex[haystack]'"
+            "nuggetindex[haystack] not installed. Run: pip install 'nuggetindex[haystack]'"
         ) from e
     return _Document, _DuplicatePolicy, _DupError
 
@@ -143,15 +143,10 @@ class NuggetDocumentStore:
         items raise ``ValueError`` to satisfy Haystack's ``WriteDocumentsTest``.
         """
         if not isinstance(documents, list):
-            raise ValueError(
-                f"documents must be a list, got {type(documents).__name__}"
-            )
+            raise ValueError(f"documents must be a list, got {type(documents).__name__}")
         for d in documents:
             if not isinstance(d, _HaystackDocument):
-                raise ValueError(
-                    f"every entry must be a haystack.Document, "
-                    f"got {type(d).__name__}"
-                )
+                raise ValueError(f"every entry must be a haystack.Document, got {type(d).__name__}")
 
         return asyncio.run(self._awrite_documents(documents, policy))
 
@@ -168,16 +163,17 @@ class NuggetDocumentStore:
                 if policy == DuplicatePolicy.SKIP:
                     continue
                 if policy == DuplicatePolicy.FAIL:
-                    raise DuplicateDocumentError(
-                        f"Document with id {d.id!r} already exists"
-                    )
+                    raise DuplicateDocumentError(f"Document with id {d.id!r} already exists")
             # OVERWRITE (explicit or default) + new-id paths land here. We
             # store the full ``to_dict()`` so ``filter_documents`` can
             # round-trip the original Document shape (meta, embeddings, etc.)
             # without re-deriving fields from the passage row.
             meta_json = json.dumps(d.to_dict(flatten=False))
             await self._store.backend.aupsert_passage_with_meta(
-                source_id=d.id, uri=None, text=content, meta_json=meta_json,
+                source_id=d.id,
+                uri=None,
+                text=content,
+                meta_json=meta_json,
             )
             written += 1
         return written
@@ -194,9 +190,7 @@ class NuggetDocumentStore:
         """
         if not document_ids:
             return
-        asyncio.run(
-            self._store.backend.adelete_by_source_ids(list(document_ids))
-        )
+        asyncio.run(self._store.backend.adelete_by_source_ids(list(document_ids)))
 
     def count_documents(self) -> int:
         """Return the number of source-passage rows currently stored."""
@@ -206,9 +200,7 @@ class NuggetDocumentStore:
     # filter_documents
     # ------------------------------------------------------------------
 
-    def filter_documents(
-        self, filters: dict[str, Any] | None = None
-    ) -> list[HaystackDocument]:
+    def filter_documents(self, filters: dict[str, Any] | None = None) -> list[HaystackDocument]:
         """Return stored documents matching ``filters``.
 
         ``filters=None`` returns every stored passage as a ``Document``
@@ -229,14 +221,10 @@ class NuggetDocumentStore:
         val = filters.get("value")
         if op != "==":
             raise ValueError(
-                f"NuggetDocumentStore.filter_documents only supports '==' "
-                f"in v0.2, got {op!r}"
+                f"NuggetDocumentStore.filter_documents only supports '==' in v0.2, got {op!r}"
             )
         if not isinstance(field, str):
-            raise ValueError(
-                "filter dict must contain a 'field' string key, "
-                f"got {field!r}"
-            )
+            raise ValueError(f"filter dict must contain a 'field' string key, got {field!r}")
         return asyncio.run(self._afilter_nuggets({field: val}))
 
     async def _afilter_all(self) -> list[HaystackDocument]:
@@ -244,14 +232,13 @@ class NuggetDocumentStore:
         records = await self._store.backend.aget_passage_records(source_ids)
         return [self._record_to_document(sid, records[sid]) for sid in source_ids]
 
-    async def _afilter_nuggets(
-        self, extra_filters: dict[str, Any]
-    ) -> list[HaystackDocument]:
+    async def _afilter_nuggets(self, extra_filters: dict[str, Any]) -> list[HaystackDocument]:
         # ``afilter`` wants a query_time; use "now" so the resulting validity
         # check is a no-op for most passages (ACTIVE nuggets with no
         # ``validity_end``). Callers who want point-in-time filtering should
         # use ``store.aretrieve`` directly.
         from datetime import UTC, datetime
+
         nugget_ids = await self._store.backend.afilter(
             query_time=datetime.now(UTC),
             view="all",
@@ -273,11 +260,7 @@ class NuggetDocumentStore:
         if not source_ids:
             return []
         records = await self._store.backend.aget_passage_records(source_ids)
-        return [
-            self._record_to_document(sid, records[sid])
-            for sid in source_ids
-            if sid in records
-        ]
+        return [self._record_to_document(sid, records[sid]) for sid in source_ids if sid in records]
 
     # ------------------------------------------------------------------
     # bm25_retrieval
@@ -307,13 +290,18 @@ class NuggetDocumentStore:
         return asyncio.run(self._abm25_retrieval(query, top_k=top_k))
 
     async def _abm25_retrieval(
-        self, query: str, *, top_k: int,
+        self,
+        query: str,
+        *,
+        top_k: int,
     ) -> list[HaystackDocument]:
         # view="all" so CONTESTED/DEPRECATED matches still surface — the
         # caller is explicitly asking for BM25 over the corpus and Haystack
         # callers typically don't wire a lifecycle view.
         results = await self._store.aretrieve(
-            query, view="all", top_k=top_k,
+            query,
+            view="all",
+            top_k=top_k,
         )
         # Collect unique source_ids in fused-score order. ``RetrievalResult``
         # carries the underlying ``Nugget`` with its provenance list already
@@ -349,7 +337,9 @@ class NuggetDocumentStore:
     # ------------------------------------------------------------------
 
     def _record_to_document(
-        self, source_id: str, record: tuple[str, str | None],
+        self,
+        source_id: str,
+        record: tuple[str, str | None],
     ) -> HaystackDocument:
         """Rebuild a Haystack ``Document`` from a stored passage row.
 

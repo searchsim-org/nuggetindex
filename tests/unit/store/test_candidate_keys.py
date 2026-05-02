@@ -1,4 +1,5 @@
 """Tests for ``NuggetStore.acandidate_keys`` (v0.2.1 discovery helper)."""
+
 from __future__ import annotations
 
 from datetime import UTC, datetime

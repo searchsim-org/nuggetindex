@@ -17,6 +17,7 @@ Imports follow the two-layer pattern used by the sibling ``retriever.py``:
 module-level :func:`_require_haystack` call raises a useful ``pip install``
 hint when the ``[haystack]`` extra isn't installed.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -34,8 +35,7 @@ def _require_haystack() -> tuple[Any, type]:
         from haystack import component as _component
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[haystack] not installed. "
-            "Run: pip install 'nuggetindex[haystack]'"
+            "nuggetindex[haystack] not installed. Run: pip install 'nuggetindex[haystack]'"
         ) from e
     return _component, _Document
 

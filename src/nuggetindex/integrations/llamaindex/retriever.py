@@ -10,6 +10,7 @@ Imports follow the same two-layer pattern as the dense-backend guards:
 ``[llamaindex]`` extra see a useful ``pip install`` hint rather than a bare
 ``ModuleNotFoundError``.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -36,8 +37,7 @@ def _require_llamaindex() -> tuple[Any, Any, Any, Any]:
         )
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[llamaindex] not installed. "
-            "Run: pip install 'nuggetindex[llamaindex]'"
+            "nuggetindex[llamaindex] not installed. Run: pip install 'nuggetindex[llamaindex]'"
         ) from e
     return _BaseRetriever, _NodeWithScore, _QueryBundle, _TextNode
 

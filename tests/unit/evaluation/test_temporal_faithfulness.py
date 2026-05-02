@@ -48,9 +48,7 @@ def _nugget(
 @pytest.mark.asyncio
 async def test_returns_1_when_no_claims() -> None:
     metric = TemporalFaithfulness()
-    score = await metric._ascore(
-        {"response": "", "retrieved_nuggets": [], "query_time": None}
-    )
+    score = await metric._ascore({"response": "", "retrieved_nuggets": [], "query_time": None})
     assert score == 1.0
 
 

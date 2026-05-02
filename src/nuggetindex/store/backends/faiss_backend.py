@@ -9,6 +9,7 @@ The FAISS SDK is imported lazily inside ``__init__`` so users without
 ``pip install nuggetindex[dense]`` can still import this module without
 triggering an ``ImportError``.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -25,10 +26,7 @@ def _require_faiss_sdk() -> Any:
     try:
         import faiss
     except ImportError as e:  # pragma: no cover - import guard
-        raise ImportError(
-            "FAISS is not installed. "
-            "Run: pip install 'nuggetindex[dense]'"
-        ) from e
+        raise ImportError("FAISS is not installed. Run: pip install 'nuggetindex[dense]'") from e
     return faiss
 
 
@@ -78,9 +76,7 @@ class FAISSBackend:
             self._index = faiss.read_index(str(self.path))
         else:
             quantizer = faiss.IndexFlatIP(dim)
-            self._index = faiss.IndexIVFFlat(
-                quantizer, dim, nlist, faiss.METRIC_INNER_PRODUCT
-            )
+            self._index = faiss.IndexIVFFlat(quantizer, dim, nlist, faiss.METRIC_INNER_PRODUCT)
             # IVF must be trained before .add(); train on random vectors now
             # so first ingest doesn't need to collect a full training batch.
             n_train = max(nlist * 40, 1024)
@@ -108,22 +104,16 @@ class FAISSBackend:
     async def aupsert(self, id: str, vector: list[float]) -> None:
         await self.aupsert_batch([(id, vector)])
 
-    async def aupsert_batch(
-        self, items: list[tuple[str, list[float]]]
-    ) -> None:
+    async def aupsert_batch(self, items: list[tuple[str, list[float]]]) -> None:
         if not items:
             return
         async with self._lock:
-            await asyncio.get_running_loop().run_in_executor(
-                None, self._upsert_sync, items
-            )
+            await asyncio.get_running_loop().run_in_executor(None, self._upsert_sync, items)
 
     def _upsert_sync(self, items: list[tuple[str, list[float]]]) -> None:
         vectors = np.asarray([v for _, v in items], dtype="float32")
         if vectors.ndim != 2 or vectors.shape[1] != self.dim:
-            raise ValueError(
-                f"Expected vectors of dim {self.dim}, got shape {vectors.shape}"
-            )
+            raise ValueError(f"Expected vectors of dim {self.dim}, got shape {vectors.shape}")
         start_row = self._index.ntotal
         self._index.add(vectors)
         for i, (nid, _) in enumerate(items):

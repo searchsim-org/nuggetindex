@@ -11,6 +11,7 @@ on both paths.
 Decisions are logged to ``~/.nuggetindex/resolve_log.jsonl`` so the
 adjudication trail is reproducible and auditable.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -43,7 +44,7 @@ def _append_log(entry: dict[str, object]) -> None:
         fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def _render_card(idx: int, n: "Nugget") -> Panel:
+def _render_card(idx: int, n: Nugget) -> Panel:
     body = (
         f"[bold]{n.fact.object}[/bold]\n"
         f"valid: {n.validity.start.date()} → "
@@ -65,10 +66,14 @@ def _prompt_choice(n_candidates: int) -> str:
     """Return one of: '1', '2', ..., 'skip', 'leave', 'all-wrong'."""
     options = ", ".join(str(i + 1) for i in range(n_candidates))
     while True:
-        raw = typer.prompt(
-            f"Pick a winner [{options}], or 'skip' / 'leave' / 'all-wrong'",
-            default="leave",
-        ).strip().lower()
+        raw = (
+            typer.prompt(
+                f"Pick a winner [{options}], or 'skip' / 'leave' / 'all-wrong'",
+                default="leave",
+            )
+            .strip()
+            .lower()
+        )
         if raw in {"skip", "leave", "all-wrong"}:
             return raw
         if raw.isdigit() and 1 <= int(raw) <= n_candidates:
@@ -153,9 +158,7 @@ async def _resolve_one_key(
     return f"winner-{winner.id[:12]}"
 
 
-async def _amain(
-    store_path: Path, key: str | None, dry_run: bool, only_first: int | None
-) -> None:
+async def _amain(store_path: Path, key: str | None, dry_run: bool, only_first: int | None) -> None:
     from nuggetindex.store import NuggetStore
 
     store = NuggetStore(db_path=store_path)
@@ -169,20 +172,14 @@ async def _amain(
                 subject, predicate, scope = parts
             else:
                 raise typer.BadParameter(
-                    "--key must be 'subject/predicate' or "
-                    "'subject/predicate/scope'"
+                    "--key must be 'subject/predicate' or 'subject/predicate/scope'"
                 )
-            await _resolve_one_key(
-                store, subject, predicate, scope, dry_run=dry_run
-            )
+            await _resolve_one_key(store, subject, predicate, scope, dry_run=dry_run)
             return
 
         keys = await store.acontested_keys()
         if not keys:
-            console.print(
-                "[green]No contested keys in the store. Nothing to resolve."
-                "[/green]"
-            )
+            console.print("[green]No contested keys in the store. Nothing to resolve.[/green]")
             return
 
         table = Table(title=f"Contested keys ({len(keys)} total)")

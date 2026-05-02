@@ -31,6 +31,7 @@ class _StubCorpus:
 
     async def search(self, query: str, *, limit: int):
         from nuggetindex.pipeline.constructor import Document
+
         self.search_calls.append(query)
         return [
             Document(

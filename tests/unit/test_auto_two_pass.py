@@ -72,9 +72,7 @@ async def test_two_pass_doubles_ingest_count(tmp_path: Path) -> None:
         # Deep-pass doc count <= len(search_docs) because of dedup across
         # seeds, and > 0 because the seed list was non-empty.
         assert 0 < report.deep_pass_docs <= len(search_docs)
-        assert report.n_docs_processed == (
-            report.bootstrap_docs + report.deep_pass_docs
-        )
+        assert report.n_docs_processed == (report.bootstrap_docs + report.deep_pass_docs)
     finally:
         await _sidecar.store.backend.aclose()
 

@@ -20,6 +20,7 @@ arrangement, which caused flaky behaviour under heavy ``asyncio.gather`` load
 because the single connection was shared across executor threads (requiring
 ``check_same_thread=False``) while the lock was held async-ly.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -39,9 +40,18 @@ _R = TypeVar("_R")
 
 # Allowlist for extra_filters in afilter() — prevents SQL-identifier injection.
 # Every column here must exist on the nuggets table (see _SCHEMA below).
-_ALLOWED_FILTER_COLUMNS: frozenset[str] = frozenset({
-    "subject", "predicate", "object", "scope", "kind", "status", "rank", "parent_id",
-})
+_ALLOWED_FILTER_COLUMNS: frozenset[str] = frozenset(
+    {
+        "subject",
+        "predicate",
+        "object",
+        "scope",
+        "kind",
+        "status",
+        "rank",
+        "parent_id",
+    }
+)
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS nuggets (
@@ -178,16 +188,9 @@ class SQLiteBackend:
         # ALTER TABLE when missing. Safe on fresh DBs too: the column is
         # already there from the CREATE, and the ``if ... not in cols`` guard
         # short-circuits.
-        cols = {
-            r[1]
-            for r in self._writer_conn.execute(
-                "PRAGMA table_info(passages)"
-            ).fetchall()
-        }
+        cols = {r[1] for r in self._writer_conn.execute("PRAGMA table_info(passages)").fetchall()}
         if "meta_json" not in cols:
-            self._writer_conn.execute(
-                "ALTER TABLE passages ADD COLUMN meta_json TEXT"
-            )
+            self._writer_conn.execute("ALTER TABLE passages ADD COLUMN meta_json TEXT")
         self._writer_queue: asyncio.Queue[_WriteItem] | None = None
         self._writer_task: asyncio.Task[None] | None = None
         # The event loop that owns the current writer task/queue. Sync
@@ -311,9 +314,7 @@ class SQLiteBackend:
 
     def _upsert_sync(self, conn: sqlite3.Connection, nugget: Nugget) -> None:
         data_json = nugget.model_dump_json()
-        key = (
-            f"{nugget.fact.subject}|{nugget.fact.predicate}|{nugget.validity.scope}"
-        )
+        key = f"{nugget.fact.subject}|{nugget.fact.predicate}|{nugget.validity.scope}"
         with self._tx(conn):
             conn.execute(
                 """INSERT OR REPLACE INTO nuggets
@@ -362,28 +363,20 @@ class SQLiteBackend:
     async def aget(self, nugget_id: str) -> Nugget | None:
         return await self._run_read(lambda conn: self._get_sync(conn, nugget_id))
 
-    def _get_sync(
-        self, conn: sqlite3.Connection, nugget_id: str
-    ) -> Nugget | None:
-        row = conn.execute(
-            "SELECT data FROM nuggets WHERE id = ?", (nugget_id,)
-        ).fetchone()
+    def _get_sync(self, conn: sqlite3.Connection, nugget_id: str) -> Nugget | None:
+        row = conn.execute("SELECT data FROM nuggets WHERE id = ?", (nugget_id,)).fetchone()
         if row is None:
             return None
         return Nugget.model_validate_json(row[0])
 
     async def afind_by_key(self, key: tuple[str, str, str]) -> list[Nugget]:
-        return await self._run_read(
-            lambda conn: self._find_by_key_sync(conn, key)
-        )
+        return await self._run_read(lambda conn: self._find_by_key_sync(conn, key))
 
     def _find_by_key_sync(
         self, conn: sqlite3.Connection, key: tuple[str, str, str]
     ) -> list[Nugget]:
         key_str = "|".join(key)
-        rows = conn.execute(
-            "SELECT data FROM nuggets WHERE key = ?", (key_str,)
-        ).fetchall()
+        rows = conn.execute("SELECT data FROM nuggets WHERE key = ?", (key_str,)).fetchall()
         return [Nugget.model_validate_json(r[0]) for r in rows]
 
     async def aget_nuggets_by_source(self, source_id: str) -> list[Nugget]:
@@ -393,13 +386,9 @@ class SQLiteBackend:
         were sourced from a given retrieved passage so it can decide whether
         to filter (all DEPRECATED) or flag (any CONTESTED) that passage.
         """
-        return await self._run_read(
-            lambda conn: self._get_nuggets_by_source_sync(conn, source_id)
-        )
+        return await self._run_read(lambda conn: self._get_nuggets_by_source_sync(conn, source_id))
 
-    def _get_nuggets_by_source_sync(
-        self, conn: sqlite3.Connection, source_id: str
-    ) -> list[Nugget]:
+    def _get_nuggets_by_source_sync(self, conn: sqlite3.Connection, source_id: str) -> list[Nugget]:
         rows = conn.execute(
             """SELECT DISTINCT n.data FROM nuggets n
                JOIN provenance p ON n.id = p.nugget_id
@@ -411,9 +400,7 @@ class SQLiteBackend:
     async def acount(self, status: LifecycleStatus | None = None) -> int:
         return await self._run_read(lambda conn: self._count_sync(conn, status))
 
-    def _count_sync(
-        self, conn: sqlite3.Connection, status: LifecycleStatus | None
-    ) -> int:
+    def _count_sync(self, conn: sqlite3.Connection, status: LifecycleStatus | None) -> int:
         if status is None:
             row = conn.execute("SELECT COUNT(*) FROM nuggets").fetchone()
             return int(row[0])
@@ -485,9 +472,7 @@ class SQLiteBackend:
         Used by :meth:`NuggetStore.achain_succession`.
         """
         return await self._run_read(
-            lambda conn: self._succession_for_key_sync(
-                conn, key, as_of, statuses, limit
-            )
+            lambda conn: self._succession_for_key_sync(conn, key, as_of, statuses, limit)
         )
 
     def _succession_for_key_sync(
@@ -645,9 +630,7 @@ class SQLiteBackend:
         """
         return await self._run_read(self._contested_keys_sync)
 
-    def _contested_keys_sync(
-        self, conn: sqlite3.Connection
-    ) -> list[tuple[str, str, str, int]]:
+    def _contested_keys_sync(self, conn: sqlite3.Connection) -> list[tuple[str, str, str, int]]:
         rows = conn.execute(
             "SELECT subject, predicate, scope, COUNT(*) AS n "
             "FROM nuggets "
@@ -670,9 +653,7 @@ class SQLiteBackend:
 
     def _distinct_entities_sync(self, conn: sqlite3.Connection) -> list[str]:
         rows = conn.execute(
-            "SELECT subject FROM nuggets "
-            "UNION "
-            "SELECT object FROM nuggets"
+            "SELECT subject FROM nuggets UNION SELECT object FROM nuggets"
         ).fetchall()
         # ``fetchall`` gives us one-element tuples; flatten and drop any
         # empty strings (defensive — the FactTriple min_length=1 guard
@@ -688,9 +669,7 @@ class SQLiteBackend:
         candidate_ids: list[str] | None = None,
         top_k: int = 20,
     ) -> list[tuple[str, float]]:
-        return await self._run_read(
-            lambda conn: self._bm25_sync(conn, query, candidate_ids, top_k)
-        )
+        return await self._run_read(lambda conn: self._bm25_sync(conn, query, candidate_ids, top_k))
 
     def _bm25_sync(
         self,
@@ -725,12 +704,8 @@ class SQLiteBackend:
 
     # --- Passages ---
 
-    async def aupsert_passage(
-        self, source_id: str, uri: str | None, text: str
-    ) -> None:
-        await self._submit_write(
-            lambda conn: self._upsert_passage_sync(conn, source_id, uri, text)
-        )
+    async def aupsert_passage(self, source_id: str, uri: str | None, text: str) -> None:
+        await self._submit_write(lambda conn: self._upsert_passage_sync(conn, source_id, uri, text))
 
     def _upsert_passage_sync(
         self,
@@ -750,9 +725,7 @@ class SQLiteBackend:
         ids = list(source_ids)
         return await self._run_read(lambda conn: self._get_passages_sync(conn, ids))
 
-    def _get_passages_sync(
-        self, conn: sqlite3.Connection, source_ids: list[str]
-    ) -> dict[str, str]:
+    def _get_passages_sync(self, conn: sqlite3.Connection, source_ids: list[str]) -> dict[str, str]:
         if not source_ids:
             return {}
         placeholders = ",".join("?" * len(source_ids))
@@ -799,9 +772,7 @@ class SQLiteBackend:
         ``NuggetDocumentStore`` glue.
         """
         ids = list(source_ids)
-        return await self._run_read(
-            lambda conn: self._get_passage_records_sync(conn, ids)
-        )
+        return await self._run_read(lambda conn: self._get_passage_records_sync(conn, ids))
 
     def _get_passage_records_sync(
         self, conn: sqlite3.Connection, source_ids: list[str]
@@ -810,8 +781,7 @@ class SQLiteBackend:
             return {}
         placeholders = ",".join("?" * len(source_ids))
         rows = conn.execute(
-            f"SELECT source_id, text, meta_json FROM passages "
-            f"WHERE source_id IN ({placeholders})",
+            f"SELECT source_id, text, meta_json FROM passages WHERE source_id IN ({placeholders})",
             source_ids,
         ).fetchall()
         return {r["source_id"]: (r["text"], r["meta_json"]) for r in rows}
@@ -830,13 +800,9 @@ class SQLiteBackend:
         """
         if not ids:
             return
-        await self._submit_write(
-            lambda conn: self._delete_by_source_ids_sync(conn, ids)
-        )
+        await self._submit_write(lambda conn: self._delete_by_source_ids_sync(conn, ids))
 
-    def _delete_by_source_ids_sync(
-        self, conn: sqlite3.Connection, source_ids: list[str]
-    ) -> None:
+    def _delete_by_source_ids_sync(self, conn: sqlite3.Connection, source_ids: list[str]) -> None:
         if not source_ids:
             return
         placeholders = ",".join("?" * len(source_ids))
@@ -846,16 +812,13 @@ class SQLiteBackend:
             #    subquery) keeps the provenance CASCADE paths predictable and
             #    lets us audit the deletion in tests if needed.
             nugget_rows = conn.execute(
-                f"SELECT DISTINCT nugget_id FROM provenance "
-                f"WHERE source_id IN ({placeholders})",
+                f"SELECT DISTINCT nugget_id FROM provenance WHERE source_id IN ({placeholders})",
                 source_ids,
             ).fetchall()
             if nugget_rows:
                 nids = [r[0] for r in nugget_rows]
                 np = ",".join("?" * len(nids))
-                conn.execute(
-                    f"DELETE FROM nuggets WHERE id IN ({np})", nids
-                )
+                conn.execute(f"DELETE FROM nuggets WHERE id IN ({np})", nids)
             # 2. Drop passages themselves (independent of nugget presence).
             conn.execute(
                 f"DELETE FROM passages WHERE source_id IN ({placeholders})",
@@ -877,9 +840,7 @@ class SQLiteBackend:
         ingest path) are unaffected.
         """
         await self._submit_write(
-            lambda conn: self._upsert_passage_with_meta_sync(
-                conn, source_id, uri, text, meta_json
-            )
+            lambda conn: self._upsert_passage_with_meta_sync(conn, source_id, uri, text, meta_json)
         )
 
     def _upsert_passage_with_meta_sync(
@@ -906,13 +867,9 @@ class SQLiteBackend:
 
     async def apassage_exists(self, source_id: str) -> bool:
         """Return ``True`` iff a passage row with ``source_id`` exists."""
-        return await self._run_read(
-            lambda conn: self._passage_exists_sync(conn, source_id)
-        )
+        return await self._run_read(lambda conn: self._passage_exists_sync(conn, source_id))
 
-    def _passage_exists_sync(
-        self, conn: sqlite3.Connection, source_id: str
-    ) -> bool:
+    def _passage_exists_sync(self, conn: sqlite3.Connection, source_id: str) -> bool:
         row = conn.execute(
             "SELECT 1 FROM passages WHERE source_id = ? LIMIT 1", (source_id,)
         ).fetchone()

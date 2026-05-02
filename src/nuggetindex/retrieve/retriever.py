@@ -10,6 +10,7 @@ Pipeline stages:
 The ``Retriever`` is not instantiated directly by users; it is a thin
 collaborator created lazily by ``NuggetStore.aretrieve``.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -81,7 +82,9 @@ class Retriever:
 
         # 1. View filter: validity + lifecycle status.
         candidate_ids = await self.backend.afilter(
-            query_time=qt, view=view, extra_filters=filters,  # type: ignore[arg-type]
+            query_time=qt,
+            view=view,
+            extra_filters=filters,  # type: ignore[arg-type]
         )
         if not candidate_ids:
             return []
@@ -89,14 +92,18 @@ class Retriever:
         # 2. Sparse (BM25) within candidate set. Over-fetch by 3x for
         #    fusion-headroom so RRF has enough to work with.
         sparse_hits = await self.backend.abm25_search(
-            query, candidate_ids=candidate_ids, top_k=top_k * 3,
+            query,
+            candidate_ids=candidate_ids,
+            top_k=top_k * 3,
         )
 
         # 3. Dense (optional).
         dense_hits: list[tuple[str, float]] = []
         if self.dense_backend is not None:
             dense_hits = await self.dense_backend.asearch(
-                query, candidate_ids=candidate_ids, top_k=top_k * 3,
+                query,
+                candidate_ids=candidate_ids,
+                top_k=top_k * 3,
             )
 
         # 4. Fusion.
@@ -107,12 +114,8 @@ class Retriever:
             fused = weighted_minmax_fusion(sparse_hits, dense_hits)
 
         # 5. Assemble results with hydrated nuggets.
-        sparse_map = {
-            d: (s, r) for r, (d, s) in enumerate(sparse_hits, start=1)
-        }
-        dense_map = {
-            d: (s, r) for r, (d, s) in enumerate(dense_hits, start=1)
-        }
+        sparse_map = {d: (s, r) for r, (d, s) in enumerate(sparse_hits, start=1)}
+        dense_map = {d: (s, r) for r, (d, s) in enumerate(dense_hits, start=1)}
 
         results: list[RetrievalResult] = []
         for rank, (nid, fscore) in enumerate(fused[:top_k], start=1):

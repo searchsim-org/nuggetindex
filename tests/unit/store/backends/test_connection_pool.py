@@ -6,6 +6,7 @@ concurrent readers as long as each reader uses a different connection, so a
 per-thread pool is essential for exploiting executor parallelism without
 tripping ``check_same_thread`` or serialising reads behind a lock.
 """
+
 from __future__ import annotations
 
 import threading

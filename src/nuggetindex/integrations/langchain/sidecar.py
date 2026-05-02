@@ -20,6 +20,7 @@ Imports follow the two-layer guard used by the sibling ``retriever.py``:
 :class:`RunnableSerializable`, and :func:`_require_langchain` raises a
 useful ``pip install`` hint when the ``[langchain]`` extra isn't installed.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -39,8 +40,7 @@ def _require_langchain() -> tuple[Any, Any]:
         from langchain_core.runnables.config import RunnableConfig as _Config
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[langchain] not installed. "
-            "Run: pip install 'nuggetindex[langchain]'"
+            "nuggetindex[langchain] not installed. Run: pip install 'nuggetindex[langchain]'"
         ) from e
     return _Runnable, _Config
 

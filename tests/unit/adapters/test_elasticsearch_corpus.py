@@ -17,12 +17,16 @@ from nuggetindex.adapters import ElasticsearchCorpus
 @pytest.mark.asyncio
 async def test_search_translates_hits_to_documents():
     mock_client = MagicMock()
-    mock_client.search = AsyncMock(return_value={
-        "hits": {"hits": [
-            {"_id": "1", "_source": {"title": "t", "content": "c", "url": "u"}},
-            {"_id": "2", "_source": {"title": "t2", "content": "c2"}},
-        ]},
-    })
+    mock_client.search = AsyncMock(
+        return_value={
+            "hits": {
+                "hits": [
+                    {"_id": "1", "_source": {"title": "t", "content": "c", "url": "u"}},
+                    {"_id": "2", "_source": {"title": "t2", "content": "c2"}},
+                ]
+            },
+        }
+    )
     corpus = ElasticsearchCorpus(client=mock_client, index="docs")
     docs = await corpus.search("query", limit=10)
     assert len(docs) == 2
@@ -39,9 +43,11 @@ async def test_sample_topic_diverse_dedups_across_queries():
     async def fake_search(**kwargs):
         call_count["n"] += 1
         return {
-            "hits": {"hits": [
-                {"_id": "shared", "_source": {"title": "t", "content": "c"}},
-            ]},
+            "hits": {
+                "hits": [
+                    {"_id": "shared", "_source": {"title": "t", "content": "c"}},
+                ]
+            },
         }
 
     mock_client = MagicMock()
@@ -58,9 +64,13 @@ async def test_sample_uniform_uses_match_all():
 
     async def fake_search(**kwargs):
         captured.update(kwargs)
-        return {"hits": {"hits": [
-            {"_id": "u1", "_source": {"title": "t", "content": "c"}},
-        ]}}
+        return {
+            "hits": {
+                "hits": [
+                    {"_id": "u1", "_source": {"title": "t", "content": "c"}},
+                ]
+            }
+        }
 
     mock_client = MagicMock()
     mock_client.search = fake_search
@@ -89,9 +99,13 @@ async def test_sample_random_ids_uses_function_score():
 @pytest.mark.asyncio
 async def test_sync_client_also_works():
     def sync_search(**kwargs):
-        return {"hits": {"hits": [
-            {"_id": "s1", "_source": {"title": "t", "content": "c"}},
-        ]}}
+        return {
+            "hits": {
+                "hits": [
+                    {"_id": "s1", "_source": {"title": "t", "content": "c"}},
+                ]
+            }
+        }
 
     mock_client = MagicMock()
     mock_client.search = sync_search
@@ -103,14 +117,21 @@ async def test_sync_client_also_works():
 @pytest.mark.asyncio
 async def test_custom_field_names():
     async def fake_search(**kwargs):
-        return {"hits": {"hits": [
-            {"_id": "1", "_source": {
-                "heading": "mytitle",
-                "body": "mybody",
-                "link": "myurl",
-                "published": "2023-01-15T00:00:00Z",
-            }},
-        ]}}
+        return {
+            "hits": {
+                "hits": [
+                    {
+                        "_id": "1",
+                        "_source": {
+                            "heading": "mytitle",
+                            "body": "mybody",
+                            "link": "myurl",
+                            "published": "2023-01-15T00:00:00Z",
+                        },
+                    },
+                ]
+            }
+        }
 
     mock_client = MagicMock()
     mock_client.search = fake_search

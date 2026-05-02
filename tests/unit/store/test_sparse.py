@@ -46,18 +46,14 @@ async def test_bm25_candidate_filter(tmp_db_path):
     b = SQLiteBackend(tmp_db_path)
     n1 = Nugget.new(
         kind=NuggetKind.SEMANTIC_FACT,
-        fact=FactTriple(
-            subject="X", predicate="p", object="A", text="A talks about Google"
-        ),
+        fact=FactTriple(subject="X", predicate="p", object="A", text="A talks about Google"),
         validity=ValidityInterval(start=datetime(2020, 1, 1, tzinfo=UTC)),
         epistemic=EpistemicState(),
         provenance=(ProvenanceRecord(source_id="d", evidence_span="x"),),
     )
     n2 = Nugget.new(
         kind=NuggetKind.SEMANTIC_FACT,
-        fact=FactTriple(
-            subject="Y", predicate="p", object="B", text="B also mentions Google"
-        ),
+        fact=FactTriple(subject="Y", predicate="p", object="B", text="B also mentions Google"),
         validity=ValidityInterval(start=datetime(2020, 1, 1, tzinfo=UTC)),
         epistemic=EpistemicState(),
         provenance=(ProvenanceRecord(source_id="d", evidence_span="x"),),

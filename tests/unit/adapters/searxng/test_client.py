@@ -12,9 +12,13 @@ async def test_clean_response_yields_results():
     def handler(request):
         params = dict(request.url.params)
         assert params.get("q") == "Apple CEO"
-        return httpx.Response(200, json={
-            "results": [{"url": "https://ex", "title": "t", "content": "c"}],
-        })
+        return httpx.Response(
+            200,
+            json={
+                "results": [{"url": "https://ex", "title": "t", "content": "c"}],
+            },
+        )
+
     client = SearxngClient(
         base_url="http://searxng.local",
         http_client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
@@ -33,9 +37,12 @@ async def test_rate_limit_triggers_proxy_rotation():
         call_log.append(dict(request.url.params))
         if len(call_log) < 3:
             return httpx.Response(429, text="Too Many Requests")
-        return httpx.Response(200, json={
-            "results": [{"url": "https://ex", "title": "t", "content": "c"}],
-        })
+        return httpx.Response(
+            200,
+            json={
+                "results": [{"url": "https://ex", "title": "t", "content": "c"}],
+            },
+        )
 
     pool = ProxyPool(
         proxies=["http://p1:1", "http://p2:2", "http://p3:3"],
@@ -57,6 +64,7 @@ async def test_rate_limit_triggers_proxy_rotation():
 async def test_captcha_after_all_proxies_returns_was_captcha_true():
     def handler(request):
         return httpx.Response(429, text="Too Many Requests")
+
     pool = ProxyPool(proxies=["http://p1:1"])
     client = SearxngClient(
         base_url="http://searxng.local",
@@ -72,7 +80,8 @@ async def test_captcha_after_all_proxies_returns_was_captcha_true():
 @pytest.mark.asyncio
 async def test_cloudflare_challenge_classified():
     def handler(request):
-        return httpx.Response(503, text='<html>cf-browser-verification</html>')
+        return httpx.Response(503, text="<html>cf-browser-verification</html>")
+
     client = SearxngClient(
         base_url="http://searxng.local",
         http_client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),

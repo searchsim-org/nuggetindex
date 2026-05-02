@@ -1,5 +1,6 @@
 """Tests for the public ``NuggetStore.backend`` property and the
 deprecation shim on the old ``_backend`` dunder-prefixed access."""
+
 import warnings
 
 import pytest

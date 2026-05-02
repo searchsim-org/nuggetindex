@@ -12,6 +12,7 @@ Two scenarios:
   vectors, so cosine similarity exceeds the default 0.92 threshold and only
   one nugget is persisted.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -38,9 +39,7 @@ class _FixedExtractor(BaseExtractor):
     def __init__(self, results: list[ExtractionResult]) -> None:
         self._results = results
 
-    async def aextract(
-        self, text: str, *, context: str = ""
-    ) -> list[ExtractionResult]:
+    async def aextract(self, text: str, *, context: str = "") -> list[ExtractionResult]:
         return list(self._results)
 
 

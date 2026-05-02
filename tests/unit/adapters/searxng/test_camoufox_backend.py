@@ -99,8 +99,7 @@ async def test_camoufox_backend_rotates_proxy_on_captcha(monkeypatch):
         '<div class="VwiC3b">c</div></div></body></html>'
     )
     sorry_html = (
-        "<html><body>Our systems have detected unusual traffic from your network."
-        "</body></html>"
+        "<html><body>Our systems have detected unusual traffic from your network.</body></html>"
     )
 
     def fake_camoufox(**kwargs):

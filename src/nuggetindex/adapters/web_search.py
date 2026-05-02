@@ -15,6 +15,7 @@ No paid APIs. Self-hostable. Covers the three canonical blocks:
   2. Challenge pages (CF, Google sorry, DDG anomaly, Bing captcha)
   3. Silent empty responses (200 + zero results + engines failed upstream)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -69,10 +70,9 @@ class WebSearchCorpus:
 
     async def sample(self, *, mode, n):
         from nuggetindex.adapters.base import _TOPIC_DIVERSE_QUERIES
+
         if mode == "random_ids":
-            raise NotImplementedError(
-                "WebSearchCorpus does not support mode='random_ids'."
-            )
+            raise NotImplementedError("WebSearchCorpus does not support mode='random_ids'.")
         pool = _TOPIC_DIVERSE_QUERIES if mode == "topic_diverse" else ("news today",)
         per = max(1, n // len(pool)) + 1
         seen: set[str] = set()
@@ -90,6 +90,7 @@ class WebSearchCorpus:
 
     def _to_document(self, hit: dict):
         from nuggetindex.pipeline.constructor import Document
+
         url = hit.get("url") or ""
         title = hit.get("title") or ""
         content = hit.get("content") or hit.get("snippet") or ""

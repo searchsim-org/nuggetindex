@@ -54,9 +54,7 @@ async def test_join_one_hop_returns_functional_lookup(tmp_db_path: Path) -> None
     store = NuggetStore(db_path=tmp_db_path)
     try:
         await store.aadd(_fact("Google", "parentCompany", "Alphabet", 2015))
-        chain = await store.achain_join(
-            start=("Google", "parentCompany"), then=[]
-        )
+        chain = await store.achain_join(start=("Google", "parentCompany"), then=[])
         assert chain.chain_type == "joined"
         assert len(chain.nuggets) == 1
         assert chain.nuggets[0].fact.object == "Alphabet"
@@ -87,9 +85,7 @@ async def test_join_max_hops_guardrail(tmp_db_path: Path) -> None:
     store = NuggetStore(db_path=tmp_db_path)
     try:
         with pytest.raises(ValueError) as ei:
-            await store.achain_join(
-                start=("A", "p"), then=["a", "b", "c", "d"]
-            )
+            await store.achain_join(start=("A", "p"), then=["a", "b", "c", "d"])
         assert "max_hops" in str(ei.value)
     finally:
         await store.aclose()
@@ -116,12 +112,8 @@ async def test_join_ambiguous_at_start_raises(tmp_db_path: Path) -> None:
     store = NuggetStore(db_path=tmp_db_path)
     try:
         # Two nuggets valid at as_of -> ambiguous.
-        await store.aadd(
-            _fact("Google", "parentCompany", "A1", 2015, 2025)
-        )
-        await store.aadd(
-            _fact("Google", "parentCompany", "A2", 2016, 2025)
-        )
+        await store.aadd(_fact("Google", "parentCompany", "A1", 2015, 2025))
+        await store.aadd(_fact("Google", "parentCompany", "A2", 2016, 2025))
         with pytest.raises(ChainAmbiguousError) as ei:
             await store.achain_join(
                 start=("Google", "parentCompany"),
@@ -139,18 +131,12 @@ async def test_join_with_resolver_picks_candidate(tmp_db_path: Path) -> None:
         async def adisambiguate(self, *, candidates: list, context: str) -> object:
             from types import SimpleNamespace
 
-            return SimpleNamespace(
-                picked=candidates[0], rationale="first"
-            )
+            return SimpleNamespace(picked=candidates[0], rationale="first")
 
     store = NuggetStore(db_path=tmp_db_path)
     try:
-        await store.aadd(
-            _fact("Google", "parentCompany", "A1", 2015, 2025)
-        )
-        await store.aadd(
-            _fact("Google", "parentCompany", "A2", 2016, 2025)
-        )
+        await store.aadd(_fact("Google", "parentCompany", "A1", 2015, 2025))
+        await store.aadd(_fact("Google", "parentCompany", "A2", 2016, 2025))
         chain = await store.achain_join(
             start=("Google", "parentCompany"),
             then=[],
@@ -176,9 +162,7 @@ async def test_join_skips_deprecated(tmp_db_path: Path) -> None:
                 status=LifecycleStatus.DEPRECATED,
             )
         )
-        await store.aadd(
-            _fact("Google", "parentCompany", "Alphabet", 2015)
-        )
+        await store.aadd(_fact("Google", "parentCompany", "Alphabet", 2015))
         chain = await store.achain_join(
             start=("Google", "parentCompany"),
             then=[],
@@ -193,9 +177,7 @@ def test_join_sync_wrapper(tmp_db_path: Path) -> None:
     store = NuggetStore(db_path=tmp_db_path)
     try:
         store.add(_fact("Google", "parentCompany", "Alphabet", 2015))
-        chain = store.chain_join(
-            start=("Google", "parentCompany"), then=[]
-        )
+        chain = store.chain_join(start=("Google", "parentCompany"), then=[])
         assert chain.nuggets[0].fact.object == "Alphabet"
     finally:
         store.close()
@@ -209,7 +191,8 @@ async def test_join_three_hop_allowed(tmp_db_path: Path) -> None:
         await store.aadd(_fact("B", "p2", "C", 2015))
         await store.aadd(_fact("C", "p3", "D", 2015))
         chain = await store.achain_join(
-            start=("A", "p1"), then=["p2", "p3"],
+            start=("A", "p1"),
+            then=["p2", "p3"],
         )
         # len(then)==2 plus first hop => 3 nuggets
         assert len(chain.nuggets) == 3

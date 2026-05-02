@@ -8,6 +8,7 @@ zero offenders even without the allow-list. The allow-list remains so the
 guard stays correct if anyone adds references inside ``base.py`` for the
 deprecation shim (e.g. inside ``__getattr__`` style fallbacks).
 """
+
 from __future__ import annotations
 
 import ast

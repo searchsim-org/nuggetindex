@@ -14,6 +14,9 @@ jobs:
       url: https://test.pypi.org/p/nuggetindex
     permissions:
       id-token: write
+    defaults:
+      run:
+        working-directory: nuggetindex
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -27,6 +30,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+          packages-dir: nuggetindex/dist
 
   smoke-test-testpypi:
     name: Smoke-test the TestPyPI release
@@ -42,7 +46,7 @@ jobs:
           pip install --index-url https://test.pypi.org/simple/ \
                       --extra-index-url https://pypi.org/simple/ \
                       nuggetindex
-          python -c "import nuggetindex; print('ok', nuggetindex.__version__)"
+          python -c "from nuggetindex import Nugget, NuggetStore; print('ok')"
 
   publish-pypi:
     name: Publish to PyPI
@@ -53,6 +57,9 @@ jobs:
       url: https://pypi.org/p/nuggetindex
     permissions:
       id-token: write
+    defaults:
+      run:
+        working-directory: nuggetindex
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -64,3 +71,5 @@ jobs:
         run: python -m build
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: nuggetindex/dist

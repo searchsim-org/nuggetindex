@@ -86,8 +86,7 @@ class JsonlCorpus:
                 text = row.get("text")
                 if not source_id or not text:
                     raise ValueError(
-                        f"{self.path}:{lineno}: missing required "
-                        "'source_id' or 'text'"
+                        f"{self.path}:{lineno}: missing required 'source_id' or 'text'"
                     )
                 docs.append(
                     Document(
@@ -142,10 +141,7 @@ class JsonlCorpus:
         except Exception:  # pragma: no cover - fallback path
             # Cheap token-overlap scoring.
             q_set = set(q_tokens)
-            scored = [
-                (d, sum(1 for t in _tokenise(d.text) if t in q_set))
-                for d in docs
-            ]
+            scored = [(d, sum(1 for t in _tokenise(d.text) if t in q_set)) for d in docs]
             scored.sort(key=lambda pair: pair[1], reverse=True)
             return [d for d, s in scored[:limit] if s > 0] or docs[:limit]
 

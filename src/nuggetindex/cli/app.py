@@ -101,12 +101,8 @@ def main(
 
 
 app.command(name="audit", help="Zero-index audit of retrieved passages.")(audit_command)
-app.command(name="build", help="Build a NuggetStore from a folder of text files.")(
-    build_command
-)
-app.command(name="ingest", help="Append-only ingest into an existing NuggetStore.")(
-    ingest_command
-)
+app.command(name="build", help="Build a NuggetStore from a folder of text files.")(build_command)
+app.command(name="ingest", help="Append-only ingest into an existing NuggetStore.")(ingest_command)
 app.command(name="query", help="Query a NuggetStore (hybrid retrieval).")(query_command)
 app.command(
     name="chain",
@@ -114,12 +110,10 @@ app.command(
 )(chain_command)
 app.command(name="inspect", help="Dump NuggetStore statistics.")(inspect_command)
 app.command(name="diff", help="Diff two NuggetStore databases.")(diff_command)
-app.command(
-    name="judge-replay", help="Summarize an LLM-judge log file."
-)(judge_replay_command)
-app.command(
-    name="review", help="Summarize the review queue of deferred extractions."
-)(review_command)
+app.command(name="judge-replay", help="Summarize an LLM-judge log file.")(judge_replay_command)
+app.command(name="review", help="Summarize the review queue of deferred extractions.")(
+    review_command
+)
 app.command(
     name="resolve",
     help="Adjudicate Contested facts: pin a winner, suppress the losers.",

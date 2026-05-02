@@ -18,11 +18,18 @@ def client(tmp_path):
 
 
 def test_job_submit_returns_job_id(client):
-    r = client.post("/v1/auto", json={
-        "corpus_type": "jsonl", "corpus_url": None, "corpus_name": None,
-        "budget": 10, "sample_size": 20, "mode": "offline-curated",
-        "extractor": "trigger",
-    })
+    r = client.post(
+        "/v1/auto",
+        json={
+            "corpus_type": "jsonl",
+            "corpus_url": None,
+            "corpus_name": None,
+            "budget": 10,
+            "sample_size": 20,
+            "mode": "offline-curated",
+            "extractor": "trigger",
+        },
+    )
     assert r.status_code == 200
     body = r.json()
     assert body["job_id"]
@@ -35,13 +42,20 @@ def test_job_status_returns_404_for_unknown(client):
 
 
 def test_job_eventually_succeeds(client):
-    r = client.post("/v1/auto", json={
-        "corpus_type": "jsonl", "budget": 5, "sample_size": 10,
-        "mode": "offline-curated", "extractor": "trigger",
-    })
+    r = client.post(
+        "/v1/auto",
+        json={
+            "corpus_type": "jsonl",
+            "budget": 5,
+            "sample_size": 10,
+            "mode": "offline-curated",
+            "extractor": "trigger",
+        },
+    )
     job_id = r.json()["job_id"]
     # Poll until terminal state or timeout
     import time
+
     for _ in range(50):
         time.sleep(0.1)
         status = client.get(f"/v1/auto/{job_id}").json()

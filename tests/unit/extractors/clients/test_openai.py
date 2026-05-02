@@ -65,9 +65,7 @@ async def test_openai_client_uses_recorded_transcript() -> None:
     client = OpenAIClient(cfg)
 
     fake_raw = MagicMock()
-    fake_raw.chat.completions.create = AsyncMock(
-        return_value=Triple(**transcript["response"])
-    )
+    fake_raw.chat.completions.create = AsyncMock(return_value=Triple(**transcript["response"]))
     client._raw_client = fake_raw
 
     result = await client.achat_structured(
@@ -82,9 +80,7 @@ def test_openai_client_raises_when_sdk_missing(monkeypatch: pytest.MonkeyPatch) 
     import nuggetindex.extractors.clients.openai as mod
 
     def _boom() -> tuple[object, object]:
-        raise ImportError(
-            "nuggetindex[openai] not installed. Run: pip install nuggetindex[openai]"
-        )
+        raise ImportError("nuggetindex[openai] not installed. Run: pip install nuggetindex[openai]")
 
     monkeypatch.setattr(mod, "_require_openai_sdk", _boom)
     with pytest.raises(ImportError, match=r"nuggetindex\[openai\] not installed"):

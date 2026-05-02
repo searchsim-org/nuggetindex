@@ -107,9 +107,7 @@ async def stratified_sample(
     rng = random.Random(rng_seed)
 
     if stratify_by not in _KNOWN_STRATIFIERS:
-        raise ValueError(
-            f"stratify_by must be one of {_KNOWN_STRATIFIERS}, got {stratify_by!r}"
-        )
+        raise ValueError(f"stratify_by must be one of {_KNOWN_STRATIFIERS}, got {stratify_by!r}")
 
     if sample_size <= 0:
         # Drain streaming inputs to stay consistent; concrete inputs are cheap.

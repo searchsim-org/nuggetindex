@@ -20,10 +20,12 @@ def _point(pid, payload, score=0.9):
 @pytest.mark.asyncio
 async def test_search_uses_embedder_and_translates_points():
     mock_client = MagicMock()
-    mock_client.search = AsyncMock(return_value=[
-        _point("1", {"title": "t", "content": "c", "url": "u"}),
-        _point("2", {"title": "t2", "content": "c2"}),
-    ])
+    mock_client.search = AsyncMock(
+        return_value=[
+            _point("1", {"title": "t", "content": "c", "url": "u"}),
+            _point("2", {"title": "t2", "content": "c2"}),
+        ]
+    )
     corpus = QdrantCorpus(client=mock_client, collection="docs", embedder=_fake_embed)
     docs = await corpus.search("query", limit=5)
     assert len(docs) == 2
@@ -41,6 +43,7 @@ async def test_search_uses_embedder_and_translates_points():
 async def test_sync_client_works():
     def sync_search(**kwargs):
         return [_point("s1", {"title": "t", "content": "c"})]
+
     mock_client = MagicMock()
     mock_client.search = sync_search
     corpus = QdrantCorpus(client=mock_client, collection="docs", embedder=_fake_embed)
@@ -51,7 +54,9 @@ async def test_sync_client_works():
 @pytest.mark.asyncio
 async def test_sample_random_ids_raises():
     corpus = QdrantCorpus(
-        client=MagicMock(), collection="docs", embedder=_fake_embed,
+        client=MagicMock(),
+        collection="docs",
+        embedder=_fake_embed,
     )
     with pytest.raises(NotImplementedError):
         await corpus.sample(mode="random_ids", n=5)
@@ -95,10 +100,18 @@ async def test_sample_uniform_uses_scroll():
 @pytest.mark.asyncio
 async def test_custom_field_names_and_date_parsing():
     async def fake_search(**kwargs):
-        return [_point("1", {
-            "heading": "h", "body": "b", "link": "l",
-            "published": "2024-03-15T00:00:00Z",
-        })]
+        return [
+            _point(
+                "1",
+                {
+                    "heading": "h",
+                    "body": "b",
+                    "link": "l",
+                    "published": "2024-03-15T00:00:00Z",
+                },
+            )
+        ]
+
     mock_client = MagicMock()
     mock_client.search = fake_search
     corpus = QdrantCorpus(

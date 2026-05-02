@@ -119,9 +119,7 @@ class Router:
             reasons.append("temporal:as_of/when")
         elif (m := self._RE_BEFORE.search(query)) is not None:
             try:
-                query_time = datetime(
-                    int(m.group(1)) - 1, 12, 31, tzinfo=now.tzinfo
-                )
+                query_time = datetime(int(m.group(1)) - 1, 12, 31, tzinfo=now.tzinfo)
                 reasons.append(f"temporal:before={m.group(1)}")
             except ValueError:
                 pass
@@ -172,22 +170,16 @@ class Router:
         try:
             decision = self.llm_classifier(query, now)
         except Exception:  # noqa: BLE001 — LLM fallback is best-effort
-            return RouterDecision(
-                use_nugget=False, reason="llm_classifier_raised"
-            )
+            return RouterDecision(use_nugget=False, reason="llm_classifier_raised")
         if not isinstance(decision, RouterDecision):
-            return RouterDecision(
-                use_nugget=False, reason="llm_classifier_returned_unknown"
-            )
+            return RouterDecision(use_nugget=False, reason="llm_classifier_returned_unknown")
         if not decision.reason or "llm" not in decision.reason.lower():
             # Ensure the reason string makes the LLM source obvious downstream.
             decision = RouterDecision(
                 use_nugget=decision.use_nugget,
                 query_time=decision.query_time,
                 expand_aliases=list(decision.expand_aliases),
-                reason=(
-                    f"llm:{decision.reason}" if decision.reason else "llm_fallback"
-                ),
+                reason=(f"llm:{decision.reason}" if decision.reason else "llm_fallback"),
             )
         return decision
 

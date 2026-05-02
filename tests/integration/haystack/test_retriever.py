@@ -6,6 +6,7 @@ internally. That collides with a running loop, so these tests are
 deliberately sync and seed the ``NuggetStore`` via an ``asyncio.run``
 helper rather than relying on an async pytest fixture.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -60,12 +61,8 @@ def _seed_store(db_path: Path) -> NuggetStore:
 
     async def _inner() -> NuggetStore:
         store = NuggetStore(db_path)
-        await store.backend.aupsert_passage(
-            "d1", None, "Sundar Pichai is CEO of Google."
-        )
-        await store.backend.aupsert_passage(
-            "d2", None, "Larry Page was a founder of Google."
-        )
+        await store.backend.aupsert_passage("d1", None, "Sundar Pichai is CEO of Google.")
+        await store.backend.aupsert_passage("d2", None, "Larry Page was a founder of Google.")
         await store.backend.aupsert_passage("d3", None, "Foo is bar.")
         await store.aadd(
             _make_nugget(
@@ -128,9 +125,7 @@ def test_run_returns_documents(tmp_path: Path) -> None:
         assert len(docs) >= 1
         assert all(isinstance(d, Document) for d in docs)
         # Content is the nugget's fact text.
-        assert any(
-            "Google" in (d.content or "") or "CEO" in (d.content or "") for d in docs
-        )
+        assert any("Google" in (d.content or "") or "CEO" in (d.content or "") for d in docs)
         # Required meta fields are present.
         for d in docs:
             for key in (
@@ -210,9 +205,7 @@ def test_retriever_composes_in_pipeline(tmp_path: Path) -> None:
     store = _seed_store(tmp_path / "hs.db")
     try:
         pipeline = Pipeline()
-        pipeline.add_component(
-            "retriever", NuggetIndexRetriever(store=store, top_k=5)
-        )
+        pipeline.add_component("retriever", NuggetIndexRetriever(store=store, top_k=5))
         pipeline.add_component("joiner", _JoinContent())
         pipeline.connect("retriever.documents", "joiner.documents")
 

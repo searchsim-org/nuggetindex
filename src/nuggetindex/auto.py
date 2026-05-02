@@ -162,9 +162,7 @@ def _load_jsonl(path: Path) -> list[Document]:
             source_id = row.get("source_id")
             text = row.get("text")
             if not source_id or not text:
-                raise ValueError(
-                    f"{path}:{lineno}: missing required 'source_id' or 'text'"
-                )
+                raise ValueError(f"{path}:{lineno}: missing required 'source_id' or 'text'")
             docs.append(
                 Document(
                     source_id=str(source_id),
@@ -215,18 +213,14 @@ def _coerce_document(item: Any) -> Document:
         source_id = item.get("source_id")
         text = item.get("text")
         if not source_id or not text:
-            raise ValueError(
-                "dict-shaped docs require 'source_id' and 'text' keys"
-            )
+            raise ValueError("dict-shaped docs require 'source_id' and 'text' keys")
         return Document(
             source_id=str(source_id),
             text=str(text),
             uri=item.get("uri"),
             source_date=_parse_source_date(item.get("source_date")),
         )
-    raise TypeError(
-        f"auto() docs items must be Document or dict; got {type(item).__name__}"
-    )
+    raise TypeError(f"auto() docs items must be Document or dict; got {type(item).__name__}")
 
 
 # --------------------------------------------------------------------------- #
@@ -243,16 +237,11 @@ def _render_markdown(*, report: dict[str, Any]) -> str:
     lines.append("|-------|-------|")
     lines.append(f"| docs processed | {report['n_docs_processed']} |")
     if report.get("two_pass_enabled"):
-        lines.append(
-            f"| bootstrap docs (pass 1) | {report.get('bootstrap_docs', 0)} |"
-        )
-        lines.append(
-            f"| deep-pass docs (pass 2) | {report.get('deep_pass_docs', 0)} |"
-        )
+        lines.append(f"| bootstrap docs (pass 1) | {report.get('bootstrap_docs', 0)} |")
+        lines.append(f"| deep-pass docs (pass 2) | {report.get('deep_pass_docs', 0)} |")
     lines.append(f"| schema predicates added | {report['schema_proposal_size']} |")
     lines.append(
-        f"| seed budget / accepted | "
-        f"{report['seed_budget']} / {report['seeds_accepted']} |"
+        f"| seed budget / accepted | {report['seed_budget']} / {report['seeds_accepted']} |"
     )
     lines.append(f"| nuggets extracted | {report['nuggets_extracted']} |")
     if report.get("two_pass_enabled"):
@@ -275,18 +264,14 @@ def _render_markdown(*, report: dict[str, Any]) -> str:
 # --------------------------------------------------------------------------- #
 
 
-_RENAME_PREDICATES: frozenset[str] = frozenset(
-    {"renamedTo", "corporateName", "formerlyKnownAs"}
-)
+_RENAME_PREDICATES: frozenset[str] = frozenset({"renamedTo", "corporateName", "formerlyKnownAs"})
 
 
 async def auto(
     docs: AsyncIterable[Any] | Iterable[Any] | Path | str | None = None,
     *,
     corpus: CorpusSource | None = None,
-    bootstrap: Literal[
-        "caller", "topic_diverse", "uniform", "random_ids"
-    ] = "caller",
+    bootstrap: Literal["caller", "topic_diverse", "uniform", "random_ids"] = "caller",
     budget: int = 100,
     sample_size: int = 500,
     mode: Literal["offline-curated", "just-in-time"] = "offline-curated",
@@ -377,8 +362,7 @@ async def auto(
         )
     if corpus is None and docs is None:
         raise ValueError(
-            "auto() requires either docs=... or corpus=... with a non-"
-            "'caller' bootstrap."
+            "auto() requires either docs=... or corpus=... with a non-'caller' bootstrap."
         )
     if two_pass and corpus is None:
         raise ValueError(
@@ -392,17 +376,14 @@ async def auto(
         if verbose:
             label = getattr(corpus, "corpus", type(corpus).__name__)
             print(
-                f"auto: bootstrap sampled {len(docs_list)} doc(s) via "
-                f"{bootstrap} from {label}",
+                f"auto: bootstrap sampled {len(docs_list)} doc(s) via {bootstrap} from {label}",
                 file=sys.stderr,
             )
     else:
         # ``docs`` is guaranteed non-None here thanks to the guard above.
         docs_list = await _materialise_docs(docs)  # type: ignore[arg-type]
         if verbose:
-            print(
-                f"auto: loaded {len(docs_list)} document(s)", file=sys.stderr
-            )
+            print(f"auto: loaded {len(docs_list)} document(s)", file=sys.stderr)
 
     # --- Step 1: resolve the extractor ------------------------------------
     # Default to the zero-cost trigger extractor so first-time users never
@@ -430,8 +411,7 @@ async def auto(
         schema = merge_proposal(schema, proposal, accept_all=True)
         if verbose:
             print(
-                f"auto: schema discovery added {schema_proposal_size} "
-                "predicate(s)",
+                f"auto: schema discovery added {schema_proposal_size} predicate(s)",
                 file=sys.stderr,
             )
 
@@ -447,8 +427,7 @@ async def auto(
         seeds_accepted = len(seed_proposal.seeds)
         if verbose:
             print(
-                f"auto: proposed {seeds_accepted} seed(s) "
-                f"(budget={budget})",
+                f"auto: proposed {seeds_accepted} seed(s) (budget={budget})",
                 file=sys.stderr,
             )
 
@@ -474,10 +453,7 @@ async def auto(
         bootstrap_failures,
     ) = await _ingest_docs(store, docs_list)
     if verbose:
-        msg = (
-            f"auto: ingested {nuggets_bootstrap} nugget(s); "
-            f"{contested_bootstrap} contested"
-        )
+        msg = f"auto: ingested {nuggets_bootstrap} nugget(s); {contested_bootstrap} contested"
         if bootstrap_failures:
             msg += f"; {bootstrap_failures} doc(s) failed extraction"
         print(msg, file=sys.stderr)
@@ -487,22 +463,13 @@ async def auto(
     nuggets_deep = 0
     contested_deep = 0
     deep_failures = 0
-    if (
-        two_pass
-        and corpus is not None
-        and seed_proposal is not None
-        and seed_proposal.seeds
-    ):
+    if two_pass and corpus is not None and seed_proposal is not None and seed_proposal.seeds:
         seen_source_ids = {d.source_id for d in docs_list}
-        effective_deep_budget = (
-            deep_budget if deep_budget is not None else budget
-        )
+        effective_deep_budget = deep_budget if deep_budget is not None else budget
         seeds_for_pass2 = seed_proposal.seeds[: max(0, effective_deep_budget)]
         for seed in seeds_for_pass2:
             try:
-                hits = await corpus.search(
-                    seed.query, limit=max(1, deep_docs_per_seed)
-                )
+                hits = await corpus.search(seed.query, limit=max(1, deep_docs_per_seed))
             except Exception:  # noqa: BLE001 -- best-effort per-seed search
                 continue
             for hit in hits:
@@ -522,10 +489,7 @@ async def auto(
             deep_failures,
         ) = await _ingest_docs(store, deep_docs)
         if verbose:
-            msg = (
-                f"auto: pass 2 ingested {nuggets_deep} nugget(s); "
-                f"{contested_deep} contested"
-            )
+            msg = f"auto: pass 2 ingested {nuggets_deep} nugget(s); {contested_deep} contested"
             if deep_failures:
                 msg += f"; {deep_failures} doc(s) failed extraction"
             print(msg, file=sys.stderr)

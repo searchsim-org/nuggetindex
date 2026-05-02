@@ -27,9 +27,7 @@ async def test_without_llm_uses_token_overlap_path(sample_nuggets) -> None:
 
     # Drive ``_find_supporting_nuggets`` directly so we isolate the path
     # under test from the claim-decomposition / temporal-validity layers.
-    supporting = await _call_find_supporting(
-        metric, "Pichai is CEO of Google", sample_nuggets
-    )
+    supporting = await _call_find_supporting(metric, "Pichai is CEO of Google", sample_nuggets)
     # Token-overlap should catch at least the Pichai nugget by the token
     # "pichai" (length > 3) appearing in its object string.
     assert any("Pichai" in n.fact.object for n in supporting)
@@ -58,9 +56,7 @@ async def test_with_llm_calls_nli_entailment(sample_nuggets) -> None:
     )()
     metric.llm = mock_llm
 
-    supporting = await _call_find_supporting(
-        metric, "Pichai runs Google", sample_nuggets
-    )
+    supporting = await _call_find_supporting(metric, "Pichai runs Google", sample_nuggets)
     assert supporting  # at least one nugget passed entailment
     assert mock_llm.agenerate_text.called  # LLM was actually invoked
 
@@ -81,9 +77,7 @@ async def test_with_llm_rejects_non_supporting(sample_nuggets) -> None:
     )()
     metric.llm = mock_llm
 
-    supporting = await _call_find_supporting(
-        metric, "Pichai runs Google", sample_nuggets
-    )
+    supporting = await _call_find_supporting(metric, "Pichai runs Google", sample_nuggets)
     assert supporting == []
     assert mock_llm.agenerate_text.call_count == len(sample_nuggets)
 
@@ -100,9 +94,7 @@ async def test_with_llm_skips_unparseable_response(sample_nuggets) -> None:
     )()
     metric.llm = mock_llm
 
-    supporting = await _call_find_supporting(
-        metric, "Pichai runs Google", sample_nuggets
-    )
+    supporting = await _call_find_supporting(metric, "Pichai runs Google", sample_nuggets)
     assert supporting == []
 
 

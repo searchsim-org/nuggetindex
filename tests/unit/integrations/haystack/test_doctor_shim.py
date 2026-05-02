@@ -8,6 +8,7 @@ the shim:
 * Returns a ``DoctorReport`` with the canonical four scores.
 * Propagates the ``mode`` argument through to ``scan_index``.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -88,9 +89,7 @@ async def test_haystack_doctor_shim_delegates_to_scan_index(
 
     import importlib
 
-    doctor_mod = importlib.import_module(
-        "nuggetindex.integrations.haystack.doctor"
-    )
+    doctor_mod = importlib.import_module("nuggetindex.integrations.haystack.doctor")
     monkeypatch.setattr(doctor_mod, "scan_index", fake_scan_index)
     store = _seed_store()
     await doctor_mod.doctor(store, mode="fast", sample_size=7, rng_seed=42)

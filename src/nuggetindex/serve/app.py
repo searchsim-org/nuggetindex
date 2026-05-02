@@ -14,6 +14,7 @@ This module is intentionally thin: each handler delegates to the existing
 library APIs and shapes the result through the Pydantic schemas in
 nuggetindex.serve.schemas.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -52,7 +53,9 @@ def create_app(
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         deps.configure(
-            db_path=db_path, mode=mode, extractor=extractor,
+            db_path=db_path,
+            mode=mode,
+            extractor=extractor,
             fallback_corpus=fallback_corpus,
             freshness_threshold=freshness_threshold,
         )
@@ -68,7 +71,9 @@ def create_app(
     @app.post("/v1/query", response_model=QueryResponse)
     async def query(req: QueryRequest, sidecar=Depends(deps.get_sidecar)) -> QueryResponse:
         response = await sidecar.ahandle(
-            req.query, query_time=req.query_time, top_k=req.top_k,
+            req.query,
+            query_time=req.query_time,
+            top_k=req.top_k,
         )
         return QueryResponse(
             query=req.query,
@@ -83,8 +88,10 @@ def create_app(
         from nuggetindex.pipeline.constructor import Document
 
         doc = Document(
-            source_id=req.source_id, text=req.text,
-            uri=req.uri, source_date=req.source_date,
+            source_id=req.source_id,
+            text=req.text,
+            uri=req.uri,
+            source_date=req.source_date,
         )
         result = await store.aingest(doc)
         return IngestResponse(
@@ -121,7 +128,8 @@ def create_app(
 
     @app.post("/v1/auto", response_model=AutoJobStatus)
     async def auto_submit(
-        req: AutoJobRequest, jobs=Depends(deps.get_jobs),
+        req: AutoJobRequest,
+        jobs=Depends(deps.get_jobs),
     ) -> AutoJobStatus:
         async def run(params: dict, job) -> dict[str, Any]:
             job.update(stage="received", progress=0.05)
@@ -151,6 +159,7 @@ def create_app(
         job = jobs.get(job_id)
         if job is None:
             from fastapi import HTTPException
+
             raise HTTPException(status_code=404, detail=f"job {job_id} not found")
         return _job_status(job)
 
@@ -205,9 +214,14 @@ def _reconstruct_docs(store: Any) -> list[Any]:
                 parsed_date = datetime.fromisoformat(raw)
             except ValueError:
                 parsed_date = None
-        docs.append(Document(
-            source_id=src_id, text=evidence, uri=None, source_date=parsed_date,
-        ))
+        docs.append(
+            Document(
+                source_id=src_id,
+                text=evidence,
+                uri=None,
+                source_date=parsed_date,
+            )
+        )
     return docs
 
 

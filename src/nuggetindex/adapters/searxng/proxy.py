@@ -4,6 +4,7 @@ Supports HTTP / HTTPS / SOCKS5 proxies. Quarantines entries that return errors;
 releases them back into rotation after ``quarantine_duration`` expires. Used by
 both the SearXNG HTTP client and the Camoufox browser fallback.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterator
@@ -30,8 +31,7 @@ class ProxyPool:
 
     def __post_init__(self) -> None:
         self._entries = [
-            p if isinstance(p, ProxyEntry) else ProxyEntry(url=p)
-            for p in self.proxies
+            p if isinstance(p, ProxyEntry) else ProxyEntry(url=p) for p in self.proxies
         ]
         self._cursor = cycle(range(len(self._entries))) if self._entries else None
 
@@ -67,6 +67,5 @@ class ProxyPool:
     def active_count(self) -> int:
         now = datetime.now(tz=UTC)
         return sum(
-            1 for e in self._entries
-            if e.quarantined_until is None or e.quarantined_until <= now
+            1 for e in self._entries if e.quarantined_until is None or e.quarantined_until <= now
         )

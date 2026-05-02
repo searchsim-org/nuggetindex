@@ -8,6 +8,7 @@ backends structurally — there is no inheritance requirement.
 and caches the instance with ``functools.lru_cache`` so the heavy model load
 only happens once per process.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
@@ -25,9 +26,7 @@ class DenseBackend(Protocol):
 
     async def aupsert(self, id: str, vector: list[float]) -> None: ...
 
-    async def aupsert_batch(
-        self, items: list[tuple[str, list[float]]]
-    ) -> None: ...
+    async def aupsert_batch(self, items: list[tuple[str, list[float]]]) -> None: ...
 
     async def asearch(
         self,
@@ -60,8 +59,7 @@ def default_encoder() -> Encoder:
         from sentence_transformers import SentenceTransformer
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[dense] not installed. "
-            "Run: pip install 'nuggetindex[dense]'"
+            "nuggetindex[dense] not installed. Run: pip install 'nuggetindex[dense]'"
         ) from e
 
     model = SentenceTransformer("BAAI/bge-small-en-v1.5")

@@ -19,6 +19,7 @@ def _patch_rule_based(monkeypatch: pytest.MonkeyPatch) -> None:
     """Patch the CLI's ``_build_extractor`` so the rule-based fixture
     stands in for the LLM extractor — keeps these inspect tests offline
     after ``RuleBasedExtractor`` was moved out of the library."""
+
     def _stub(model: str) -> object:  # noqa: ARG001
         return RuleBasedExtractor()
 
@@ -30,9 +31,7 @@ def _prep_db(tmp_path: Path) -> Path:
     corpus.mkdir()
     (corpus / "a.txt").write_text("Sundar Pichai is CEO of Google.\n")
     db = tmp_path / "ni.db"
-    result = runner.invoke(
-        app, ["build", str(corpus), "--db", str(db)]
-    )
+    result = runner.invoke(app, ["build", str(corpus), "--db", str(db)])
     assert result.exit_code == 0, result.output
     return db
 

@@ -56,9 +56,7 @@ async def test_sample_topic_diverse_degrades_to_uniform_with_warning(
         docs = await corpus.sample(mode="topic_diverse", n=10)
     assert len(docs) == 10
     assert any(
-        issubclass(w.category, UserWarning)
-        and "topic_diverse" in str(w.message)
-        for w in captured
+        issubclass(w.category, UserWarning) and "topic_diverse" in str(w.message) for w in captured
     ), f"expected a UserWarning mentioning topic_diverse; got {captured!r}"
 
 

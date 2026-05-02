@@ -1,4 +1,5 @@
 """Tests for the ``DenseBackend`` protocol + ``default_encoder`` shim."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -15,9 +16,7 @@ class _StubDense:
     async def aupsert(self, id: str, vector: list[float]) -> None:
         return None
 
-    async def aupsert_batch(
-        self, items: list[tuple[str, list[float]]]
-    ) -> None:
+    async def aupsert_batch(self, items: list[tuple[str, list[float]]]) -> None:
         return None
 
     async def asearch(
@@ -55,7 +54,9 @@ def test_default_encoder_is_cached(monkeypatch: pytest.MonkeyPatch) -> None:
             calls.append(1)
 
         def encode(
-            self, texts: list[str], normalize_embeddings: bool = True  # noqa: ARG002
+            self,
+            texts: list[str],
+            normalize_embeddings: bool = True,  # noqa: ARG002
         ) -> Any:
             import numpy as np
 

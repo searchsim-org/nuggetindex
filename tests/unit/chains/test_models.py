@@ -60,9 +60,7 @@ def test_window_returns_nugget_valid_at_time(sample_nuggets: list) -> None:
 
 
 def test_window_returns_none_when_no_match(sample_nuggets: list) -> None:
-    chain = NuggetChain(
-        nuggets=tuple(sample_nuggets), edges=(), chain_type="succession"
-    )
+    chain = NuggetChain(nuggets=tuple(sample_nuggets), edges=(), chain_type="succession")
     assert chain.window(datetime(1990, 1, 1, tzinfo=UTC)) is None
 
 
@@ -72,9 +70,7 @@ def test_chain_type_literal_validated() -> None:
 
 
 def test_chain_is_frozen(sample_nuggets: list) -> None:
-    chain = NuggetChain(
-        nuggets=tuple(sample_nuggets), edges=(), chain_type="succession"
-    )
+    chain = NuggetChain(nuggets=tuple(sample_nuggets), edges=(), chain_type="succession")
     with pytest.raises(ValidationError):
         chain.truncated = True  # type: ignore[misc]
 

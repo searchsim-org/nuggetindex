@@ -12,6 +12,7 @@ Imports follow the same two-layer pattern as the sibling
 runtime import guard raises a useful ``pip install`` hint when the
 ``[haystack]`` extra is missing.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -29,8 +30,7 @@ def _require_haystack() -> tuple[Any, type]:
         from haystack import component as _component
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[haystack] not installed. "
-            "Run: pip install 'nuggetindex[haystack]'"
+            "nuggetindex[haystack] not installed. Run: pip install 'nuggetindex[haystack]'"
         ) from e
     return _component, _Document
 
@@ -111,19 +111,13 @@ class NuggetChainRetriever:
                 **self._extract_kwargs(spec, _SUCCESSION_KEYS)
             )
         if chain_type == "rename":
-            return await self.store.achain_rename(
-                **self._extract_kwargs(spec, _RENAME_KEYS)
-            )
+            return await self.store.achain_rename(**self._extract_kwargs(spec, _RENAME_KEYS))
         if chain_type == "joined":
-            return await self.store.achain_join(
-                **self._extract_kwargs(spec, _JOIN_KEYS)
-            )
+            return await self.store.achain_join(**self._extract_kwargs(spec, _JOIN_KEYS))
         raise ValueError(f"unknown chain type: {chain_type!r}")
 
     @staticmethod
-    def _extract_kwargs(
-        spec: dict[str, Any], allowed: set[str]
-    ) -> dict[str, Any]:
+    def _extract_kwargs(spec: dict[str, Any], allowed: set[str]) -> dict[str, Any]:
         return {k: v for k, v in spec.items() if k in allowed}
 
     def _chain_to_documents(self, chain: NuggetChain) -> list[HaystackDocument]:
@@ -144,26 +138,18 @@ class NuggetChainRetriever:
                 "object": n.fact.object,
                 "valid_from": n.validity.start.isoformat(),
                 "valid_until": (
-                    n.validity.end.isoformat()
-                    if n.validity.end is not None
-                    else "ongoing"
+                    n.validity.end.isoformat() if n.validity.end is not None else "ongoing"
                 ),
                 "status": status,
                 "confidence": n.epistemic.confidence,
                 "source": first_prov.source_id if first_prov is not None else None,
-                "evidence": (
-                    first_prov.evidence_span if first_prov is not None else ""
-                ),
+                "evidence": (first_prov.evidence_span if first_prov is not None else ""),
                 "chain_position": i,
                 "chain_type": chain.chain_type,
                 "gap_seconds_to_prev": (
-                    edge.gap.total_seconds()
-                    if edge is not None and edge.gap is not None
-                    else None
+                    edge.gap.total_seconds() if edge is not None and edge.gap is not None else None
                 ),
-                "edge_type_to_prev": (
-                    str(edge.edge_type) if edge is not None else None
-                ),
+                "edge_type_to_prev": (str(edge.edge_type) if edge is not None else None),
             }
             docs.append(_HaystackDocument(content=content, meta=meta))
         return docs

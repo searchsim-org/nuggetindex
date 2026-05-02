@@ -25,9 +25,7 @@ from nuggetindex.extractors.trigger import TriggerExtractor
 async def test_extracts_role_succession() -> None:
     """``became CEO of`` -> canonical predicate ``chiefExecutiveOfficer``."""
     ext = TriggerExtractor()
-    results = await ext.aextract(
-        "Satya Nadella became CEO of Microsoft in 2014."
-    )
+    results = await ext.aextract("Satya Nadella became CEO of Microsoft in 2014.")
     assert len(results) >= 1
     schema = RelationSchema.default()
     preds = {schema.canonicalize(r.nugget.fact.predicate) for r in results}
@@ -47,9 +45,7 @@ async def test_extracts_role_succession() -> None:
 async def test_extracts_entity_rename() -> None:
     """``renamed to`` -> predicate ``renamedTo``."""
     ext = TriggerExtractor()
-    results = await ext.aextract(
-        "Twitter Inc. was renamed to X Corp. in 2023."
-    )
+    results = await ext.aextract("Twitter Inc. was renamed to X Corp. in 2023.")
     renames = [r for r in results if r.nugget.fact.predicate == "renamedTo"]
     assert len(renames) >= 1
     r = renames[0]
@@ -105,9 +101,7 @@ async def test_no_llm_calls(monkeypatch: pytest.MonkeyPatch) -> None:
     """
 
     def _boom(*args: object, **kwargs: object) -> None:
-        raise AssertionError(
-            "TriggerExtractor must not invoke HTTP / LLM clients"
-        )
+        raise AssertionError("TriggerExtractor must not invoke HTTP / LLM clients")
 
     try:
         import openai
@@ -125,9 +119,7 @@ async def test_no_llm_calls(monkeypatch: pytest.MonkeyPatch) -> None:
         pass
 
     ext = TriggerExtractor()
-    results = await ext.aextract(
-        "Microsoft acquired LinkedIn for $26.2 billion."
-    )
+    results = await ext.aextract("Microsoft acquired LinkedIn for $26.2 billion.")
     assert results, "expected at least one trigger hit"
 
 
@@ -163,9 +155,7 @@ async def test_subject_type_populated_when_spacy_available() -> None:
         pytest.skip("en_core_web_sm model not installed")
 
     ext = TriggerExtractor()
-    results = await ext.aextract(
-        "Microsoft acquired LinkedIn for $26.2 billion."
-    )
+    results = await ext.aextract("Microsoft acquired LinkedIn for $26.2 billion.")
     acquired = [r for r in results if r.nugget.fact.predicate == "acquired"]
     assert acquired
     assert acquired[0].nugget.fact.subject_type is not None

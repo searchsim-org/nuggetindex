@@ -1,4 +1,5 @@
 """Tests for ``GovernanceFilter`` (wraps any LangChain retriever)."""
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -23,9 +24,7 @@ class _StubRetriever:
     def __init__(self, docs: list[Document]) -> None:
         self._docs = docs
 
-    async def ainvoke(
-        self, input: Any, config: Any = None, **kwargs: Any
-    ) -> list[Document]:
+    async def ainvoke(self, input: Any, config: Any = None, **kwargs: Any) -> list[Document]:
         return list(self._docs)
 
 

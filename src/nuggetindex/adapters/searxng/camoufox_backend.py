@@ -7,6 +7,7 @@ directly, and parses into the same result shape ``SearxngClient`` returns.
 Shares the ``ProxyPool`` with the HTTP client: each query gets a fresh proxy,
 and proxies that land on a sorry-page are quarantined like any other failure.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -25,8 +26,8 @@ except ImportError:  # pragma: no cover -- exercised via monkeypatch in tests
 
 _ENGINE_URLS = {
     "google": "https://www.google.com/search?q={q}&num={n}&hl=en",
-    "bing":   "https://www.bing.com/search?q={q}&count={n}",
-    "ddg":    "https://duckduckgo.com/html/?q={q}",
+    "bing": "https://www.bing.com/search?q={q}&count={n}",
+    "ddg": "https://duckduckgo.com/html/?q={q}",
 }
 
 
@@ -42,8 +43,7 @@ class CamoufoxBackend:
     def __post_init__(self) -> None:
         if self.engine not in _ENGINE_URLS:
             raise ValueError(
-                f"unsupported engine: {self.engine!r}. "
-                f"Supported: {sorted(_ENGINE_URLS)}"
+                f"unsupported engine: {self.engine!r}. Supported: {sorted(_ENGINE_URLS)}"
             )
 
     async def search(self, query: str, *, limit: int) -> list[dict]:
@@ -106,11 +106,13 @@ class CamoufoxBackend:
                 snippet = g.select_one("div.VwiC3b, .IsZvec")
                 if not (a and h3):
                     continue
-                results.append({
-                    "url": a.get("href", ""),
-                    "title": h3.get_text(" ", strip=True),
-                    "content": snippet.get_text(" ", strip=True) if snippet else "",
-                })
+                results.append(
+                    {
+                        "url": a.get("href", ""),
+                        "title": h3.get_text(" ", strip=True),
+                        "content": snippet.get_text(" ", strip=True) if snippet else "",
+                    }
+                )
                 if len(results) >= limit:
                     break
         elif self.engine == "bing":
@@ -119,11 +121,13 @@ class CamoufoxBackend:
                 snippet = li.select_one(".b_caption p")
                 if not a:
                     continue
-                results.append({
-                    "url": a.get("href", ""),
-                    "title": a.get_text(" ", strip=True),
-                    "content": snippet.get_text(" ", strip=True) if snippet else "",
-                })
+                results.append(
+                    {
+                        "url": a.get("href", ""),
+                        "title": a.get_text(" ", strip=True),
+                        "content": snippet.get_text(" ", strip=True) if snippet else "",
+                    }
+                )
                 if len(results) >= limit:
                     break
         elif self.engine == "ddg":
@@ -132,11 +136,13 @@ class CamoufoxBackend:
                 snippet = r.select_one(".result__snippet")
                 if not a:
                     continue
-                results.append({
-                    "url": a.get("href", ""),
-                    "title": a.get_text(" ", strip=True),
-                    "content": snippet.get_text(" ", strip=True) if snippet else "",
-                })
+                results.append(
+                    {
+                        "url": a.get("href", ""),
+                        "title": a.get_text(" ", strip=True),
+                        "content": snippet.get_text(" ", strip=True) if snippet else "",
+                    }
+                )
                 if len(results) >= limit:
                     break
         return results

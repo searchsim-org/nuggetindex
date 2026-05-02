@@ -72,8 +72,7 @@ class DocumentConstructor:
         # real intervals and leave the attribute unset.
         inner = (
             self.quality_gate.extractor
-            if self.quality_gate is not None
-            and hasattr(self.quality_gate, "extractor")
+            if self.quality_gate is not None and hasattr(self.quality_gate, "extractor")
             else extractor
         )
         self._extractor_emits_placeholder = bool(

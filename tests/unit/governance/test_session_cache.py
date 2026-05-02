@@ -1,4 +1,5 @@
 """Session cache helpers: default path resolution + content-addressed passage hash."""
+
 from pathlib import Path
 
 from nuggetindex.governance.session_cache import default_cache_path, passage_hash

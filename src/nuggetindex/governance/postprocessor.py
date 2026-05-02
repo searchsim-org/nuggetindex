@@ -21,6 +21,7 @@ constructor to be safe to call from inside a running event loop (the default
 for LangChain / LlamaIndex). Use the async classmethod :meth:`acreate_warm`
 to pre-populate the cache from documents before the first query.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -86,12 +87,11 @@ class GovernancePostProcessor:
         schema_hash: str = "default",
     ) -> None:
         self._extractor = self._build_extractor(extractor)
-        extractor_cfg = (
-            extractor if isinstance(extractor, str) else type(extractor).__name__
-        )
+        extractor_cfg = extractor if isinstance(extractor, str) else type(extractor).__name__
         if cache_path is None:
             self._cache_path = default_cache_path(
-                extractor_config=extractor_cfg, schema_hash=schema_hash,
+                extractor_config=extractor_cfg,
+                schema_hash=schema_hash,
             )
         else:
             self._cache_path = Path(cache_path)
@@ -202,22 +202,27 @@ class GovernancePostProcessor:
         (Phase 2), so each emitted nugget already carries the passage's
         source_id in its provenance.
         """
-        sd = source_date if source_date is not None else (
-            self.query_time if self.query_time is not None else datetime.now(UTC)
+        sd = (
+            source_date
+            if source_date is not None
+            else (self.query_time if self.query_time is not None else datetime.now(UTC))
         )
         doc = Document(source_id=passage.source_id, text=passage.text, source_date=sd)
 
         # 1. Run extraction (bounded concurrency) outside the ingest lock.
         async with self._sem:
             processed = await self._constructor.aprocess(
-                doc, fetch_existing_by_key=self._store.backend.afind_by_key,
+                doc,
+                fetch_existing_by_key=self._store.backend.afind_by_key,
             )
 
         # 2. Persist under the serial lock so the next passage's conflict
         # detection sees this one's effects.
         async with self._ingest_lock:
             await self._store.backend.aupsert_passage(
-                passage.source_id, None, passage.text,
+                passage.source_id,
+                None,
+                passage.text,
             )
             for n in processed:
                 await self._store.backend.aupsert(n)
@@ -225,9 +230,7 @@ class GovernancePostProcessor:
 
     # --- main entry point --------------------------------------------------
 
-    async def apostprocess(
-        self, passages: list[RetrievedPassage]
-    ) -> list[RetrievedPassage]:
+    async def apostprocess(self, passages: list[RetrievedPassage]) -> list[RetrievedPassage]:
         """Extract + ingest any new passages, then filter/flag based on cache state.
 
         Returns the (possibly reduced, possibly edited) list of passages.
@@ -237,8 +240,7 @@ class GovernancePostProcessor:
 
         # 1. Ingest any passages we haven't seen (content-addressed).
         new_passages = [
-            p for p in passages
-            if passage_hash(p.text) not in self._known_passage_hashes
+            p for p in passages if passage_hash(p.text) not in self._known_passage_hashes
         ]
         if new_passages:
             await asyncio.gather(*(self._ingest_passage(p) for p in new_passages))
@@ -277,9 +279,7 @@ class GovernancePostProcessor:
 
     # --- introspection ----------------------------------------------------
 
-    async def acount_cached_nuggets(
-        self, status: LifecycleStatus | None = None
-    ) -> int:
+    async def acount_cached_nuggets(self, status: LifecycleStatus | None = None) -> int:
         """Total nuggets currently in the session cache (async-safe).
 
         Goes through the backend's writer queue / read executor, so it is
@@ -289,9 +289,7 @@ class GovernancePostProcessor:
         """
         return await self._store.backend.acount(status)
 
-    def count_cached_nuggets_unsafe(
-        self, status: LifecycleStatus | None = None
-    ) -> int:
+    def count_cached_nuggets_unsafe(self, status: LifecycleStatus | None = None) -> int:
         """Sync count that bypasses the backend writer queue.
 
         Reads a per-thread connection directly out of the backend's pool

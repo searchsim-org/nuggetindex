@@ -12,6 +12,7 @@ so this module keeps to the public surface (see import-hygiene test).
 ``NuggetStore.aingest`` duck-types on ``source_id``, ``text``, ``uri``,
 ``source_date``.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -36,8 +37,7 @@ def _require_llamaindex() -> tuple[Any, Any]:
         )
     except ImportError as e:  # pragma: no cover - import guard
         raise ImportError(
-            "nuggetindex[llamaindex] not installed. "
-            "Run: pip install 'nuggetindex[llamaindex]'"
+            "nuggetindex[llamaindex] not installed. Run: pip install 'nuggetindex[llamaindex]'"
         ) from e
     return _TransformComponent, _BaseNode
 

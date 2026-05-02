@@ -172,8 +172,11 @@ async def test_benchmark_list_of_queries(tmp_path: Path) -> None:
     sidecar, store = await _make_sidecar_with_google_ceo(tmp_path)
     try:
         inline = [
-            BenchmarkQuery(query="who was Google's CEO in 2013?", expected_answer="Larry Page",
-                           query_time=datetime(2013, 6, 15, tzinfo=UTC)),
+            BenchmarkQuery(
+                query="who was Google's CEO in 2013?",
+                expected_answer="Larry Page",
+                query_time=datetime(2013, 6, 15, tzinfo=UTC),
+            ),
             BenchmarkQuery(query="unrelated", expected_answer="no-answer"),
         ]
         report = await run_eval(

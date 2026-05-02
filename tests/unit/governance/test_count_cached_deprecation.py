@@ -23,9 +23,7 @@ async def test_acount_is_async_and_safe(tmp_path):
     )
     try:
         assert await pp.acount_cached_nuggets() == 0
-        await pp.apostprocess(
-            [RetrievedPassage(source_id="d-1", text="Google is a company.")]
-        )
+        await pp.apostprocess([RetrievedPassage(source_id="d-1", text="Google is a company.")])
         assert await pp.acount_cached_nuggets() >= 1
     finally:
         await pp.aclose()

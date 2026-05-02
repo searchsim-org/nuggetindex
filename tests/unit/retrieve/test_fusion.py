@@ -1,4 +1,5 @@
 """Unit tests for fusion primitives (RRF + weighted min-max)."""
+
 from nuggetindex.retrieve.fusion import (
     reciprocal_rank_fusion,
     weighted_minmax_fusion,

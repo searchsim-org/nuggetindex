@@ -3,6 +3,7 @@
 FastAPI's Depends() wires these into per-request handlers. The app's lifespan
 context calls ``configure(...)`` once at startup to populate ``app_state``.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -8,6 +8,7 @@ assumed to be the ranking (rank 1 first). Returned lists are sorted by fused
 score descending; RRF ties break by first-appearance order across the input
 rankings (deterministic stable sort).
 """
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -74,7 +75,5 @@ def weighted_minmax_fusion(
     sp = minmax(sparse)
     dn = minmax(dense)
     all_ids = set(sp) | set(dn)
-    combined = {
-        d: alpha * sp.get(d, 0.0) + beta * dn.get(d, 0.0) for d in all_ids
-    }
+    combined = {d: alpha * sp.get(d, 0.0) + beta * dn.get(d, 0.0) for d in all_ids}
     return sorted(combined.items(), key=lambda kv: -kv[1])

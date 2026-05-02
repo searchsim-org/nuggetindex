@@ -12,6 +12,7 @@ intentionally deferred this component; the filter DSL and base-protocol
 surface area made sense once the SQL allowlist was established during v0.1
 review.
 """
+
 from nuggetindex.integrations.haystack.chain_retriever import NuggetChainRetriever
 from nuggetindex.integrations.haystack.constructor import NuggetConstructor
 from nuggetindex.integrations.haystack.doctor import doctor

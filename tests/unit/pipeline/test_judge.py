@@ -30,9 +30,7 @@ from nuggetindex.pipeline.judge import JudgeDecision, LLMJudge
 def _nugget(obj: str, start_year: int) -> Nugget:
     return Nugget.new(
         kind=NuggetKind.SEMANTIC_FACT,
-        fact=FactTriple(
-            subject="Google", predicate="chiefExecutiveOfficer", object=obj, text="x"
-        ),
+        fact=FactTriple(subject="Google", predicate="chiefExecutiveOfficer", object=obj, text="x"),
         validity=ValidityInterval(start=datetime(start_year, 1, 1, tzinfo=UTC)),
         epistemic=EpistemicState(),
         provenance=(ProvenanceRecord(source_id="d", evidence_span="x"),),

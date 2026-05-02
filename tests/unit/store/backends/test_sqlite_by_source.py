@@ -1,4 +1,5 @@
 """``SQLiteBackend.aget_nuggets_by_source`` — SQL JOIN on provenance."""
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -65,7 +66,10 @@ async def test_distinct_when_multiple_provenance(tmp_path):
         provenance=(
             ProvenanceRecord(source_id="doc-a", evidence_span="A is B", char_start=0, char_end=6),
             ProvenanceRecord(
-                source_id="doc-a", evidence_span="A is B again", char_start=20, char_end=30,
+                source_id="doc-a",
+                evidence_span="A is B again",
+                char_start=20,
+                char_end=30,
             ),
         ),
     )

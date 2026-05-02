@@ -20,9 +20,7 @@ def print_banner(rq: str, title: str, paper_ref: str) -> None:
     print(bar)
 
 
-def print_markdown_table(
-    headers: Sequence[str], rows: Sequence[Sequence[Any]]
-) -> None:
+def print_markdown_table(headers: Sequence[str], rows: Sequence[Sequence[Any]]) -> None:
     """Emit a Github-flavoured Markdown table to stdout."""
     print("| " + " | ".join(str(h) for h in headers) + " |")
     print("| " + " | ".join("---" for _ in headers) + " |")

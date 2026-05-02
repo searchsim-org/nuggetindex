@@ -73,7 +73,9 @@ async def test_check_store_returns_stale_for_old_evidence(tmp_path: Path):
 
     fc = FreshnessChecker(threshold=timedelta(days=90))
     result = await fc.check_store(
-        store, subject="Apple", predicate="chiefExecutiveOfficer",
+        store,
+        subject="Apple",
+        predicate="chiefExecutiveOfficer",
     )
     assert result.is_fresh is False
     await store.backend.aclose()

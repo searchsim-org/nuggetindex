@@ -82,8 +82,6 @@ async def test_contested_keys_column_is_respected() -> None:
 @pytest.mark.asyncio
 async def test_score_is_float_in_range() -> None:
     metric = ConflictTransparency()
-    score = await metric._ascore(
-        {"response": "foo", "retrieved_nuggets": [], "contested_keys": []}
-    )
+    score = await metric._ascore({"response": "foo", "retrieved_nuggets": [], "contested_keys": []})
     assert isinstance(score, float)
     assert 0.0 <= score <= 1.0

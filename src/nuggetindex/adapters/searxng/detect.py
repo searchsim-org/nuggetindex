@@ -5,6 +5,7 @@ result, a hard CAPTCHA challenge, a soft rate-limit signal, or a
 SearXNG-specific empty-because-upstream-blocked state. Pure heuristic; never
 hits the network. Extensible via ``extra_patterns``.
 """
+
 from __future__ import annotations
 
 import re
@@ -12,9 +13,14 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 _Category = Literal[
-    "ok", "rate_limit",
-    "cloudflare", "google_sorry", "ddg_anomaly", "bing_captcha",
-    "searxng_silent_empty", "unknown_block",
+    "ok",
+    "rate_limit",
+    "cloudflare",
+    "google_sorry",
+    "ddg_anomaly",
+    "bing_captcha",
+    "searxng_silent_empty",
+    "unknown_block",
 ]
 
 
@@ -38,8 +44,13 @@ class CaptchaDetector:
     extra_patterns: list[tuple[re.Pattern[str], str]] = field(default_factory=list)
 
     def classify(
-        self, *, status_code: int, body: str, headers: dict[str, str],
-        searxng_empty: bool = False, searxng_engines_failed: bool = False,
+        self,
+        *,
+        status_code: int,
+        body: str,
+        headers: dict[str, str],
+        searxng_empty: bool = False,
+        searxng_engines_failed: bool = False,
     ) -> DetectionResult:
         if status_code == 429:
             return DetectionResult(True, "rate_limit", "HTTP 429")
@@ -53,7 +64,8 @@ class CaptchaDetector:
             return DetectionResult(True, cat, f"body matches {cat} pattern")
         if searxng_empty and searxng_engines_failed:
             return DetectionResult(
-                True, "searxng_silent_empty",
+                True,
+                "searxng_silent_empty",
                 "SearXNG returned 200 with zero results and engine errors",
             )
         return DetectionResult(False, "ok", "no CAPTCHA signals")

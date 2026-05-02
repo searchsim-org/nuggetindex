@@ -14,7 +14,7 @@ authors:
   - given-names: Jelena
     family-names: Mitrović
     orcid: "https://orcid.org/0000-0003-3220-8749"
-version: 0.3.0
+version: 0.3.1
 date-released: "2026-04-27"
 license: MIT
 repository-code: "https://github.com/searchsim-org/nuggetindex"

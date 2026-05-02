@@ -1,8 +1,6 @@
 # nuggetindex
 
-<p align="center">
-  <img alt="nuggetindex" src="https://raw.githubusercontent.com/searchsim-org/nuggetindex/main/assets/nuggetindex_logo.png" width="500"/>
-</p>
+![nuggetindex](https://raw.githubusercontent.com/searchsim-org/nuggetindex/main/assets/nuggetindex_logo.png)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
@@ -28,11 +26,12 @@ same `(subject, predicate)` key. At query time, it filters by the
 question's time and surfaces source disagreements to the generator. No
 re-indexing of your existing retriever required.
 
-<p align="center">
-  <img alt="Pipeline overview" src="https://raw.githubusercontent.com/searchsim-org/nuggetindex/main/assets/pipeline.jpg"/>
-</p>
+![Pipeline overview](https://raw.githubusercontent.com/searchsim-org/nuggetindex/main/assets/pipeline.jpg)
 
-*Pipeline overview. Source: the published paper
+*NuggetIndex pipeline. Raw text is normalised into atomic candidates.
+Algorithm 1 infers validity intervals using temporal expressions and
+revision history, while Algorithm 2 detects conflicts with the index
+to determine lifecycle states. Figure from the SIGIR 2026 paper
 ([arXiv:2604.27306](https://arxiv.org/abs/2604.27306)).*
 
 ## Install

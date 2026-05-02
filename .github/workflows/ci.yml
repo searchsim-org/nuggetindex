@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths: ['nuggetindex/**']
+  pull_request:
+    paths: ['nuggetindex/**']
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+        extras: ["dev", "all"]
+    defaults:
+      run:
+        working-directory: nuggetindex
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[${{ matrix.extras }}]"
+      - name: Lint
+        if: matrix.extras == 'dev'
+        run: |
+          ruff check src tests
+          ruff format --check src tests
+      - name: Typecheck
+        if: matrix.extras == 'dev'
+        run: mypy src
+      - name: Test
+        run: pytest tests -v --cov=nuggetindex --cov-report=xml
+
+  test-pgvector:
+    name: test (pgvector)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nuggetindex
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: nuggetindex_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      TEST_POSTGRES_DSN: "postgresql://postgres:postgres@localhost:5432/nuggetindex_test"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,pgvector]" pytest-postgresql
+      - name: Test
+        run: pytest tests/unit/store/backends/test_pgvector.py -v

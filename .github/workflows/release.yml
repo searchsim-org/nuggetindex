@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-publish-testpypi:
+    name: Build and publish to TestPyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/nuggetindex
+    permissions:
+      id-token: write
+    defaults:
+      run:
+        working-directory: nuggetindex
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install build
+        run: pip install build
+      - name: Build sdist and wheel
+        run: python -m build
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: nuggetindex/dist
+
+  smoke-test-testpypi:
+    name: Smoke-test the TestPyPI release
+    needs: build-and-publish-testpypi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Wait for TestPyPI indexing, install, and import
+        run: |
+          sleep 120
+          pip install --index-url https://test.pypi.org/simple/ \
+                      --extra-index-url https://pypi.org/simple/ \
+                      nuggetindex
+          python -c "from nuggetindex import Nugget, NuggetStore; print('ok')"
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: smoke-test-testpypi
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/nuggetindex
+    permissions:
+      id-token: write
+    defaults:
+      run:
+        working-directory: nuggetindex
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install build
+        run: pip install build
+      - name: Build sdist and wheel
+        run: python -m build
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: nuggetindex/dist

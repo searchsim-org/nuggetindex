@@ -1,0 +1,266 @@
+# Default predicate schema for nuggetindex v0.1.
+# `functional: true`  -> single-valued at any validity point (e.g., CEO of a company at a time).
+# `functional: false` -> multi-valued (e.g., board members coexist).
+# `cardinality:` (optional, orthogonal to `functional`) distinguishes
+#   - `functional`   : one value at a time (CEO, headquarters)
+#   - `multi_valued` : many values coexist (board members, acquisitions, aliases)
+#   - `event_log`    : news-verb / timestamped event stream (announced, says,
+#                      published) — never triggers CONTESTED.
+# When omitted, `cardinality` is derived from `functional`. When both are
+# present, `cardinality` wins.
+# Users extend this file or provide their own YAML; see docs/recipes/custom-predicates.md.
+
+version: 1
+predicates:
+  # People - roles
+  chiefExecutiveOfficer:
+    functional: true
+    expected_subject_types: [ORG]
+    expected_object_types: [PERSON]
+    aliases: [ceo, "chief executive officer", headOfCompany]
+  chairperson:
+    functional: true
+    expected_subject_types: [ORG]
+    expected_object_types: [PERSON]
+    aliases: [chair, chairman, chairwoman]
+  president:
+    functional: true
+    aliases: []
+  founder:
+    functional: false
+    expected_subject_types: [ORG]
+    expected_object_types: [PERSON]
+    aliases: [cofounder, co-founder]
+  chiefTechnologyOfficer:
+    functional: true
+    aliases: [cto]
+  chiefFinancialOfficer:
+    functional: true
+    aliases: [cfo]
+  chiefOperatingOfficer:
+    functional: true
+    aliases: [coo]
+
+  # People - identity
+  dateOfBirth:
+    functional: true
+    aliases: [born, birthdate]
+  dateOfDeath:
+    functional: true
+    aliases: [died, deathdate]
+  placeOfBirth:
+    functional: true
+    aliases: [bornIn]
+  placeOfDeath:
+    functional: true
+    aliases: [diedIn]
+  nationality:
+    functional: true
+    aliases: [citizen]
+  gender:
+    functional: true
+    aliases: []
+  occupation:
+    functional: false
+    aliases: [profession]
+  educatedAt:
+    functional: false
+    aliases: [alma_mater, studiedAt]
+
+  # Companies and organisations
+  headquarteredIn:
+    functional: true
+    expected_subject_types: [ORG]
+    expected_object_types: [GPE, LOC]
+    aliases: [hq, headquarters]
+  foundedIn:
+    functional: true
+    expected_subject_types: [ORG]
+    expected_object_types: [DATE, GPE]
+    aliases: [founded, established]
+  corporateName:
+    functional: true
+    renaming: true
+    aliases: [name, legal_name, legalName]
+  renamedTo:
+    functional: true
+    renaming: true
+    expected_subject_types: [ORG, PRODUCT]
+    expected_object_types: [ORG, PRODUCT]
+    aliases: [renamedAs, becomes]
+  formerlyKnownAs:
+    functional: true
+    renaming: true
+    expected_subject_types: [ORG, PRODUCT]
+    expected_object_types: [ORG, PRODUCT]
+    aliases: [previouslyCalled]
+  industry:
+    functional: false
+    aliases: []
+  parentCompany:
+    functional: true
+    aliases: [owner]
+  subsidiary:
+    functional: false
+    aliases: []
+  employer:
+    functional: true
+    expected_subject_types: [PERSON]
+    expected_object_types: [ORG]
+    aliases: [worksFor]
+  employeeCount:
+    functional: true
+    aliases: [numberOfEmployees]
+  revenue:
+    functional: true
+    aliases: []
+  ticker:
+    functional: true
+    aliases: [stockSymbol]
+
+  # Places
+  locatedIn:
+    functional: true
+    aliases: [in, partOf]
+  country:
+    functional: true
+    aliases: []
+  capital:
+    functional: true
+    aliases: []
+  population:
+    functional: true
+    aliases: []
+  currency:
+    functional: true
+    aliases: []
+  officialLanguage:
+    functional: false
+    aliases: [language]
+
+  # Events
+  startDate:
+    functional: true
+    aliases: [began, started]
+  endDate:
+    functional: true
+    aliases: [ended, finished]
+  eventLocation:
+    functional: true
+    aliases: []
+  participant:
+    functional: false
+    aliases: [attended]
+  organizer:
+    functional: false
+    aliases: []
+
+  # Creative works
+  author:
+    functional: false
+    aliases: [writer, wroteBy]
+  director:
+    functional: true
+    aliases: []
+  publicationDate:
+    functional: true
+    aliases: [releasedOn]
+  publisher:
+    functional: true
+    aliases: []
+  genre:
+    functional: false
+    aliases: []
+  language:
+    functional: true
+    aliases: []
+
+  # Generic relations
+  partOf:
+    functional: false
+    aliases: []
+  memberOf:
+    functional: false
+    aliases: [member]
+  hasPart:
+    functional: false
+    aliases: []
+  boardMember:
+    functional: false
+    aliases: [director_of]
+  follows:
+    functional: true
+    aliases: [succeededBy]
+  # Role-succession predicates. Not entity-rename — see renamedTo /
+  # formerlyKnownAs / corporateName for actual entity-rename edges.
+  precededBy:
+    functional: true
+    expected_subject_types: [PERSON, ORG]
+    expected_object_types: [PERSON, ORG]
+    aliases: [predecessor]
+  succeededBy:
+    functional: true
+    expected_subject_types: [PERSON, ORG]
+    expected_object_types: [PERSON, ORG]
+    aliases: [successor]
+  knownFor:
+    functional: false
+    aliases: []
+
+  # Business activity — multi-valued (a company can acquire many companies,
+  # offer many products, etc.).  Listed here so extractors don't see them as
+  # "unknown" predicates.
+  acquired:
+    functional: false
+    cardinality: multi_valued
+    expected_subject_types: [ORG]
+    expected_object_types: [ORG, PRODUCT]
+    aliases: [acquires, acquiring, acquisitionOf]
+  offers:
+    functional: false
+    cardinality: multi_valued
+    aliases: [offered, offering]
+  includes:
+    functional: false
+    cardinality: multi_valued
+    aliases: [included, including]
+  supports:
+    functional: false
+    cardinality: multi_valued
+    aliases: [supported, supporting]
+
+  # News-verb / event-log predicates.  Each extraction represents a distinct
+  # event in a stream — NOT a contested single-valued attribute — so the
+  # conflict detector must never flag two differing objects as CONTESTED.
+  announced:
+    functional: false
+    cardinality: event_log
+    aliases: [announces, announcing]
+  said:
+    functional: false
+    cardinality: event_log
+    aliases: [says, saying]
+  reported:
+    functional: false
+    cardinality: event_log
+    aliases: [reports, reporting]
+  launched:
+    functional: false
+    cardinality: event_log
+    aliases: [launches, launching]
+  released:
+    functional: false
+    cardinality: event_log
+    aliases: [releases, releasing]
+  published:
+    functional: false
+    cardinality: event_log
+    aliases: [publishes, publishing]
+  confirmed:
+    functional: false
+    cardinality: event_log
+    aliases: [confirms, confirming]
+  presented:
+    functional: false
+    cardinality: event_log
+    aliases: [presents, presenting]

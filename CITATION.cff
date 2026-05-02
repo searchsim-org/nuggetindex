@@ -1,0 +1,51 @@
+cff-version: 1.2.0
+title: nuggetindex
+message: >
+  If you use this software, please cite the SIGIR 2026 paper below.
+type: software
+authors:
+  - given-names: Saber
+    family-names: Zerhoudi
+    email: szerhoudi@acm.org
+    orcid: "https://orcid.org/0000-0003-2259-0462"
+  - given-names: Michael
+    family-names: Granitzer
+    orcid: "https://orcid.org/0000-0003-3566-5507"
+  - given-names: Jelena
+    family-names: Mitrović
+    orcid: "https://orcid.org/0000-0003-3220-8749"
+version: 0.2.7
+date-released: "2026-04-27"
+license: MIT
+repository-code: "https://github.com/searchsim-org/nuggetindex"
+url: "https://github.com/searchsim-org/nuggetindex"
+abstract: >
+  nuggetindex is a time-aware, conflict-aware fact retrieval sidecar
+  for RAG stacks. It stores atomic facts as governed records with
+  validity intervals, lifecycle states (Active / Deprecated /
+  Contested), and provenance, and exposes a `nuggetindex resolve`
+  CLI for human-in-the-loop adjudication of source disagreements.
+  Drop-in adapters for LangChain, LlamaIndex, and Haystack.
+keywords:
+  - rag
+  - retrieval
+  - temporal-ir
+  - nugget-evaluation
+  - fact-maintenance
+preferred-citation:
+  type: conference-paper
+  title: "NuggetIndex: Governed Atomic Retrieval for Maintainable RAG"
+  authors:
+    - given-names: Saber
+      family-names: Zerhoudi
+      email: szerhoudi@acm.org
+    - given-names: Michael
+      family-names: Granitzer
+    - given-names: Jelena
+      family-names: Mitrović
+  collection-title: >
+    Proceedings of the 49th International ACM SIGIR Conference on
+    Research and Development in Information Retrieval (SIGIR '26)
+  year: 2026
+  url: "https://arxiv.org/abs/2604.27306"
+  doi: "10.48550/arXiv.2604.27306"

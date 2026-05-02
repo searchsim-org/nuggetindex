@@ -1,0 +1,24 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "request": {
+    "messages": [
+      {
+        "role": "system",
+        "content": "You extract atomic facts from text. Output ONLY valid JSON matching the provided schema."
+      },
+      {
+        "role": "user",
+        "content": "Extract atomic facts from: Sundar Pichai is CEO of Google."
+      }
+    ],
+    "response_model": "Triple",
+    "temperature": 0.0,
+    "max_tokens": 2048
+  },
+  "response": {
+    "subject": "Google",
+    "predicate": "ceo",
+    "object": "Sundar Pichai"
+  }
+}

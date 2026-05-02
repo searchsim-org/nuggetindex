@@ -1,0 +1,20 @@
+{
+  "provider": "google",
+  "model": "gemini-1.5-flash",
+  "request": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "Extract atomic facts from: Larry Page co-founded Google."
+      }
+    ],
+    "response_model": "Triple",
+    "temperature": 0.0,
+    "max_output_tokens": 2048
+  },
+  "response": {
+    "subject": "Larry Page",
+    "predicate": "co-founded",
+    "object": "Google"
+  }
+}

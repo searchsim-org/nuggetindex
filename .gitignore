@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtualenvs
+.venv/
+venv/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# SQLite / FAISS artifacts in examples and tests
+*.db
+*.db-journal
+*.faiss
+review_queue.jsonl
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Jupyter
+.ipynb_checkpoints/
+
+# mkdocs build
+site/
+
+# Documentation source (kept local; not tracked)
+docs/
+
+# Hypothesis
+.hypothesis/
+
+# OS
+.DS_Store
+
+# Release
+*.whl
+*.tar.gz

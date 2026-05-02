@@ -1,0 +1,148 @@
+[project]
+name = "nuggetindex"
+dynamic = ["version"]
+description = "Time-aware, conflict-aware fact retrieval as a sidecar to your existing RAG system"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [{ name = "Saber Zerhoudi", email = "szerhoudi@acm.org" }]
+maintainers = [{ name = "Saber Zerhoudi", email = "szerhoudi@acm.org" }]
+keywords = ["rag", "retrieval", "temporal-ir", "nugget-evaluation", "fact-maintenance"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "pydantic>=2.5",
+    "rank-bm25>=0.2.2",
+    "httpx>=0.24",
+    "tenacity>=8.2",
+    "structlog>=23.1",
+    "typer>=0.9",
+    "rich>=13.0",
+    "pyyaml>=6.0",
+    "dateparser>=1.2",
+]
+
+[project.optional-dependencies]
+dense = ["sentence-transformers>=2.2", "faiss-cpu>=1.7", "torch>=2.0", "numpy>=1.24"]
+langchain = ["langchain-core>=0.3"]
+llamaindex = ["llama-index-core>=0.11"]
+haystack = ["haystack-ai>=2.0"]
+qdrant = ["qdrant-client>=1.9"]
+pinecone = ["pinecone>=5.0"]
+chroma = ["chromadb>=0.5"]
+ollama = ["ollama>=0.3"]
+openai = ["openai>=1.0", "instructor>=1.0"]
+anthropic = ["anthropic>=0.30", "instructor>=1.0"]
+google = ["google-generativeai>=0.5", "instructor>=1.0"]
+eval = ["ragas>=0.2", "datasets>=2.14"]
+pgvector = ["asyncpg>=0.29", "pgvector>=0.3"]
+doctor = [
+    "spacy>=3.7",
+    "dateparser>=1.2",
+    "langdetect>=1.0.9",
+    "scikit-learn>=1.3",
+]
+seeds = ["sentence-transformers>=2.7"]
+web = [
+    "camoufox[geoip]>=0.4",
+    "playwright>=1.44",
+    "beautifulsoup4>=4.12",
+]
+elasticsearch = ["elasticsearch[async]>=8.0"]
+opensearch = ["opensearch-py>=2.7"]
+serve = ["fastapi>=0.115", "uvicorn[standard]>=0.30"]
+all = [
+    "nuggetindex[dense,langchain,llamaindex,haystack,qdrant,pinecone,chroma,ollama,openai,anthropic,google,eval,pgvector,doctor,seeds,web,elasticsearch,opensearch,serve]",
+]
+dev = [
+    "pytest>=7.3", "pytest-asyncio>=0.21", "pytest-cov>=4.1",
+    "hypothesis>=6.80", "ruff>=0.5", "mypy>=1.8",
+]
+
+[project.scripts]
+nuggetindex = "nuggetindex.cli.app:app"
+
+[project.urls]
+Homepage = "https://github.com/searchsim-org/nuggetindex"
+Repository = "https://github.com/searchsim-org/nuggetindex"
+Issues = "https://github.com/searchsim-org/nuggetindex/issues"
+Demo = "https://nuggetindex.searchsim.org/"
+Paper = "https://arxiv.org/abs/2604.27306"
+
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nuggetindex"]
+
+[tool.hatch.version]
+path = "src/nuggetindex/_version.py"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "llm: tests requiring a real LLM API (skipped unless NUGGETINDEX_LLM_TESTS=1)",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# Typer idiom: ``param: T = typer.Option(...)`` trips B008 (function call in
+# default) by design. Exempt the CLI package where the pattern is universal.
+"src/nuggetindex/cli/*.py" = ["B008"]
+# FastAPI idiom: ``param = Depends(fn)`` in endpoint signatures also trips
+# B008. Exempt the serve package where the pattern is universal.
+"src/nuggetindex/serve/*.py" = ["B008"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = [
+    "faiss.*",
+    "rank_bm25.*",
+    "sentence_transformers.*",
+    "qdrant_client.*",
+    "chromadb.*",
+    "yaml",
+    "anthropic",
+    "anthropic.*",
+    "ollama",
+    "ollama.*",
+    "google.*",
+    "google.generativeai",
+    "google.generativeai.*",
+    "instructor",
+    "instructor.*",
+    "dateparser",
+    "dateparser.*",
+    "datasets",
+    "datasets.*",
+    "ragas",
+    "ragas.*",
+    "asyncpg",
+    "asyncpg.*",
+    "pgvector",
+    "pgvector.*",
+]
+ignore_missing_imports = true

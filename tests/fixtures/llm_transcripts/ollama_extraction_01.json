@@ -1,0 +1,20 @@
+{
+  "provider": "ollama",
+  "model": "llama3.2",
+  "request": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "Extract atomic facts from: Elon Musk founded SpaceX."
+      }
+    ],
+    "response_model": "Triple",
+    "temperature": 0.0,
+    "max_tokens": 2048
+  },
+  "response": {
+    "subject": "Elon Musk",
+    "predicate": "founded",
+    "object": "SpaceX"
+  }
+}
